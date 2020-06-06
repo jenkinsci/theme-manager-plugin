@@ -8,28 +8,27 @@ import io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class NoOpThemeManagerFactory extends ThemeManagerFactory {
-    
-    @DataBoundConstructor
-    public NoOpThemeManagerFactory() {
+
+  @DataBoundConstructor
+  public NoOpThemeManagerFactory() {}
+
+  @Override
+  public Theme getTheme() {
+    return Theme.builder().build();
+  }
+
+  @Extension
+  public static class NoOpThemeManagerFactoryDescriptor extends ThemeManagerFactoryDescriptor {
+
+    @NonNull
+    @Override
+    public String getDisplayName() {
+      return "None";
     }
 
     @Override
-    public Theme getTheme() {
-        return Theme.builder().build();
+    public ThemeManagerFactory getInstance() {
+      return new NoOpThemeManagerFactory();
     }
-    
-    @Extension
-    public static class NoOpThemeManagerFactoryDescriptor extends ThemeManagerFactoryDescriptor {
-
-        @NonNull
-        @Override
-        public String getDisplayName() {
-            return "None";
-        }
-
-        @Override
-        public ThemeManagerFactory getInstance() {
-            return new NoOpThemeManagerFactory();
-        }
-    }
+  }
 }
