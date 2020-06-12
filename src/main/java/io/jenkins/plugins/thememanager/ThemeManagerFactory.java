@@ -22,7 +22,8 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
   public String getCssUrl() {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
     return Jenkins.get().getRootUrl()
-        + descriptor.getDescriptorUrl()
+        + "theme-"
+        + descriptor.getThemeId()
         + "/"
         + descriptor.getThemeCssSuffix();
   }
