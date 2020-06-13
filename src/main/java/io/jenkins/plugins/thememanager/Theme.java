@@ -13,7 +13,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 /**
  * Holds URLs to CSS and JavaScript files.
  *
- * <p>Initialise it with {@link Theme#builder()}</p>
+ * <p>Initialise it with {@link Theme#builder()}
  */
 public class Theme {
 
