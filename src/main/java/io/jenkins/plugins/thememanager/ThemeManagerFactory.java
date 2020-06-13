@@ -31,10 +31,10 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
   public String getJavaScriptUrl() {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
     return Jenkins.get().getRootUrl()
-            + "theme-"
-            + descriptor.getThemeId()
-            + "/"
-            + descriptor.getThemeJsSuffix();
+        + "theme-"
+        + descriptor.getThemeId()
+        + "/"
+        + descriptor.getThemeJsSuffix();
   }
 
   @Override

@@ -76,7 +76,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     return null;
   }
-  
+
   /**
    * Filter to only inject CSS into "normal" Jenkins pages. Some plugins replace the whole layout of
    * Jenkins and we don't want to disturb them.
@@ -100,5 +100,4 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     // We don't want to style the build-monitor-plugin
     return !o.getClass().getName().startsWith("com.smartcodeltd.jenkinsci.plugins.buildmonitor");
   }
-
 }
