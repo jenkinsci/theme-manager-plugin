@@ -6,9 +6,12 @@ import hudson.Extension;
 import hudson.model.User;
 import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+@Restricted(NoExternalUse.class)
 public class ThemeUserProperty extends UserProperty {
 
   private ThemeManagerFactory theme;

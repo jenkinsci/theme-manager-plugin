@@ -7,6 +7,9 @@ import io.jenkins.plugins.thememanager.ThemeManagerFactory;
 import io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+/**
+ * Disables any theming.
+ */
 public class NoOpThemeManagerFactory extends ThemeManagerFactory {
 
   @DataBoundConstructor
