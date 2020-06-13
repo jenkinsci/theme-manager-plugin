@@ -8,26 +8,57 @@
 
 ## Introduction
 
-TODO Describe what your plugin does here
+Adds theme management to Jenkins, at a global or user level.
 
 ## Getting started
 
-TODO Tell users how to configure your plugin here, include screenshots, pipeline examples and 
-configuration-as-code examples.
+There's normally no need to install this plugin directly as the theme you install will depend on this.
 
-## Issues
+First you will want to install a theme plugin through the Jenkins Update Center.
 
-TODO Decide where you're going to host your issues, the default is Jenkins JIRA, but you can also enable GitHub issues,
-If you use GitHub issue there's no need for this section, else add the following line:
+### Known themes
 
-Report issues and enhancements in the [Jenkins issue tracker](https://issues.jenkins-ci.org/).
+* [Dark theme](https://github.com/jenkins/dark-theme-plugin)
+* [Dark theme (OS settings respected)](https://github.com/jenkins/dark-theme-plugin)
+
+_Just send a pull request to add your theme to the list if create one_
+
+### Configuring the plugin
+
+You can configure this plugin globally, or each user can configure it in their configuration as well.
+
+### Global
+
+Manage Jenkins → Configure System → Built-in Themes
+
+![Global configuration](docs/images/global-theme-manager.png)
+
+You can stop users from being able to change their theme by selecting the:
+'Disable user theme override' option
+
+### User
+
+'Your name' profile link (in top right) → Configure → Built-in Themes
+
+![User configuration](docs/images/user-theme-manager.png)
+
+### Configuration as Code example
+
+```yaml
+unclassified:
+  themeManager:
+    disableUserThemes: true
+    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
+```
+
+## Creating a new theme
+
+See our [developer guide](docs/developer-guide.md).
 
 ## Contributing
 
-TODO review the included CONTRIBUTING file and make sure it is appropriate for your plugin.
-
-Refer to our [contribution guidelines](.github/CONTRIBUTING.md)
+Refer to our [contribution guidelines](.github/CONTRIBUTING.md).
 
 ## LICENSE
 
-Licensed under MIT, see [LICENSE](LICENSE.md)
+Licensed under MIT, see [LICENSE](LICENSE.md).

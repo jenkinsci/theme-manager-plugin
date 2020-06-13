@@ -71,3 +71,9 @@ INFO: Jenkins is fully up and running
 ```
 
 - Open <http://localhost:8080/jenkins/> to test the plugin locally.
+
+## Codestyle
+
+We're using the google-java-format style, but there's a GitHub action
+that will automatically format code once it's merged to master,
+so don't worry about the style.
