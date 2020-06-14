@@ -7,7 +7,7 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/theme-manager.svg?color=blue)](https://plugins.jenkins.io/theme-manager)
 
 :exclamation: **Incubation Stage**: Currently this plugin is in the incubation stage.
-It's possible there will be some breaking changes as it involves.
+It's possible there will be some breaking changes as it evolves.
 You are welcome to try out this plugin and to provide your feedback.
 Contributions are welcome!
 
