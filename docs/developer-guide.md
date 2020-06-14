@@ -12,6 +12,8 @@ extension point.
 
 Create a plugin from the `empty plugin` [Jenkins archetype](https://github.com/jenkinsci/archetypes/).
 
+In the properties section of your `pom.xml` add `<useBeta>true</useBeta>`
+
 You will need to extend/implement:
 
 * [ThemeManagerFactory](https://github.com/jenkinsci/theme-manager-plugin/blob/master/src/main/java/io/jenkins/plugins/thememanager/ThemeManagerFactory.java)
