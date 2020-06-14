@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    User and global themes, built-in to Jenkins
+    Provides an extension point for adding user and global themes, built-in to Jenkins.
 </div>
