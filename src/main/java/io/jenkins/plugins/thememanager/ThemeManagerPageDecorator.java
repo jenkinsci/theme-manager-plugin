@@ -1,5 +1,6 @@
 package io.jenkins.plugins.thememanager;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
@@ -57,20 +58,33 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     this.disableUserThemes = disableUserThemes;
   }
 
-  /** Get the complete header HTML for all configured theme elements. */
-  public String getHeaderHtml() {
+  /**
+   * Finds the active theme.
+   * Checks User and then global theme.
+   *
+   * @return the active theme, or null if no active theme.
+   */
+  @CheckForNull
+  public Theme findTheme() {
     if (!disableUserThemes) {
-      Theme theme = ThemeUserProperty.forCurrentUser();
-      if (theme != null) {
-        boolean injectCss = shouldInjectCss();
-        Set<String> data = new LinkedHashSet<>(theme.generateHeaderElements(injectCss));
-        return StringUtils.join(data, "\n");
+      Theme userTheme = ThemeUserProperty.forCurrentUser();
+      if (userTheme != null) {
+        return userTheme;
       }
     }
 
     if (theme != null) {
+      return theme.getTheme();
+    }
+    return null;
+  }
+
+  /** Get the complete header HTML for all configured theme elements. */
+  public String getHeaderHtml() {
+    Theme theme = findTheme();
+    if (theme != null) {
       boolean injectCss = shouldInjectCss();
-      Set<String> data = new LinkedHashSet<>(theme.getTheme().generateHeaderElements(injectCss));
+      Set<String> data = new LinkedHashSet<>(this.theme.getTheme().generateHeaderElements(injectCss));
       return StringUtils.join(data, "\n");
     }
 
