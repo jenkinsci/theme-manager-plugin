@@ -25,11 +25,12 @@ public class Theme {
 
   private final List<String> cssUrls;
   private final List<String> javascriptUrls;
-  private boolean blueOceanCompatible;
+  private final boolean blueOceanCompatible;
 
-  private Theme(List<String> cssUrls, List<String> javascriptUrls) {
+  private Theme(List<String> cssUrls, List<String> javascriptUrls, boolean blueOceanCompatible) {
     this.cssUrls = cssUrls;
     this.javascriptUrls = javascriptUrls;
+    this.blueOceanCompatible = blueOceanCompatible;
   }
 
   @Restricted(NoExternalUse.class)
@@ -88,7 +89,7 @@ public class Theme {
   public static class Builder {
     private List<String> cssUrls = emptyList();
     private List<String> javascriptUrls = emptyList();
-    private boolean blueOceanCompatible = true;
+    private boolean blueOceanCompatible = false;
 
     Builder() {}
 
@@ -186,7 +187,7 @@ public class Theme {
      * @return the theme.
      */
     public Theme build() {
-      return new Theme(cssUrls, javascriptUrls);
+      return new Theme(cssUrls, javascriptUrls, blueOceanCompatible);
     }
   }
 }
