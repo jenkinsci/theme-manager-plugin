@@ -49,6 +49,12 @@
       <artifactId>test-harness</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>blueocean-web</artifactId>
+      <version>1.23.2</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <developers>
