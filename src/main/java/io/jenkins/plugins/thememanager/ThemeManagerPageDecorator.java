@@ -59,8 +59,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   }
 
   /**
-   * Finds the active theme.
-   * Checks User and then global theme.
+   * Finds the active theme. Checks User and then global theme.
    *
    * @return the active theme, or null if no active theme.
    */
@@ -84,7 +83,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     Theme theme = findTheme();
     if (theme != null) {
       boolean injectCss = shouldInjectCss();
-      Set<String> data = new LinkedHashSet<>(this.theme.getTheme().generateHeaderElements(injectCss));
+      Set<String> data =
+          new LinkedHashSet<>(this.theme.getTheme().generateHeaderElements(injectCss));
       return StringUtils.join(data, "\n");
     }
 

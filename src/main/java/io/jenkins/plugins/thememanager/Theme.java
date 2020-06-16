@@ -70,6 +70,7 @@ public class Theme {
 
   /**
    * Whether the theme should be served on Blue Ocean.
+   *
    * @return if the theme is compatible with blue ocean.
    */
   public boolean isBlueOceanCompatible() {
