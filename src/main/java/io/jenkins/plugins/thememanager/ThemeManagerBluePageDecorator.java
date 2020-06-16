@@ -11,6 +11,12 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public class ThemeManagerBluePageDecorator extends BluePageDecorator {
 
   public String getHeaderHtml() {
-    return ThemeManagerPageDecorator.get().getHeaderHtml();
+    ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
+    Theme theme = themeManagerPageDecorator.findTheme();
+    
+    if (theme != null && theme.isBlueOceanCompatible()) {
+      return themeManagerPageDecorator.getHeaderHtml();
+    }
+    return null;
   }
 }

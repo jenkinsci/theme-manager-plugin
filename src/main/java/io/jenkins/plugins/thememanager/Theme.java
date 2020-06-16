@@ -25,6 +25,7 @@ public class Theme {
 
   private final List<String> cssUrls;
   private final List<String> javascriptUrls;
+  private boolean blueOceanCompatible;
 
   private Theme(List<String> cssUrls, List<String> javascriptUrls) {
     this.cssUrls = cssUrls;
@@ -67,6 +68,14 @@ public class Theme {
   }
 
   /**
+   * Whether the theme should be served on Blue Ocean.
+   * @return if the theme is compatible with blue ocean.
+   */
+  public boolean isBlueOceanCompatible() {
+    return blueOceanCompatible;
+  }
+
+  /**
    * Constructs the builder for the theme.
    *
    * @return an empty builder for building the theme.
@@ -79,6 +88,7 @@ public class Theme {
   public static class Builder {
     private List<String> cssUrls = emptyList();
     private List<String> javascriptUrls = emptyList();
+    private boolean blueOceanCompatible = true;
 
     Builder() {}
 
@@ -113,6 +123,26 @@ public class Theme {
      */
     public Builder withCssUrls(List<String> cssUrls) {
       this.cssUrls = cssUrls;
+      return this;
+    }
+
+    /**
+     * Enables the theme on BlueOcean
+     *
+     * @return the current builder with BlueOcean enabled.
+     */
+    public Builder enableOnBlueOcean() {
+      this.blueOceanCompatible = true;
+      return this;
+    }
+
+    /**
+     * Disables the theme on BlueOcean
+     *
+     * @return the current builder with BlueOcean disabled.
+     */
+    public Builder disableOnBlueOcean() {
+      this.blueOceanCompatible = false;
       return this;
     }
 
