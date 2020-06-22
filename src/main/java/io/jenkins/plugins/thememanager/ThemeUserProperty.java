@@ -36,7 +36,7 @@ public class ThemeUserProperty extends UserProperty {
     }
 
     ThemeUserProperty property = current.getProperty(ThemeUserProperty.class);
-    if (property.theme == null) {
+    if (property == null || property.theme == null) {
       return null;
     }
 
