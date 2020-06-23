@@ -17,7 +17,7 @@
     <jenkins.version>2.222.1</jenkins.version>
     <java.level>8</java.level>
   </properties>
-  <name>Theme Manager (Incubated)</name>
+  <name>Theme Manager (Incubating)</name>
   <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   <dependencyManagement>
     <dependencies>
