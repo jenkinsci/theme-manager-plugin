@@ -7,7 +7,7 @@
     </f:entry>
     
     <f:entry field="disableUserThemes">
-      <f:checkbox title="${%Disable user theme override}" />
+      <f:checkbox title="${%Do not allow users to select a different theme}" />
     </f:entry>
   </f:section>
 </j:jelly>
