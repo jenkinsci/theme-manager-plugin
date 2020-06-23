@@ -1,4 +1,4 @@
-# Theme Manager plugin for Jenkins (Incubated)
+# Theme Manager plugin for Jenkins (Incubating)
 
 [![Build Status](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/)
 [![Contributors](https://img.shields.io/github/contributors/jenkinsci/theme-manager-plugin.svg)](https://github.com/jenkinsci/theme-manager-plugin/graphs/contributors)
