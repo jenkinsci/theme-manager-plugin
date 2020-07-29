@@ -23,8 +23,8 @@ First you will want to install a theme plugin through the Jenkins Update Center.
 
 ### Known themes
 
-* [Dark theme](https://github.com/jenkins/dark-theme-plugin)
-* [Dark theme (OS settings respected)](https://github.com/jenkins/dark-theme-plugin)
+* [Dark theme](https://github.com/jenkinsci/dark-theme-plugin)
+* [Dark theme (OS settings respected)](https://github.com/jenkinsci/dark-theme-plugin)
 
 _Just send a pull request to add your theme to the list if create one_
 
