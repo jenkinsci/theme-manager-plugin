@@ -84,7 +84,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     if (theme != null) {
       boolean injectCss = shouldInjectCss();
       Set<String> data =
-          new LinkedHashSet<>(this.theme.getTheme().generateHeaderElements(injectCss));
+          new LinkedHashSet<>(theme.generateHeaderElements(injectCss));
       return StringUtils.join(data, "\n");
     }
 
