@@ -27,7 +27,7 @@ public class NoOpThemeManagerFactory extends ThemeManagerFactory {
     @NonNull
     @Override
     public String getDisplayName() {
-      return "None";
+      return "Default";
     }
 
     @Override
