@@ -5,6 +5,7 @@ import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.Beta;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 
 /**
  * Definition of a Theme Manager
@@ -15,11 +16,13 @@ import org.kohsuke.accmod.restrictions.Beta;
 public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> {
 
   /**
-   * Creates an instance of a {@link ThemeManagerFactory}.
-   *
-   * @return an instance of {@link ThemeManagerFactory}
+   * Unused
    */
-  public abstract ThemeManagerFactory getInstance();
+  @Deprecated
+  @Restricted(DoNotUse.class)
+  public ThemeManagerFactory getInstance() {
+    return null;
+  };
 
   /**
    * A unique name for a theme plugin
