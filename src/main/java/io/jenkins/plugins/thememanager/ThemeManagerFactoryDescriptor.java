@@ -15,14 +15,13 @@ import org.kohsuke.accmod.restrictions.DoNotUse;
 @Restricted(Beta.class)
 public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> {
 
-  /**
-   * Unused
-   */
+  /** Unused */
   @Deprecated
   @Restricted(DoNotUse.class)
   public ThemeManagerFactory getInstance() {
     return null;
-  };
+  }
+  ;
 
   /**
    * A unique name for a theme plugin
