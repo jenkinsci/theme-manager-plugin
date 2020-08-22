@@ -23,11 +23,11 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
   public abstract Theme getTheme();
 
   /**
-   * Expected CSS URL assuming your CSS file is named after your theme.
-   * You can also change the CSS file name by overriding:
-   * {@link ThemeManagerFactoryDescriptor#getThemeCssSuffix()}
+   * Expected CSS URL assuming your CSS file is named after your theme. You can also change the CSS
+   * file name by overriding: {@link ThemeManagerFactoryDescriptor#getThemeCssSuffix()}
    *
-   * See {@link #toAssetUrl(String)} for arbitrary files
+   * <p>See {@link #toAssetUrl(String)} for arbitrary files
+   *
    * @return CSS url in the form '$JENKINS_URL/theme-$themeId/theme.css.
    */
   public String getCssUrl() {
@@ -36,26 +36,23 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
   }
 
   /**
-   * Arbitrary asset URL.
-   * Useful if you want additional css or js files
+   * Arbitrary asset URL. Useful if you want additional css or js files
    *
    * @param asset additional-stylesheet.css
    * @return Asset url in the form '$JENKINS_URL/theme-$themeId/$asset-parameter
    */
   public String toAssetUrl(String asset) {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
-    return Jenkins.get().getRootUrl()
-            + "theme-"
-            + descriptor.getThemeId()
-            + "/" + asset;
+    return Jenkins.get().getRootUrl() + "theme-" + descriptor.getThemeId() + "/" + asset;
   }
 
   /**
-   * Expected JavaScript URL assuming your JavaScript file is named after your theme.
-   * You can also change the CSS file name by overriding:
-   * {@link ThemeManagerFactoryDescriptor#getThemeJsSuffix()}
+   * Expected JavaScript URL assuming your JavaScript file is named after your theme. You can also
+   * change the CSS file name by overriding: {@link
+   * ThemeManagerFactoryDescriptor#getThemeJsSuffix()}
    *
-   * See {@link #toAssetUrl(String)} for arbitrary files
+   * <p>See {@link #toAssetUrl(String)} for arbitrary files
+   *
    * @return JavaScript url in the form '$JENKINS_URL/theme-$themeId/theme.js.
    */
   public String getJavaScriptUrl() {
