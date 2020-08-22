@@ -32,11 +32,7 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
    */
   public String getCssUrl() {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
-    return Jenkins.get().getRootUrl()
-        + "theme-"
-        + descriptor.getThemeId()
-        + "/"
-        + descriptor.getThemeCssSuffix();
+    return toAssetUrl(descriptor.getThemeCssSuffix());
   }
 
   /**
@@ -64,11 +60,7 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
    */
   public String getJavaScriptUrl() {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
-    return Jenkins.get().getRootUrl()
-        + "theme-"
-        + descriptor.getThemeId()
-        + "/"
-        + descriptor.getThemeJsSuffix();
+    return toAssetUrl(descriptor.getThemeJsSuffix());
   }
 
   @Override
