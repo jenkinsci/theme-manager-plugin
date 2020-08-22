@@ -22,22 +22,45 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
 
   public abstract Theme getTheme();
 
+  /**
+   * Expected CSS URL assuming your CSS file is named after your theme.
+   * You can also change the CSS file name by overriding:
+   * {@link ThemeManagerFactoryDescriptor#getThemeCssSuffix()}
+   *
+   * See {@link #toAssetUrl(String)} for arbitrary files
+   * @return CSS url in the form '$JENKINS_URL/theme-$themeId/theme.css.
+   */
   public String getCssUrl() {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
-    return Jenkins.get().getRootUrl()
-        + "theme-"
-        + descriptor.getThemeId()
-        + "/"
-        + descriptor.getThemeCssSuffix();
+    return toAssetUrl(descriptor.getThemeCssSuffix());
   }
 
-  public String getJavaScriptUrl() {
+  /**
+   * Arbitrary asset URL.
+   * Useful if you want additional css or js files
+   *
+   * @param asset additional-stylesheet.css
+   * @return Asset url in the form '$JENKINS_URL/theme-$themeId/$asset-parameter
+   */
+  public String toAssetUrl(String asset) {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
     return Jenkins.get().getRootUrl()
-        + "theme-"
-        + descriptor.getThemeId()
-        + "/"
-        + descriptor.getThemeJsSuffix();
+            + "theme-"
+            + descriptor.getThemeId()
+            + "/" + asset;
+  }
+
+  /**
+   * Expected JavaScript URL assuming your JavaScript file is named after your theme.
+   * You can also change the CSS file name by overriding:
+   * {@link ThemeManagerFactoryDescriptor#getThemeJsSuffix()}
+   *
+   * See {@link #toAssetUrl(String)} for arbitrary files
+   * @return JavaScript url in the form '$JENKINS_URL/theme-$themeId/theme.js.
+   */
+  public String getJavaScriptUrl() {
+    ThemeManagerFactoryDescriptor descriptor = getDescriptor();
+    return toAssetUrl(descriptor.getThemeJsSuffix());
   }
 
   @Override
