@@ -44,7 +44,7 @@ public class Theme {
     }
 
     for (String javascriptUrl : javascriptUrls) {
-      headerElements.add(MessageFormat.format(JS_HTML, javascriptUrl));
+      headerElements.add(MessageFormat.format(JS_HTML, javascriptUrl))
     }
 
     return headerElements;
