@@ -43,7 +43,7 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
    */
   public String toAssetUrl(String asset) {
     ThemeManagerFactoryDescriptor descriptor = getDescriptor();
-    return Jenkins.get().getRootUrl() + "theme-" + descriptor.getThemeId() + "/" + asset;
+    return Jenkins.get().getRootUrlFromRequest() + "theme-" + descriptor.getThemeId() + "/" + asset;
   }
 
   /**
