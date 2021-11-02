@@ -22,6 +22,8 @@ You will need to extend/implement:
 
 Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) for a sample implementation.
 
+You can find all of the available variables provided by Jenkins core in [theme.less](https://github.com/jenkinsci/jenkins/blob/master/war/src/main/less/abstracts/theme.less). Plugins may also define their own variables so this list may not be complete but it should cover most of them.
+
 Don't forget to add `@Extension` to your `descriptor` and `UnprotectedRootAction`.
 
 Add a symbol to your `descriptor` for a nice short name when using configuration-as-code, e.g. `@Symbol("neo2")`.
