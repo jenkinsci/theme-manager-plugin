@@ -124,8 +124,10 @@
                     <svg width="320px" height="180px" viewBox="0 0 320 180" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                         <rect fill="var(--background)" x="0" y="0" width="320" height="180"></rect>
+                        <rect fill="var(--panel-border-color)" x="0" y="30" width="86" height="150"></rect>
                         <rect fill="var(--header-bg-classic)" x="0" y="0" width="320" height="30"></rect>
-                        <rect fill="var(--panel-border-color)" x="0" y="20" width="86" height="160"></rect>
+                        <rect fill="var(--text-color)" x="106" y="50" width="100" height="20"></rect>
+                        <rect fill="var(--text-color-secondary)" x="106" y="100" width="60" height="20"></rect>
                       </g>
                     </svg>
                   </div>
