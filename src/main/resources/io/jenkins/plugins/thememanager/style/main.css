@@ -30,13 +30,21 @@
 }
 
 .app-theme-picker__item input:checked + label span::before {
-    transition: 0.2s ease;
+    transition: var(--standard-transition);
     width: 18px;
     min-width: 18px;
     margin-right: 1ch;
     transform: scale(1);
     opacity: 1;
     font-size: 10px;
+}
+
+.app-theme-picker__item input:checked + label span::after {
+    transition: var(--standard-transition);
+    width: 18px;
+    min-width: 18px;
+    transform: scale(1);
+    opacity: 1;
 }
 
 .app-theme-picker__item label {
@@ -67,25 +75,43 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    margin: auto;
 }
 
 .app-theme-picker__item label span::before {
-    content: "✓";
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    content: "";
     width: 0;
     height: 18px;
     min-width: 0;
     min-height: 18px;
     background: var(--focus-input-border);
     border-radius: 100%;
-    color: var(--background);
-    font-size: 0;
-    font-weight: 800;
     transform: scale(0);
     opacity: 0;
-    transition: width 0.2s ease 0.2s, min-width 0.2s ease 0.2s, margin-right 0.2s ease 0.2s, transform 0.2s ease, opacity 0.2s ease, font-size 0.2s ease;
+    transition: width var(--standard-transition) 0.2s, min-width var(--standard-transition) 0.2s, margin-right var(--standard-transition) 0.2s, transform var(--standard-transition), opacity var(--standard-transition);
+}
+
+.app-theme-picker__item label span::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    min-width: 0;
+    background: var(--background);
+    border-radius: 100%;
+    transform: scale(0);
+    opacity: 0;
+    transition: width var(--elastic-transition) 0.2s, min-width var(--standard-transition) 0.2s, margin-right var(--standard-transition) 0.2s, transform var(--elastic-transition), opacity var(--standard-transition);
+    -webkit-mask-image: url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='UTF-8'?%3e%3csvg width='384px' height='320px' viewBox='0 0 384 320' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ePath%3c/title%3e%3cg id='Page-1' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3e%3cpath d='M327.917546,10.9278525 C339.555371,-2.37251966 359.771775,-3.72027991 373.072147,7.91754577 C386.239516,19.4389932 387.692129,39.368305 376.427694,52.671077 L376.082454,53.0721475 L152.082454,309.072147 C140.014868,322.863675 118.889432,323.700972 105.767743,311.015951 L105.372583,310.627417 L9.372583,214.627417 C-3.12419433,202.13064 -3.12419433,181.86936 9.372583,169.372583 C21.7443926,157.000773 41.7261905,156.877055 54.2501999,169.001429 L54.627417,169.372583 L126.441,241.186 L327.917546,10.9278525 Z' id='Path' fill='%23FF0000' fill-rule='nonzero'%3e%3c/path%3e%3c/g%3e%3c/svg%3e");
+    -webkit-mask-size: 8px 8px;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-image: url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='UTF-8'?%3e%3csvg width='384px' height='320px' viewBox='0 0 384 320' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ePath%3c/title%3e%3cg id='Page-1' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3e%3cpath d='M327.917546,10.9278525 C339.555371,-2.37251966 359.771775,-3.72027991 373.072147,7.91754577 C386.239516,19.4389932 387.692129,39.368305 376.427694,52.671077 L376.082454,53.0721475 L152.082454,309.072147 C140.014868,322.863675 118.889432,323.700972 105.767743,311.015951 L105.372583,310.627417 L9.372583,214.627417 C-3.12419433,202.13064 -3.12419433,181.86936 9.372583,169.372583 C21.7443926,157.000773 41.7261905,156.877055 54.2501999,169.001429 L54.627417,169.372583 L126.441,241.186 L327.917546,10.9278525 Z' id='Path' fill='%23FF0000' fill-rule='nonzero'%3e%3c/path%3e%3c/g%3e%3c/svg%3e");
+    mask-size: 8px 8px;
+    mask-repeat: no-repeat;
+    mask-position: center;
 }
 
 .app-theme-picker__item label::before {
