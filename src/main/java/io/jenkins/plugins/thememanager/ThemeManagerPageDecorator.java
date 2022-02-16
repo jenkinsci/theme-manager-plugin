@@ -1,12 +1,15 @@
 package io.jenkins.plugins.thememanager;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import hudson.util.ListBoxModel;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
@@ -78,16 +81,50 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     return null;
   }
 
+  @CheckForNull
+  public ThemeManagerFactory findThemeFactory() {
+    if (!disableUserThemes) {
+      ThemeManagerFactory userTheme = ThemeUserProperty.forCurrentUserFactory();
+      if (userTheme != null) {
+        return userTheme;
+      }
+    }
+
+    if (theme != null) {
+      return theme;
+    }
+    return null;
+  }
+
   /** Get the complete header HTML for all configured theme elements. */
   public String getHeaderHtml() {
-    Theme theme = findTheme();
-    if (theme != null) {
-      boolean injectCss = shouldInjectCss();
-      Set<String> data = new LinkedHashSet<>(theme.generateHeaderElements(injectCss));
+    boolean injectCss = shouldInjectCss();
+    Set<String> namespacedThemes = ThemeManagerFactoryDescriptor.all()
+            .stream()
+            .filter(ThemeManagerFactoryDescriptor::isNamespaced)
+            .map(desc -> desc.getInstance().getTheme().generateHeaderElements(injectCss))
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
+
+    ThemeManagerFactory themeManagerFactory = findThemeFactory();
+    if (themeManagerFactory != null && !themeManagerFactory.getDescriptor().isNamespaced()) {
+      Set<String> data = new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
+      data.addAll(namespacedThemes);
       return StringUtils.join(data, "\n");
     }
 
-    return null;
+    return StringUtils.join(namespacedThemes, "\n");
+  }
+
+  @SuppressWarnings("unused") // called by jelly
+  public String getThemeKey() {
+    ThemeManagerFactory themeFactory = findThemeFactory();
+
+    if (themeFactory == null) {
+      return null;
+    }
+
+    return themeFactory.getDescriptor().getThemeKey();
   }
 
   /**

@@ -23,9 +23,10 @@
                        id="${uniqueId}.theme-${loop.index}"
                        value="${loop.index}"
                        class="radio-block-control block-control"
+                       data-theme="${theme.themeKey}"
                        checked="${currentDescriptor == theme ? 'true' : null}"/>
                 <label for="${uniqueId}.theme-${loop.index}">
-                  <div>
+                  <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
                     <svg width="320px" height="180px" viewBox="0 0 320 180" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                         <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
