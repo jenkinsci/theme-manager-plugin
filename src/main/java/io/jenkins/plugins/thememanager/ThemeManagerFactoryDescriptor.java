@@ -49,9 +49,9 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
   public abstract String getThemeKey();
 
   /**
-   * If the theme's CSS will only be selected under the '[data-theme=theme-id]' selector
+   * If the theme's CSS will only be selected under the '[data-theme=theme-key]' selector
    *
-   * It will be served on all pages even if not activated, ensure all selectors are behind the dataset id.
+   * It will be served on all pages even if not activated, ensure all selectors are behind the dataset selector.
    *
    * All new themes should be namespaced
    *
