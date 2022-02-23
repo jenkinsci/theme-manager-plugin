@@ -25,7 +25,7 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
   }
 
   /**
-   * A unique name for a theme plugin
+   * A name for a theme plugin
    *
    * <p>This should be all lower case and URL safe, i.e. 'dark', 'neo2'
    *
@@ -41,12 +41,14 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
   /**
    * A unique key for a theme plugin
    *
-   * <p>This should be all lower case and URL safe, i.e. 'dark', 'neo2'
+   * <p>This should be all lower case and URL safe, i.e. 'dark-system', 'neo2'
    *
    * <p>Used in the html dataset namespace for the theme.
    * @return the theme key
    */
-  public abstract String getThemeKey();
+  public String getThemeKey() {
+    return getThemeId();
+  }
 
   /**
    * If the theme's CSS will only be selected under the '[data-theme=theme-key]' selector
