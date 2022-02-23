@@ -35,8 +35,8 @@ Manage Jenkins → Configure System → Built-in Themes
 
 ![Global configuration](docs/images/global-theme-manager.png)
 
-You can stop users from being able to change their theme by selecting the:
-'Disable user theme override' option
+You can stop users from being able to change their theme by selecting the 
+'Do not allow users to select a different theme' checkbox
 
 ### User
 
