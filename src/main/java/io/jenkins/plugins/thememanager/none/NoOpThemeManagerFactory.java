@@ -34,5 +34,10 @@ public class NoOpThemeManagerFactory extends ThemeManagerFactory {
     public String getThemeId() {
       return "none";
     }
+
+    @Override
+    public String getThemeKey() {
+      return "none";
+    }
   }
 }

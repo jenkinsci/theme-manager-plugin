@@ -30,6 +30,15 @@ public class ThemeUserProperty extends UserProperty {
 
   @CheckForNull
   public static Theme forCurrentUser() {
+    ThemeManagerFactory factory = forCurrentUserFactory();
+    if (factory == null) {
+      return null;
+    }
+    return factory.getTheme();
+  }
+
+  @CheckForNull
+  public static ThemeManagerFactory forCurrentUserFactory() {
     final User current = User.current();
     if (current == null) {
       return null;
@@ -40,7 +49,7 @@ public class ThemeUserProperty extends UserProperty {
       return null;
     }
 
-    return property.getTheme().getTheme();
+    return property.getTheme();
   }
 
   @Extension

@@ -1,4 +1,4 @@
-# Theme Manager plugin for Jenkins (Incubating)
+# Theme Manager plugin for Jenkins
 
 [![Build Status](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/)
 [![Contributors](https://img.shields.io/github/contributors/jenkinsci/theme-manager-plugin.svg)](https://github.com/jenkinsci/theme-manager-plugin/graphs/contributors)
@@ -6,10 +6,6 @@
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/theme-manager-plugin.svg?label=changelog)](https://github.com/jenkinsci/theme-manager-plugin/releases/latest)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/theme-manager.svg?color=blue)](https://plugins.jenkins.io/theme-manager)
 
-:exclamation: **Incubation Stage**: Currently this plugin is in the incubation stage.
-It's possible there will be some breaking changes as it evolves.
-You are welcome to try out this plugin and to provide your feedback.
-Contributions are welcome!
 
 ## Introduction
 
@@ -39,14 +35,12 @@ Manage Jenkins → Configure System → Built-in Themes
 
 ![Global configuration](docs/images/global-theme-manager.png)
 
-You can stop users from being able to change their theme by selecting the:
-'Disable user theme override' option
+You can stop users from being able to change their theme by selecting the 
+'Do not allow users to select a different theme' checkbox
 
 ### User
 
 'Your name' profile link (in top right) → Configure → Built-in Themes
-
-![User configuration](docs/images/user-theme-manager.png)
 
 ### Configuration as Code example
 

@@ -1,11 +1,9 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:th="/lib/theme-manager">
   <f:section title="${%Built-in Themes}">
-    <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
-    <f:entry title="${%Theme}">
-      <f:hetero-radio field="theme" descriptors="${descriptors}"/>
-    </f:entry>
-    
+
+    <th:selector />
+
     <f:entry field="disableUserThemes">
       <f:checkbox title="${%Do not allow users to select a different theme}" />
     </f:entry>

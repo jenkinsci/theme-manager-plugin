@@ -15,16 +15,17 @@ import org.kohsuke.accmod.restrictions.DoNotUse;
 @Restricted(Beta.class)
 public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> {
 
-  /** Unused */
-  @Deprecated
-  @Restricted(DoNotUse.class)
   public ThemeManagerFactory getInstance() {
-    return null;
+    try {
+      //noinspection deprecation
+      return this.clazz.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      throw new IllegalStateException("Failed to instantiate " + clazz.getName(), e);
+    }
   }
-  ;
 
   /**
-   * A unique name for a theme plugin
+   * A name for a theme plugin
    *
    * <p>This should be all lower case and URL safe, i.e. 'dark', 'neo2'
    *
@@ -36,6 +37,31 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
    * @return the theme ID.
    */
   public abstract String getThemeId();
+
+  /**
+   * A unique key for a theme plugin
+   *
+   * <p>This should be all lower case and URL safe, i.e. 'dark-system', 'neo2'
+   *
+   * <p>Used in the html dataset namespace for the theme.
+   * @return the theme key
+   */
+  public String getThemeKey() {
+    return getThemeId();
+  }
+
+  /**
+   * If the theme's CSS will only be selected under the '[data-theme=theme-key]' selector
+   *
+   * It will be served on all pages even if not activated, ensure all selectors are behind the dataset selector.
+   *
+   * All new themes should be namespaced
+   *
+   * @return if it's namespaced.
+   */
+  public boolean isNamespaced() {
+    return false;
+  }
 
   /**
    * Name of the theme resource file.
