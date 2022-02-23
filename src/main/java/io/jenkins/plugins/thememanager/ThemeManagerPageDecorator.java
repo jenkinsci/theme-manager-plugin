@@ -1,11 +1,9 @@
 package io.jenkins.plugins.thememanager;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
-import hudson.util.ListBoxModel;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -99,8 +97,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   /** Get the complete header HTML for all configured theme elements. */
   public String getHeaderHtml() {
     boolean injectCss = shouldInjectCss();
-    Set<String> namespacedThemes = ThemeManagerFactoryDescriptor.all()
-            .stream()
+    Set<String> namespacedThemes =
+        ThemeManagerFactoryDescriptor.all().stream()
             .filter(ThemeManagerFactoryDescriptor::isNamespaced)
             .map(desc -> desc.getInstance().getTheme().generateHeaderElements(injectCss))
             .flatMap(Set::stream)
@@ -108,7 +106,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     ThemeManagerFactory themeManagerFactory = findThemeFactory();
     if (themeManagerFactory != null && !themeManagerFactory.getDescriptor().isNamespaced()) {
-      Set<String> data = new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
+      Set<String> data =
+          new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
       data.addAll(namespacedThemes);
       return StringUtils.join(data, "\n");
     }

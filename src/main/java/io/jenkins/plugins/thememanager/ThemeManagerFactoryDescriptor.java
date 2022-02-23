@@ -5,7 +5,6 @@ import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.Beta;
-import org.kohsuke.accmod.restrictions.DoNotUse;
 
 /**
  * Definition of a Theme Manager
@@ -44,6 +43,7 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
    * <p>This should be all lower case and URL safe, i.e. 'dark-system', 'neo2'
    *
    * <p>Used in the html dataset namespace for the theme.
+   *
    * @return the theme key
    */
   public String getThemeKey() {
@@ -53,9 +53,10 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
   /**
    * If the theme's CSS will only be selected under the '[data-theme=theme-key]' selector
    *
-   * It will be served on all pages even if not activated, ensure all selectors are behind the dataset selector.
+   * <p>It will be served on all pages even if not activated, ensure all selectors are behind the
+   * dataset selector.
    *
-   * All new themes should be namespaced
+   * <p>All new themes should be namespaced
    *
    * @return if it's namespaced.
    */
