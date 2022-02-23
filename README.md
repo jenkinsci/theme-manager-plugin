@@ -42,8 +42,6 @@ You can stop users from being able to change their theme by selecting the
 
 'Your name' profile link (in top right) → Configure → Built-in Themes
 
-![User configuration](docs/images/user-theme-manager.png)
-
 ### Configuration as Code example
 
 ```yaml
