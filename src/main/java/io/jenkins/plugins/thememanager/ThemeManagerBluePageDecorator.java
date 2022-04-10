@@ -18,4 +18,14 @@ public class ThemeManagerBluePageDecorator extends BluePageDecorator {
     }
     return null;
   }
+
+  public String getThemeKey() {
+    ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
+    Theme theme = themeManagerPageDecorator.findTheme();
+
+    if (theme != null && theme.isBlueOceanCompatible()) {
+      return themeManagerPageDecorator.getThemeKey();
+    }
+    return null;
+  }
 }
