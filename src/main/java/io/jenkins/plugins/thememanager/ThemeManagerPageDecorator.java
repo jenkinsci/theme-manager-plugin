@@ -1,9 +1,10 @@
 package io.jenkins.plugins.thememanager;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,9 +63,9 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   /**
    * Finds the active theme. Checks User and then global theme.
    *
-   * @return the active theme, or null if no active theme.
+   * @return the active theme, or a no-op theme if not selected
    */
-  @CheckForNull
+  @NonNull
   public Theme findTheme() {
     if (!disableUserThemes) {
       Theme userTheme = ThemeUserProperty.forCurrentUser();
@@ -76,10 +77,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     if (theme != null) {
       return theme.getTheme();
     }
-    return null;
+    return new NoOpThemeManagerFactory().getTheme();
   }
 
-  @CheckForNull
+  @NonNull
   public ThemeManagerFactory findThemeFactory() {
     if (!disableUserThemes) {
       ThemeManagerFactory userTheme = ThemeUserProperty.forCurrentUserFactory();
@@ -91,7 +92,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     if (theme != null) {
       return theme;
     }
-    return null;
+    return new NoOpThemeManagerFactory();
   }
 
   /** Get the complete header HTML for all configured theme elements. */
@@ -105,7 +106,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             .collect(Collectors.toSet());
 
     ThemeManagerFactory themeManagerFactory = findThemeFactory();
-    if (themeManagerFactory != null && !themeManagerFactory.getDescriptor().isNamespaced()) {
+    if (!themeManagerFactory.getDescriptor().isNamespaced()) {
       Set<String> data =
           new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
       data.addAll(namespacedThemes);
@@ -118,10 +119,6 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   @SuppressWarnings("unused") // called by jelly
   public String getThemeKey() {
     ThemeManagerFactory themeFactory = findThemeFactory();
-
-    if (themeFactory == null) {
-      return null;
-    }
 
     return themeFactory.getDescriptor().getThemeKey();
   }
