@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.Beta;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
@@ -16,7 +15,6 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  *
  * <p>Initialise it with {@link Theme#builder()}
  */
-@Restricted(Beta.class)
 public class Theme {
 
   private static final String JS_HTML = "<script type=\"text/javascript\" src=\"{0}\"></script>";
