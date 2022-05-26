@@ -4,7 +4,7 @@ Themes can set properties giving information about themselves.
 
 This can be useful when interfacing with other libraries like Prism or CodeMirror that have their own theming capability but need to know which theme to use.
 
-Instead of making a user select their theme for each library, themes can say which ones work best for them
+Instead of making a user select their theme for each library, a theme can say which one works best with it.
 
 ## Provider guide
 
