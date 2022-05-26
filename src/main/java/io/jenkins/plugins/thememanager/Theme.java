@@ -4,9 +4,13 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -24,11 +28,13 @@ public class Theme {
   private final List<String> cssUrls;
   private final List<String> javascriptUrls;
   private final boolean blueOceanCompatible;
+  private final Map<String, String> properties;
 
-  private Theme(List<String> cssUrls, List<String> javascriptUrls, boolean blueOceanCompatible) {
+  private Theme(List<String> cssUrls, List<String> javascriptUrls, boolean blueOceanCompatible, Map<String, String> properties) {
     this.cssUrls = cssUrls;
     this.javascriptUrls = javascriptUrls;
     this.blueOceanCompatible = blueOceanCompatible;
+    this.properties = properties;
   }
 
   @Restricted(NoExternalUse.class)
@@ -76,6 +82,32 @@ public class Theme {
   }
 
   /**
+   * Additional information that theme authors can provide to influence other plugins
+   *
+   * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+   * @param artifactId the plugin to retrieve the properties for
+   * @return the properties associated with the plugin requested
+   */
+  public List<String> getProperties(String artifactId) {
+    return properties.entrySet().stream()
+            .filter(k -> k.getKey().startsWith(artifactId + ":"))
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * Additional information that theme authors can provide to influence other plugins
+   *
+   * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+   * @param artifactId the plugin to retrieve the properties for
+   * @param propertyName the property to retrieve
+   * @return the properties associated with the plugin requested
+   */
+  public Optional<String> getProperty(String artifactId, String propertyName) {
+    return Optional.ofNullable(properties.get(artifactId + ":" + propertyName));
+  }
+
+  /**
    * Constructs the builder for the theme.
    *
    * @return an empty builder for building the theme.
@@ -89,6 +121,7 @@ public class Theme {
     private List<String> cssUrls = emptyList();
     private List<String> javascriptUrls = emptyList();
     private boolean blueOceanCompatible = false;
+    private final Map<String, String> properties = new HashMap<>();
 
     Builder() {}
 
@@ -147,6 +180,20 @@ public class Theme {
     }
 
     /**
+     * Properties are a way a theme author can provide extra information to plugins.
+     * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+     *
+     * @param pluginId artifact ID of the plugin the property is associated with
+     * @param name property name this will be namespaced with the artifactId automatically
+     * @param value the property value
+     * @return the current builder with the new property
+     */
+    public Builder withProperty(String pluginId, String name, String value) {
+      this.properties.put(pluginId + ":" + name, value);
+      return this;
+    }
+
+    /**
      * A URL to a JavaScript file, this can be served by Jenkins or remote.
      *
      * <p>The URL must be absolute (i.e. not just contain the path)
@@ -186,7 +233,7 @@ public class Theme {
      * @return the theme.
      */
     public Theme build() {
-      return new Theme(cssUrls, javascriptUrls, blueOceanCompatible);
+      return new Theme(cssUrls, javascriptUrls, blueOceanCompatible, properties);
     }
   }
 }
