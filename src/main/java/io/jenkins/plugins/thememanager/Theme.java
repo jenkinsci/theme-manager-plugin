@@ -30,7 +30,11 @@ public class Theme {
   private final boolean blueOceanCompatible;
   private final Map<String, String> properties;
 
-  private Theme(List<String> cssUrls, List<String> javascriptUrls, boolean blueOceanCompatible, Map<String, String> properties) {
+  private Theme(
+      List<String> cssUrls,
+      List<String> javascriptUrls,
+      boolean blueOceanCompatible,
+      Map<String, String> properties) {
     this.cssUrls = cssUrls;
     this.javascriptUrls = javascriptUrls;
     this.blueOceanCompatible = blueOceanCompatible;
@@ -84,21 +88,25 @@ public class Theme {
   /**
    * Additional information that theme authors can provide to influence other plugins
    *
-   * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+   * <p>e.g. the Prism API plugin can read properties and use a default theme based on this
+   * information.
+   *
    * @param artifactId the plugin to retrieve the properties for
    * @return the properties associated with the plugin requested
    */
   public List<String> getProperties(String artifactId) {
     return properties.entrySet().stream()
-            .filter(k -> k.getKey().startsWith(artifactId + ":"))
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
+        .filter(k -> k.getKey().startsWith(artifactId + ":"))
+        .map(Map.Entry::getValue)
+        .collect(Collectors.toList());
   }
 
   /**
    * Additional information that theme authors can provide to influence other plugins
    *
-   * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+   * <p>e.g. the Prism API plugin can read properties and use a default theme based on this
+   * information.
+   *
    * @param artifactId the plugin to retrieve the properties for
    * @param propertyName the property to retrieve
    * @return the properties associated with the plugin requested
@@ -180,8 +188,8 @@ public class Theme {
     }
 
     /**
-     * Properties are a way a theme author can provide extra information to plugins.
-     * e.g. the Prism API plugin can read properties and use a default theme based on this information.
+     * Properties are a way a theme author can provide extra information to plugins. e.g. the Prism
+     * API plugin can read properties and use a default theme based on this information.
      *
      * @param pluginId artifact ID of the plugin the property is associated with
      * @param name property name this will be namespaced with the artifactId automatically

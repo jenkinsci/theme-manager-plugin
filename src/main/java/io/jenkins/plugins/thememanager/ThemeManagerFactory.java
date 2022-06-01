@@ -3,7 +3,6 @@ package io.jenkins.plugins.thememanager;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import jenkins.model.Jenkins;
-import org.kohsuke.accmod.Restricted;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
