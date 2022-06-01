@@ -7,5 +7,9 @@
     <f:entry field="disableUserThemes">
       <f:checkbox title="${%Do not allow users to select a different theme}" />
     </f:entry>
+
+    <j:forEach var="extension" items="${it.allExtensions}">
+      <st:include page="${extension.configPage}" it="${extension}" optional="true" />
+    </j:forEach>
   </f:section>
 </j:jelly>

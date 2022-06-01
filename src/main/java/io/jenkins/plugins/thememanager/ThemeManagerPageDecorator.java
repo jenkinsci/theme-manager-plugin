@@ -24,6 +24,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   private ThemeManagerFactory theme;
   private boolean disableUserThemes;
 
+  private List<ThemeExtension> extensions;
+
   public ThemeManagerPageDecorator() {
     load();
   }
@@ -55,6 +57,19 @@ public class ThemeManagerPageDecorator extends PageDecorator {
   @DataBoundSetter
   public void setDisableUserThemes(boolean disableUserThemes) {
     this.disableUserThemes = disableUserThemes;
+  }
+
+  public List<ThemeExtension> getExtensions() {
+    return extensions;
+  }
+
+  @DataBoundSetter
+  public void setExtensions(List<ThemeExtension> extensions) {
+    this.extensions = extensions;
+  }
+
+  public List<? extends ThemeExtensionDescriptor> getAllExtensions() {
+    return ThemeExtensionDescriptor.all();
   }
 
   /**
