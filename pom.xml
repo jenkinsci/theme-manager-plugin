@@ -9,7 +9,7 @@
   </parent>
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>theme-manager</artifactId>
-  <version>1.5</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
   <name>Theme Manager</name>
   <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
@@ -31,11 +31,11 @@
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-    <tag>theme-manager-1.5</tag>
+    <tag>${scmTag}</tag>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   </scm>
   <properties>
-    <revision>1.5</revision>
+    <revision>1.6</revision>
     <changelist>-SNAPSHOT</changelist>
     <jenkins.version>2.336</jenkins.version>
   </properties>
