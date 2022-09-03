@@ -55,7 +55,7 @@
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
       <artifactId>blueocean-web</artifactId>
-      <version>1.24.8</version>
+      <version>1.25.7</version>
       <optional>true</optional>
     </dependency>
     <dependency>
