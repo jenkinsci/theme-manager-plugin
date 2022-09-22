@@ -13,7 +13,7 @@ public class ThemeManagerBluePageDecorator extends BluePageDecorator {
     ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
     Theme theme = themeManagerPageDecorator.findTheme();
 
-    if (theme != null && theme.isBlueOceanCompatible()) {
+    if (theme.isBlueOceanCompatible()) {
       return themeManagerPageDecorator.getHeaderHtml();
     }
     return null;
@@ -23,7 +23,7 @@ public class ThemeManagerBluePageDecorator extends BluePageDecorator {
     ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
     Theme theme = themeManagerPageDecorator.findTheme();
 
-    if (theme != null && theme.isBlueOceanCompatible()) {
+    if (theme.isBlueOceanCompatible()) {
       return themeManagerPageDecorator.getThemeKey();
     }
     return null;
