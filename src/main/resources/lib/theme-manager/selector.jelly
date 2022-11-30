@@ -13,7 +13,7 @@
       <j:set var="uniqueId" value="${h.generateId()}" />
 
       <j:forEach var="theme" items="${descriptors}" varStatus="loop">
-        <div class="radioBlock-container">
+        <div class="jenkins-!-display-contents">
           <!-- this ID marks the beginning -->
           <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
             <div class="app-theme-picker__item">

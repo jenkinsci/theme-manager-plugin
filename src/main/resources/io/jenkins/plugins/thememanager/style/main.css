@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .app-theme-picker__item {
@@ -129,4 +129,21 @@
 
 .app-theme-picker__item label:hover::before {
     border-color: var(--input-border-hover);
+}
+
+.tm-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4ch;
+    float: right;
+}
+
+.tm-link svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.tm-link svg * {
+    stroke-width: 45px;
 }

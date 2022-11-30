@@ -1,6 +1,9 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:th="/lib/theme-manager">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:th="/lib/theme-manager">
   <f:section title="${%Themes}">
+    <a class="tm-link" href="${rootURL}/manage/pluginManager/available?filter=UI Themes">
+      You can get more themes at <l:icon src="symbol-plugins" /> Plugins
+    </a>
 
     <th:selector />
 
