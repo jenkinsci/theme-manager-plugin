@@ -3,15 +3,12 @@ package io.jenkins.plugins.thememanager;
 import hudson.DescriptorExtensionList;
 import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.Beta;
 
 /**
  * Definition of a Theme Manager
  *
  * @see ThemeManagerFactory
  */
-@Restricted(Beta.class)
 public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> {
 
   public ThemeManagerFactory getInstance() {

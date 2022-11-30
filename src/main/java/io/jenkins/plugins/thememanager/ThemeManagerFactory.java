@@ -3,8 +3,6 @@ package io.jenkins.plugins.thememanager;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import jenkins.model.Jenkins;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.Beta;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -16,7 +14,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @see ThemeManagerPageDecorator
  * @see ThemeManagerPageDecorator
  */
-@Restricted(Beta.class)
 public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeManagerFactory>
     implements ExtensionPoint {
 
