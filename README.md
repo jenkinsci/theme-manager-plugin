@@ -31,7 +31,7 @@ You can configure this plugin globally, or each user can configure it in their c
 
 ### Global
 
-Manage Jenkins → Configure System → Built-in Themes
+Manage Jenkins → Configure System → Themes
 
 ![Global configuration](docs/images/global-theme-manager.png)
 
@@ -40,7 +40,7 @@ You can stop users from being able to change their theme by selecting the
 
 ### User
 
-'Your name' profile link (in top right) → Configure → Built-in Themes
+'Your name' profile link (in top right) → Configure → Themes
 
 ### Configuration as Code example
 
