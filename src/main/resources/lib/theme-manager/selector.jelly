@@ -6,7 +6,7 @@
 
   <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
-  <f:entry title="${%Theme}" field="theme">
+  <f:entry title="${%Select theme}" field="theme">
     <div class="app-theme-picker">
       <j:set var="currentInstance" value="${instance['theme']}" />
       <j:set var="currentDescriptor" value="${currentInstance.descriptor}" />
