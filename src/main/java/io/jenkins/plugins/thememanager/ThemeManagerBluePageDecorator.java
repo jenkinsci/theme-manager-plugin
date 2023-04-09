@@ -9,23 +9,23 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Restricted(NoExternalUse.class)
 public class ThemeManagerBluePageDecorator extends BluePageDecorator {
 
-  public String getHeaderHtml() {
-    ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
-    Theme theme = themeManagerPageDecorator.findTheme();
+    public String getHeaderHtml() {
+        ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
+        Theme theme = themeManagerPageDecorator.findTheme();
 
-    if (theme.isBlueOceanCompatible()) {
-      return themeManagerPageDecorator.getHeaderHtml();
+        if (theme.isBlueOceanCompatible()) {
+            return themeManagerPageDecorator.getHeaderHtml();
+        }
+        return null;
     }
-    return null;
-  }
 
-  public String getThemeKey() {
-    ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
-    Theme theme = themeManagerPageDecorator.findTheme();
+    public String getThemeKey() {
+        ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
+        Theme theme = themeManagerPageDecorator.findTheme();
 
-    if (theme.isBlueOceanCompatible()) {
-      return themeManagerPageDecorator.getThemeKey();
+        if (theme.isBlueOceanCompatible()) {
+            return themeManagerPageDecorator.getThemeKey();
+        }
+        return null;
     }
-    return null;
-  }
 }

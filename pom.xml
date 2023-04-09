@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.58</version>
+    <version>4.59</version>
     <relativePath />
   </parent>
   <groupId>io.jenkins.plugins</groupId>
@@ -75,41 +75,4 @@
       <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.35.0</version>
-        <configuration>
-          <java>
-            <googleJavaFormat>
-              <style>GOOGLE</style>
-            </googleJavaFormat>
-          </java>
-          <pom>
-            <sortPom>
-              <encoding>${project.build.sourceEncoding}</encoding>
-              <lineSeparator>\n</lineSeparator>
-              <expandEmptyElements>false</expandEmptyElements>
-              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-              <sortDependencies>scope,groupId,artifactId</sortDependencies>
-              <sortDependencyExclusions>groupId,artifactId</sortDependencyExclusions>
-            </sortPom>
-          </pom>
-        </configuration>
-        <executions>
-          <execution>
-            <id>spotless-check</id>
-            <goals>
-              <!-- can be disabled using -Dspotless.check.skip=true -->
-              <goal>check</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
