@@ -9,15 +9,15 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Restricted(NoExternalUse.class)
 public class ThemeManagerSimplePageDecorator extends SimplePageDecorator {
 
-  public ThemeManagerSimplePageDecorator() {
-    load();
-  }
+    public ThemeManagerSimplePageDecorator() {
+        load();
+    }
 
-  public String getHeaderHtml() {
-    return ThemeManagerPageDecorator.get().getHeaderHtml();
-  }
+    public String getHeaderHtml() {
+        return ThemeManagerPageDecorator.get().getHeaderHtml();
+    }
 
-  public String getThemeKey() {
-    return ThemeManagerPageDecorator.get().getThemeKey();
-  }
+    public String getThemeKey() {
+        return ThemeManagerPageDecorator.get().getThemeKey();
+    }
 }

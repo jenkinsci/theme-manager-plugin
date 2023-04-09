@@ -13,31 +13,31 @@ import org.kohsuke.stapler.DataBoundConstructor;
 @Restricted(NoExternalUse.class)
 public class NoOpThemeManagerFactory extends ThemeManagerFactory {
 
-  @DataBoundConstructor
-  public NoOpThemeManagerFactory() {}
-
-  @Override
-  public Theme getTheme() {
-    return Theme.builder().build();
-  }
-
-  @Extension
-  public static class NoOpThemeManagerFactoryDescriptor extends ThemeManagerFactoryDescriptor {
-
-    @NonNull
-    @Override
-    public String getDisplayName() {
-      return "Default";
-    }
+    @DataBoundConstructor
+    public NoOpThemeManagerFactory() {}
 
     @Override
-    public String getThemeId() {
-      return "none";
+    public Theme getTheme() {
+        return Theme.builder().build();
     }
 
-    @Override
-    public String getThemeKey() {
-      return "none";
+    @Extension
+    public static class NoOpThemeManagerFactoryDescriptor extends ThemeManagerFactoryDescriptor {
+
+        @NonNull
+        @Override
+        public String getDisplayName() {
+            return "Default";
+        }
+
+        @Override
+        public String getThemeId() {
+            return "none";
+        }
+
+        @Override
+        public String getThemeKey() {
+            return "none";
+        }
     }
-  }
 }

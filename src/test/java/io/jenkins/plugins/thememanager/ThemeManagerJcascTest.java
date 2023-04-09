@@ -19,30 +19,30 @@ import org.junit.Test;
 
 public class ThemeManagerJcascTest {
 
-  @ClassRule
-  @ConfiguredWithCode("ConfigurationAsCode.yml")
-  public static JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
+    @ClassRule
+    @ConfiguredWithCode("ConfigurationAsCode.yml")
+    public static JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
 
-  @Test
-  public void testConfig() {
-    ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
+    @Test
+    public void testConfig() {
+        ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
 
-    ThemeManagerFactory theme = decorator.getTheme();
-    assertNotNull(theme);
+        ThemeManagerFactory theme = decorator.getTheme();
+        assertNotNull(theme);
 
-    assertThat(decorator.isDisableUserThemes(), is(true));
-    assertThat(theme, instanceOf(NoOpThemeManagerFactory.class));
-  }
+        assertThat(decorator.isDisableUserThemes(), is(true));
+        assertThat(theme, instanceOf(NoOpThemeManagerFactory.class));
+    }
 
-  @Test
-  public void testExport() throws Exception {
-    ConfigurationContext context = new ConfigurationContext(ConfiguratorRegistry.get());
-    CNode yourAttribute = getUnclassifiedRoot(context).get("themeManager");
+    @Test
+    public void testExport() throws Exception {
+        ConfigurationContext context = new ConfigurationContext(ConfiguratorRegistry.get());
+        CNode yourAttribute = getUnclassifiedRoot(context).get("themeManager");
 
-    String exported = toYamlString(yourAttribute);
+        String exported = toYamlString(yourAttribute);
 
-    String expected = toStringFromYamlFile(this, "ConfigurationAsCodeExport.yml");
+        String expected = toStringFromYamlFile(this, "ConfigurationAsCodeExport.yml");
 
-    assertThat(exported, is(expected));
-  }
+        assertThat(exported, is(expected));
+    }
 }
