@@ -28,4 +28,15 @@ public class ThemeManagerBluePageDecorator extends BluePageDecorator {
         }
         return null;
     }
+
+    @SuppressWarnings("unused") // called by jelly
+    public boolean isRespectSystemAppearance() {
+        ThemeManagerPageDecorator themeManagerPageDecorator = ThemeManagerPageDecorator.get();
+        Theme theme = themeManagerPageDecorator.findTheme();
+
+        if (theme.isBlueOceanCompatible()) {
+            return themeManagerPageDecorator.isRespectSystemAppearance();
+        }
+        return false;
+    }
 }

@@ -102,6 +102,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 .collect(Collectors.toSet());
 
         ThemeManagerFactory themeManagerFactory = findThemeFactory();
+        namespacedThemes.add(themeManagerFactory.getTheme().generateProperties());
+
         if (!themeManagerFactory.getDescriptor().isNamespaced()) {
             Set<String> data =
                     new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
@@ -117,6 +119,13 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         ThemeManagerFactory themeFactory = findThemeFactory();
 
         return themeFactory.getDescriptor().getThemeKey();
+    }
+
+    @SuppressWarnings("unused") // called by jelly
+    public boolean isRespectSystemAppearance() {
+        ThemeManagerFactory themeFactory = findThemeFactory();
+
+        return themeFactory.getTheme().isRespectSystemAppearance();
     }
 
     /**

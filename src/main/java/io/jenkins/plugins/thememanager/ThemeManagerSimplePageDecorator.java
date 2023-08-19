@@ -20,4 +20,9 @@ public class ThemeManagerSimplePageDecorator extends SimplePageDecorator {
     public String getThemeKey() {
         return ThemeManagerPageDecorator.get().getThemeKey();
     }
+
+    @SuppressWarnings("unused") // called by jelly
+    public boolean isRespectSystemAppearance() {
+        return ThemeManagerPageDecorator.get().isRespectSystemAppearance();
+    }
 }
