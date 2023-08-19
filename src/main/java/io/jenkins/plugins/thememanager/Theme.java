@@ -3,6 +3,7 @@ package io.jenkins.plugins.thememanager;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,22 +23,39 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public class Theme {
 
     private static final String JS_HTML = "<script type=\"text/javascript\" src=\"{0}\"></script>";
+    private static final String JSON_HTML = "<script id=\"theme-manager-{0}\" type=\"application/json\">{1}</script>";
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private static final String CSS_HTML = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\"/>";
 
     private final List<String> cssUrls;
     private final List<String> javascriptUrls;
     private final boolean blueOceanCompatible;
+
+    private final boolean respectSystemAppearance;
     private final Map<String, String> properties;
 
     private Theme(
             List<String> cssUrls,
             List<String> javascriptUrls,
             boolean blueOceanCompatible,
+            boolean respectSystemAppearance,
             Map<String, String> properties) {
         this.cssUrls = cssUrls;
         this.javascriptUrls = javascriptUrls;
         this.blueOceanCompatible = blueOceanCompatible;
+        this.respectSystemAppearance = respectSystemAppearance;
         this.properties = properties;
+    }
+
+    @Restricted(NoExternalUse.class)
+    String generateProperties() {
+        try {
+            return MessageFormat.format(JSON_HTML, "properties", OBJECT_MAPPER.writeValueAsString(properties));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Restricted(NoExternalUse.class)
@@ -84,6 +102,10 @@ public class Theme {
         return blueOceanCompatible;
     }
 
+    public boolean isRespectSystemAppearance() {
+        return respectSystemAppearance;
+    }
+
     /**
      * Additional information that theme authors can provide to influence other plugins
      *
@@ -101,6 +123,7 @@ public class Theme {
     }
 
     /**
+     * Do not use this as it doesn't support system themes.
      * Additional information that theme authors can provide to influence other plugins
      *
      * <p>e.g. the Prism API plugin can read properties and use a default theme based on this
@@ -108,8 +131,11 @@ public class Theme {
      *
      * @param artifactId the plugin to retrieve the properties for
      * @param propertyName the property to retrieve
+     *
+     * @deprecated use <code>getThemeManagerProperty</code> from JavaScript instead
      * @return the properties associated with the plugin requested
      */
+    @Deprecated
     public Optional<String> getProperty(String artifactId, String propertyName) {
         return Optional.ofNullable(properties.get(artifactId + ":" + propertyName));
     }
@@ -128,6 +154,8 @@ public class Theme {
         private List<String> cssUrls = emptyList();
         private List<String> javascriptUrls = emptyList();
         private boolean blueOceanCompatible = false;
+
+        private boolean respectSystemAppearance = false;
         private final Map<String, String> properties = new HashMap<>();
 
         Builder() {}
@@ -187,6 +215,17 @@ public class Theme {
         }
 
         /**
+         * Marks the theme as a 'system' respecting theme that will adapt to light and dark system
+         * configuration
+         *
+         * @return the current builder with respect system appearance enabled.
+         */
+        public Builder respectSystemAppearance() {
+            this.respectSystemAppearance = true;
+            return this;
+        }
+
+        /**
          * Properties are a way a theme author can provide extra information to plugins. e.g. the Prism
          * API plugin can read properties and use a default theme based on this information.
          *
@@ -240,7 +279,7 @@ public class Theme {
          * @return the theme.
          */
         public Theme build() {
-            return new Theme(cssUrls, javascriptUrls, blueOceanCompatible, properties);
+            return new Theme(cssUrls, javascriptUrls, blueOceanCompatible, respectSystemAppearance, properties);
         }
     }
 }
