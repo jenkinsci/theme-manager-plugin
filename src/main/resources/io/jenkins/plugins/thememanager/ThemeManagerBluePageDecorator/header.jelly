@@ -1,6 +1,6 @@
 <?jelly escape-by-default='false'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-  <script id="theme-manager-theme" type="application/json">{ "id": "${it.themeKey}" }</script>
-  <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
+  <script id="theme-manager-theme" type="application/json">{ "id": "${it.themeKey}", "respect_system_appearance":  ${it.respectSystemAppearance} }</script>
   ${it.getHeaderHtml()}
+  <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
 </j:jelly>
