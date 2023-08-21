@@ -44,6 +44,15 @@ You can stop users from being able to change their theme by selecting the
 
 ### Configuration as Code example
 
+From Jenkins 2.4xx:
+```yaml
+appearance:
+  themeManager:
+    disableUserThemes: true
+    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
+```
+
+Previously:
 ```yaml
 unclassified:
   themeManager:

@@ -9,6 +9,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import jenkins.appearance.AppearanceCategory;
+import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
@@ -37,6 +39,12 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         req.bindJSON(this, formData);
         save();
         return true;
+    }
+
+    @NonNull
+    @Override
+    public GlobalConfigurationCategory getCategory() {
+        return GlobalConfigurationCategory.get(AppearanceCategory.class);
     }
 
     @DataBoundSetter
