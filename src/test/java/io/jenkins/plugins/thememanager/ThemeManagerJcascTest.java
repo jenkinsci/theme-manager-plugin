@@ -29,11 +29,12 @@ public class ThemeManagerJcascTest {
     public static JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
 
     public static Mapping getAppearanceRoot(ConfigurationContext context) throws Exception {
-        GlobalConfigurationCategory category = ExtensionList.lookup(AppearanceCategory.class).get(0);
+        GlobalConfigurationCategory category =
+                ExtensionList.lookup(AppearanceCategory.class).get(0);
         GlobalConfigurationCategoryConfigurator configurator = new GlobalConfigurationCategoryConfigurator(category);
-        return Objects.requireNonNull(configurator.describe(configurator.getTargetComponent(context), context)).asMapping();
+        return Objects.requireNonNull(configurator.describe(configurator.getTargetComponent(context), context))
+                .asMapping();
     }
-
 
     @Test
     public void testConfig() {
