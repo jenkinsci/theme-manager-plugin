@@ -44,7 +44,7 @@ You can stop users from being able to change their theme by selecting the
 
 ### Configuration as Code example
 
-From Jenkins 2.4xx:
+From Jenkins 2.421:
 ```yaml
 appearance:
   themeManager:
