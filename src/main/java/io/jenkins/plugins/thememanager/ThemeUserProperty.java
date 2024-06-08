@@ -70,5 +70,16 @@ public class ThemeUserProperty extends UserProperty {
         public UserProperty newInstance(User user) {
             return new ThemeUserProperty();
         }
+
+        //        @Override
+        //        public @NonNull UserPropertyCategory getUserPropertyCategory() {
+        //            return UserPropertyCategory.get(UserPropertyCategory.Appearance.class);
+        //        }
+
+        // replace with above method when bumping core to version including:
+        // https://github.com/jenkinsci/jenkins/pull/7268
+        public @CheckForNull String getUserPropertyCategoryAsString() {
+            return "appearance";
+        }
     }
 }
