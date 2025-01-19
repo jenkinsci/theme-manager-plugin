@@ -1,12 +1,25 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+  <div class="jenkins-section__description tm-description">
+    ${%description}
+    <j:if test="${app.hasPermission(app.ADMINISTER)}">
+      ${%get-themes}
+      <a class="tm-link" href="${rootURL}/manage/pluginManager/available?filter=UI Themes">
+        <j:set var="icon">
+          <l:icon src="symbol-plugins" />
+        </j:set>
+        <j:out value="${%plugin-link(icon)}" />
+      </a>.
+    </j:if>
+  </div>
+
   <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
 
   <st:adjunct includes="io.jenkins.plugins.thememanager.style.main" />
 
   <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
-  <f:entry title="${%Select theme}" field="theme">
+  <f:entry field="theme">
     <div class="app-theme-picker">
       <j:set var="currentInstance" value="${instance['theme']}" />
       <j:set var="currentDescriptor" value="${currentInstance.descriptor}" />

@@ -1,13 +1,6 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:th="/lib/theme-manager">
-  <f:section title="${%Themes}">
-    <a class="tm-link" href="${rootURL}/manage/pluginManager/available?filter=UI Themes">
-      <j:set var="icon">
-        <l:icon src="symbol-plugins" />
-      </j:set>
-      <j:out value="${%plugin-link(icon)}" />
-    </a>
-
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:th="/lib/theme-manager">
+  <f:section title="${%Theme}">
     <th:selector />
 
     <f:entry field="disableUserThemes">

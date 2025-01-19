@@ -6,6 +6,8 @@ import hudson.Extension;
 import hudson.model.User;
 import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
+import hudson.model.userproperty.UserPropertyCategory;
+import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -20,6 +22,10 @@ public class ThemeUserProperty extends UserProperty {
     public ThemeUserProperty() {}
 
     public ThemeManagerFactory getTheme() {
+        if (theme == null) {
+            return new NoOpThemeManagerFactory();
+        }
+
         return theme;
     }
 
@@ -63,7 +69,7 @@ public class ThemeUserProperty extends UserProperty {
         @NonNull
         @Override
         public String getDisplayName() {
-            return "Themes";
+            return "Theme";
         }
 
         @Override
@@ -71,15 +77,9 @@ public class ThemeUserProperty extends UserProperty {
             return new ThemeUserProperty();
         }
 
-        //        @Override
-        //        public @NonNull UserPropertyCategory getUserPropertyCategory() {
-        //            return UserPropertyCategory.get(UserPropertyCategory.Appearance.class);
-        //        }
-
-        // replace with above method when bumping core to version including:
-        // https://github.com/jenkinsci/jenkins/pull/7268
-        public @CheckForNull String getUserPropertyCategoryAsString() {
-            return "appearance";
+        @Override
+        public @NonNull UserPropertyCategory getUserPropertyCategory() {
+            return UserPropertyCategory.get(UserPropertyCategory.Appearance.class);
         }
     }
 }
