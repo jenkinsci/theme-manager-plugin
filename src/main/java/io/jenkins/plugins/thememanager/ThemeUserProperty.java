@@ -64,6 +64,7 @@ public class ThemeUserProperty extends UserProperty {
         @NonNull
         @Override
         public String getDisplayName() {
+            return "Theme";
         }
 
         @Override
