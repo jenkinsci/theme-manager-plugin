@@ -21,7 +21,7 @@ public class NoOpThemeManagerFactory extends ThemeManagerFactory {
         return Theme.builder().build();
     }
 
-    @Extension
+    @Extension(ordinal = 999)
     public static class NoOpThemeManagerFactoryDescriptor extends ThemeManagerFactoryDescriptor {
 
         @NonNull

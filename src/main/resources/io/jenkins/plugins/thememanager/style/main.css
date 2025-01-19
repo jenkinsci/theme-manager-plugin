@@ -53,14 +53,14 @@
     flex-direction: column;
     text-align: center;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: var(--font-bold-weight, 450);
 }
 
 .app-theme-picker__item label div {
     display: flex;
     flex-direction: column;
     width: 100%;
-    border-radius: 10px;
+    border-radius: var(--form-input-border-radius);
     margin-bottom: 0.75rem;
     overflow: hidden;
 }
@@ -131,19 +131,24 @@
     border-color: var(--input-border-hover);
 }
 
+.tm-link2 {
+    display: flex;
+    align-items: center;
+}
+
 .tm-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.4ch;
-    float: right;
-}
+    margin-left: 0.4ch;
 
-.tm-link svg {
-    width: 1rem;
-    height: 1rem;
-}
+    svg {
+        width: 1rem;
+        height: 1rem;
 
-.tm-link svg * {
-    stroke-width: 45px;
+        * {
+            stroke-width: 45px;
+        }
+    }
 }
