@@ -1,12 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
-  <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
-
-  <st:adjunct includes="io.jenkins.plugins.thememanager.style.main" />
-
-  <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
-
-  <div class="jenkins-section__description tm-link2">
+  <div class="jenkins-section__description tm-description">
     ${%description}
     <j:if test="${app.hasPermission(app.ADMINISTER)}">
       ${%get-themes}
@@ -18,6 +12,12 @@
       </a>.
     </j:if>
   </div>
+
+  <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
+
+  <st:adjunct includes="io.jenkins.plugins.thememanager.style.main" />
+
+  <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
   <f:entry field="theme">
     <div class="app-theme-picker">

@@ -131,7 +131,7 @@
     border-color: var(--input-border-hover);
 }
 
-.tm-link2 {
+.tm-description {
     display: flex;
     align-items: center;
 }
