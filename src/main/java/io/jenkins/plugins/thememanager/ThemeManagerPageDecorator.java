@@ -17,7 +17,7 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 @Extension
 @Symbol("themeManager")
@@ -35,7 +35,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject formData) {
+    public boolean configure(StaplerRequest2 req, JSONObject formData) {
         req.bindJSON(this, formData);
         save();
         return true;
@@ -143,7 +143,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
      * @return true if it is okay to inject CSS
      */
     public boolean shouldInjectCss() {
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         if (req == null) {
             return false;
         }
