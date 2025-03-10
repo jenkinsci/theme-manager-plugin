@@ -5,7 +5,7 @@ import static io.jenkins.plugins.casc.misc.Util.toYamlString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import hudson.ExtensionList;
 import io.jenkins.plugins.casc.ConfigurationContext;
@@ -13,22 +13,19 @@ import io.jenkins.plugins.casc.ConfiguratorRegistry;
 import io.jenkins.plugins.casc.impl.configurators.GlobalConfigurationCategoryConfigurator;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
+import io.jenkins.plugins.casc.misc.junit.jupiter.WithJenkinsConfiguredWithCode;
 import io.jenkins.plugins.casc.model.CNode;
 import io.jenkins.plugins.casc.model.Mapping;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.Objects;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ThemeManagerJcascTest {
+@WithJenkinsConfiguredWithCode
+class ThemeManagerJCasCTest {
 
-    @ClassRule
-    @ConfiguredWithCode("ConfigurationAsCode.yml")
-    public static JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
-
-    public static Mapping getAppearanceRoot(ConfigurationContext context) throws Exception {
+    private static Mapping getAppearanceRoot(ConfigurationContext context) {
         GlobalConfigurationCategory category =
                 ExtensionList.lookup(AppearanceCategory.class).get(0);
         GlobalConfigurationCategoryConfigurator configurator = new GlobalConfigurationCategoryConfigurator(category);
@@ -37,7 +34,8 @@ public class ThemeManagerJcascTest {
     }
 
     @Test
-    public void testConfig() {
+    @ConfiguredWithCode("ConfigurationAsCode.yml")
+    void testConfig(JenkinsConfiguredWithCodeRule j) {
         ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
 
         ThemeManagerFactory theme = decorator.getTheme();
@@ -48,7 +46,8 @@ public class ThemeManagerJcascTest {
     }
 
     @Test
-    public void testExport() throws Exception {
+    @ConfiguredWithCode("ConfigurationAsCode.yml")
+    void testExport(JenkinsConfiguredWithCodeRule j) throws Exception {
         ConfigurationContext context = new ConfigurationContext(ConfiguratorRegistry.get());
         CNode yourAttribute = getAppearanceRoot(context).get("themeManager");
 

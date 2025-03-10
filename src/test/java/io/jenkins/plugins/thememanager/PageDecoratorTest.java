@@ -1,26 +1,24 @@
 package io.jenkins.plugins.thememanager;
 
 import jenkins.model.Jenkins;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class PageDecoratorTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class PageDecoratorTest {
 
     @Test
-    public void testJavaScriptLoadsOnSimpleAndRegularPages() throws Exception {
+    void testJavaScriptLoadsOnSimpleAndRegularPages(JenkinsRule j) throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         MockAuthorizationStrategy auth =
                 new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
         j.jenkins.setAuthorizationStrategy(auth);
 
-        JenkinsRule.WebClient wc = j.createWebClient();
-
-        wc.login("alice");
-        wc.goTo("");
+        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.login("alice");
+            wc.goTo("");
+        }
     }
 }
