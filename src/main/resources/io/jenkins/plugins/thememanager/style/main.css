@@ -130,20 +130,3 @@
 .app-theme-picker__item label:hover::before {
     border-color: var(--input-border-hover);
 }
-
-.tm-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4ch;
-    margin-left: 0.4ch;
-
-    svg {
-        width: 1rem;
-        height: 1rem;
-
-        * {
-            stroke-width: 45px;
-        }
-    }
-}
