@@ -1,16 +1,7 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
-  <div class="jenkins-section__description tm-description">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+  <div class="jenkins-section__description">
     ${%description}
-    <j:if test="${app.hasPermission(app.ADMINISTER)}">
-      ${%get-themes}
-      <a class="tm-link" href="${rootURL}/manage/pluginManager/available?filter=UI Themes">
-        <j:set var="icon">
-          <l:icon src="symbol-plugins" />
-        </j:set>
-        <j:out value="${%plugin-link(icon)}" />
-      </a>.
-    </j:if>
   </div>
 
   <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
