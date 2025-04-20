@@ -26,7 +26,7 @@
 }
 
 .app-theme-picker__item input:checked + label::before {
-    border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
+    border: calc(var(--jenkins-border-width, 2px) * 2) solid var(--focus-input-border);
 }
 
 .app-theme-picker__item input:checked + label span::before {
@@ -122,7 +122,7 @@
     right: 0;
     border-radius: var(--form-input-border-radius);
     aspect-ratio: 1.7777777777778;
-    border: var(--jenkins-border-width) solid var(--input-border);
+    border: var(--jenkins-border-width, 2px) solid var(--input-border);
     box-shadow: var(--form-input-glow);
     transition: var(--standard-transition);
 }
