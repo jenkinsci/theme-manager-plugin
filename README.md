@@ -22,6 +22,7 @@ First you will want to install a theme plugin through the Jenkins Update Center.
 * [Dark theme](https://github.com/jenkinsci/dark-theme-plugin)
 * [Solarized theme](https://plugins.jenkins.io/solarized-theme/)
 * [Material theme](https://plugins.jenkins.io/material-theme/)
+* [Chocolate theme](https://plugins.jenkins.io/chocolate-theme/)
 
 _Just send a pull request to add your theme to the list if create one_
 
