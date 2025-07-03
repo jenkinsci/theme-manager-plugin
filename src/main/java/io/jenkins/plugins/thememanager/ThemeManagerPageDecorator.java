@@ -192,14 +192,19 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 throw new RuntimeException("Setting user themes is disabled");
             }
 
-            User u = User.current();
-            ThemeUserProperty p = u.getProperty(ThemeUserProperty.class);
+            User user = User.current();
+
+            if (user == null) {
+                throw new RuntimeException("User is not signed in");
+            }
+
+            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
             p.setTheme(ThemeManagerFactoryDescriptor.all().stream()
                     .filter(e -> e.getThemeKey().equals(value))
                     .findFirst()
                     .orElseThrow()
                     .getInstance());
-            u.save();
+            user.save();
 
             return HttpResponses.ok();
         }
