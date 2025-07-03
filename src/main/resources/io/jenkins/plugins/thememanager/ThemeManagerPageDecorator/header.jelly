@@ -1,6 +1,33 @@
 <?jelly escape-by-default='false'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dd="/lib/layout/dropdowns">
   <script id="theme-manager-theme" type="application/json">{ "id": "${it.themeKey}", "respect_system_appearance":  ${it.respectSystemAppearance} }</script>
   ${it.getHeaderHtml()}
   <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
+
+  <j:if test="${it.shouldShowAccountThemePicker()}">
+    <template id="account-theme-picker-template">
+      <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
+
+      <dd:custom>
+        <label class="jenkins-dropdown__item tm-account-theme-picker-select"
+               for="account-theme-picker">
+          <div class="jenkins-dropdown__item__icon">
+            <l:icon src="symbol-brush-outline" />
+          </div>
+          ${%Theme}
+          <span>
+            ${it.findThemeFactory().descriptor.displayName}
+          </span>
+          <select id="account-theme-picker">
+            <j:forEach var="theme" items="${descriptors}" varStatus="loop">
+              <option value="${theme.themeKey}" selected="${it.themeKey == theme.themeKey ? 'true' : null}">
+                ${theme.displayName}
+              </option>
+            </j:forEach>
+          </select>
+        </label>
+      </dd:custom>
+      <dd:separator />
+    </template>
+  </j:if>
 </j:jelly>

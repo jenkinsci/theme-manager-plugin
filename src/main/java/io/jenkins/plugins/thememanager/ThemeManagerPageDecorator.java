@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import hudson.model.User;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -98,6 +99,11 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             return theme;
         }
         return new NoOpThemeManagerFactory();
+    }
+
+    @NonNull
+    public boolean shouldShowAccountThemePicker() {
+        return User.current() != null && !isDisableUserThemes();
     }
 
     /** Get the complete header HTML for all configured theme elements. */

@@ -23,3 +23,34 @@
     }
   }
 })()
+
+document.addEventListener('DOMContentLoaded', function () {
+  const userActions = document.querySelector("#root-action-UserAction")?.nextElementSibling;
+
+  if (!userActions) {
+    return;
+  }
+
+  // Create the template
+  const tpl = document.createElement('template');
+  tpl.dataset.dropdownType = 'CUSTOM';
+
+  // Copy the <select> and its options
+  const select = document.querySelector("#account-theme-picker-template").content;
+
+  // Add the select to the template
+  userActions.content.querySelector('.jenkins-dropdown [data-dropdown-type="SEPARATOR"]').after(select);
+
+  // Add an event listener for the themes
+  Behaviour.specify(
+      '#account-theme-picker',
+      "account-theme-picker",
+      0,
+      function (e) {
+        e.addEventListener("change", () => {
+          document.documentElement.dataset.theme = e.value;
+          document.querySelector("label[for='account-theme-picker'] span").innerHTML = e.selectedOptions[0].textContent;;
+        });
+      },
+  );
+})
