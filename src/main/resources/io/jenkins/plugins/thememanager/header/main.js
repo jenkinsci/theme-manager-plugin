@@ -27,7 +27,11 @@
 document.addEventListener('DOMContentLoaded', function () {
   const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
   const themesTemplate = document.querySelector("#account-theme-picker-template");
-  const userActions = document.querySelector("#root-action-UserAction")?.nextElementSibling;
+  let userActions = document.querySelector("#root-action-UserAction")
+
+  if (userActions) {
+    userActions = userActions.nextElementSibling;
+  }
 
   if (isAppearancePage || !themesTemplate || !userActions) {
     return;
@@ -50,7 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
           const root = document.querySelector("[data-rooturl]").dataset.rooturl;
           fetch(root + '/theme/set', {
             method: 'POST',
-            headers: {...crumb.wrap({}), 'Content-Type':'application/x-www-form-urlencoded'},
+            headers: Object.assign({}, crumb.wrap({}), {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }),
             body: 'value=' + e.value
           });
         });
