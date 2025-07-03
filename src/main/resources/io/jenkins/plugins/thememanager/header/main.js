@@ -27,11 +27,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
   const themesTemplate = document.querySelector("#account-theme-picker-template");
-  let userActions = document.querySelector("#root-action-UserAction")
-
-  if (userActions) {
-    userActions = userActions.nextElementSibling;
-  }
+  let userActions = document.querySelector("#root-action-UserAction + template");
 
   if (isAppearancePage || !themesTemplate || !userActions) {
     return;
