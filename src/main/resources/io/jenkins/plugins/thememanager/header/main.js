@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
           document.querySelector("label[for='account-theme-picker'] .jenkins-dropdown__item__icon").innerHTML =
               document.querySelector("[data-theme-icon='" + e.value + "']").innerHTML;
 
-          const root = document.querySelector("[data-rooturl]").dataset.rooturl;
+          const root = document.head.dataset.rooturl
           fetch(root + '/theme/set', {
             method: 'POST',
             headers: Object.assign({}, crumb.wrap({}), {
