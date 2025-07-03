@@ -23,3 +23,41 @@
     }
   }
 })()
+
+document.addEventListener('DOMContentLoaded', function () {
+  const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
+  const themesTemplate = document.querySelector("#account-theme-picker-template");
+  let userActions = document.querySelector("#root-action-UserAction + template");
+
+  if (isAppearancePage || !themesTemplate || !userActions) {
+    return;
+  }
+
+  // Copy the <select> and its options and add it to the account menu
+  const select = themesTemplate.content;
+  userActions.content.querySelector('.jenkins-dropdown [data-dropdown-type="SEPARATOR"]').after(select);
+
+  // Add an event listener for the themes
+  Behaviour.specify(
+      '#account-theme-picker',
+      "account-theme-picker",
+      0,
+      function (e) {
+        e.addEventListener("change", () => {
+          document.documentElement.dataset.theme = e.value;
+          document.querySelector("label[for='account-theme-picker'] span").innerHTML = e.selectedOptions[0].textContent;
+          document.querySelector("label[for='account-theme-picker'] .jenkins-dropdown__item__icon").innerHTML =
+              document.querySelector("[data-theme-icon='" + e.value + "']").innerHTML;
+
+          const root = document.head.dataset.rooturl
+          fetch(root + '/theme/set', {
+            method: 'POST',
+            headers: Object.assign({}, crumb.wrap({}), {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+            body: 'value=' + e.value
+          });
+        });
+      },
+  );
+})
