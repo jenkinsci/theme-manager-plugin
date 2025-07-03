@@ -12,14 +12,14 @@
         <label class="jenkins-dropdown__item tm-account-theme-picker-select"
                for="account-theme-picker">
           <div class="jenkins-dropdown__item__icon">
-            <l:icon src="symbol-brush-outline" />
+            <l:icon src="symbol-water-outline plugin-ionicons-api" />
           </div>
           ${%Theme}
           <span>
             ${it.findThemeFactory().descriptor.displayName}
           </span>
           <select id="account-theme-picker">
-            <j:forEach var="theme" items="${descriptors}" varStatus="loop">
+            <j:forEach var="theme" items="${descriptors}">
               <option value="${theme.themeKey}" selected="${it.themeKey == theme.themeKey ? 'true' : null}">
                 ${theme.displayName}
               </option>

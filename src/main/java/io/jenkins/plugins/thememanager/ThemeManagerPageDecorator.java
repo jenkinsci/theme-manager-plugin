@@ -4,8 +4,12 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import hudson.model.RootAction;
 import hudson.model.User;
+import hudson.util.HttpResponses;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
+
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +21,11 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 @Extension
 @Symbol("themeManager")
@@ -164,5 +171,26 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
         // We don't want to style the build-monitor-plugin
         return !o.getClass().getName().startsWith("com.smartcodeltd.jenkinsci.plugins.buildmonitor");
+    }
+
+    @Extension
+    public static class ThemeAction implements RootAction {
+        public String getUrlName()      { return "theme"; }
+        public String getDisplayName()  { return null; }
+        public String getIconFileName() { return null; }
+
+        @RequirePOST
+        public HttpResponse doSet(@QueryParameter String value) throws IOException {
+            if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
+                throw new RuntimeException("Cant do that");
+            }
+
+            User u = User.current();
+            ThemeUserProperty p = u.getProperty(ThemeUserProperty.class);
+            p.setTheme(ThemeManagerFactoryDescriptor.all().stream().filter(e -> e.getThemeKey().equals(value)).findFirst().orElseThrow().getInstance());
+            u.save();
+
+            return HttpResponses.ok();
+        }
     }
 }
