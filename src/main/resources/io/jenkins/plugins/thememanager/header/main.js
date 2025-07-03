@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
         e.addEventListener("change", () => {
           document.documentElement.dataset.theme = e.value;
           document.querySelector("label[for='account-theme-picker'] span").innerHTML = e.selectedOptions[0].textContent;
+          document.querySelector("label[for='account-theme-picker'] .jenkins-dropdown__item__icon").innerHTML =
+              document.querySelector("[data-theme-icon='" + e.value + "']").innerHTML;
 
           const root = document.querySelector("[data-rooturl]").dataset.rooturl;
           fetch(root + '/theme/set', {
