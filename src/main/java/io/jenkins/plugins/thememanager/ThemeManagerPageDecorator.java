@@ -8,7 +8,6 @@ import hudson.model.RootAction;
 import hudson.model.User;
 import hudson.util.HttpResponses;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
-
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -175,19 +174,31 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     @Extension
     public static class ThemeAction implements RootAction {
-        public String getUrlName()      { return "theme"; }
-        public String getDisplayName()  { return null; }
-        public String getIconFileName() { return null; }
+        public String getUrlName() {
+            return "theme";
+        }
+
+        public String getDisplayName() {
+            return null;
+        }
+
+        public String getIconFileName() {
+            return null;
+        }
 
         @RequirePOST
         public HttpResponse doSet(@QueryParameter String value) throws IOException {
             if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
-                throw new RuntimeException("Cant do that");
+                throw new RuntimeException("Setting user themes is disabled");
             }
 
             User u = User.current();
             ThemeUserProperty p = u.getProperty(ThemeUserProperty.class);
-            p.setTheme(ThemeManagerFactoryDescriptor.all().stream().filter(e -> e.getThemeKey().equals(value)).findFirst().orElseThrow().getInstance());
+            p.setTheme(ThemeManagerFactoryDescriptor.all().stream()
+                    .filter(e -> e.getThemeKey().equals(value))
+                    .findFirst()
+                    .orElseThrow()
+                    .getInstance());
             u.save();
 
             return HttpResponses.ok();

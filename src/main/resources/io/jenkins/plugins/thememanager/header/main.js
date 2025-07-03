@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
           fetch(root + '/theme/set', {
             method: 'POST',
             headers: {...crumb.wrap({}), 'Content-Type':'application/x-www-form-urlencoded'},
-            body: 'value=' + encodeURIComponent(e.value)
+            body: 'value=' + e.value
           });
         });
       },
