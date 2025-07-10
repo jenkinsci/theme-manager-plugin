@@ -8,7 +8,6 @@
   window.isSystemRespectingTheme = theme.respect_system_appearance
 
   const propertiesJson = document.getElementById('theme-manager-properties')
-  // may not be present, e.g. on BlueOcean where the theme is not marked as BlueOcean compatible
   if (propertiesJson) {
     const parsedProperties = JSON.parse(propertiesJson.text);
 
