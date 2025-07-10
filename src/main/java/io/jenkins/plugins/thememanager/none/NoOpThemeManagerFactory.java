@@ -27,7 +27,7 @@ public class NoOpThemeManagerFactory extends ThemeManagerFactory {
         @NonNull
         @Override
         public String getDisplayName() {
-            return "Default";
+            return "Light";
         }
 
         @Override
@@ -38,6 +38,11 @@ public class NoOpThemeManagerFactory extends ThemeManagerFactory {
         @Override
         public String getThemeKey() {
             return "none";
+        }
+
+        @Override
+        public String getIconClassName() {
+            return "symbol-sunny-outline plugin-ionicons-api";
         }
     }
 }
