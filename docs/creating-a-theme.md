@@ -16,7 +16,7 @@ You will need to update the TODO sections your `theme.css`, found in `src/main/w
 
 Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) or [catppuccin-theme-plugin](https://github.com/jenkinsci/catppuccin-theme-plugin) for a sample implementation.
 
-You can find all the available variables provided by Jenkins core in [theme.less](https://github.com/jenkinsci/jenkins/blob/master/war/src/main/less/abstracts/theme.less). Plugins may also define their own variables so this list may not be complete, but it should cover most of them.
+You can find all the available variables provided by Jenkins core in [_theme.scss](https://github.com/jenkinsci/jenkins/blob/master/src/main/scss/abstracts/_theme.scss). Plugins may also define their own variables so this list may not be complete, but it should cover most of them.
 
 ## Testing your theme
 
