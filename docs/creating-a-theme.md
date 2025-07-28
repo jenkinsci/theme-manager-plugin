@@ -2,7 +2,7 @@
 
 A theme is a Jenkins plugin that includes:
 
-* 0 or more CSS files
+* 1 or more CSS files
 * 0 or more JavaScript files
 
 Theme discovery in Jenkins uses the [ThemeManagerFactory](https://github.com/jenkinsci/theme-manager-plugin/blob/master/src/main/java/io/jenkins/plugins/thememanager/ThemeManagerFactory.java)
@@ -12,7 +12,7 @@ extension point.
 
 Create a plugin from the `theme plugin` [Jenkins archetype](https://github.com/jenkinsci/archetypes/).
 
-You will then need to update the TODO sections your `theme.css`
+You will then need to update the TODO sections your `theme.css`, found in `src/main/webapp`.
 
 Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) or [catppuccin-theme-plugin](https://github.com/jenkinsci/catppuccin-theme-plugin) for a sample implementation.
 
