@@ -10,21 +10,13 @@ extension point.
 
 ## Getting started
 
-Create a plugin from the `empty plugin` [Jenkins archetype](https://github.com/jenkinsci/archetypes/).
+Create a plugin from the `theme plugin` [Jenkins archetype](https://github.com/jenkinsci/archetypes/).
 
-You will need to extend/implement:
+You will then need to update the TODO sections your `theme.css`
 
-* [ThemeManagerFactory](https://github.com/jenkinsci/theme-manager-plugin/blob/master/src/main/java/io/jenkins/plugins/thememanager/ThemeManagerFactory.java)
-* [ThemeManagerFactoryDescriptor](https://github.com/jenkinsci/theme-manager-plugin/blob/master/src/main/java/io/jenkins/plugins/thememanager/ThemeManagerFactoryDescriptor.java)
-* [UnprotectedRootAction](https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/hudson/model/UnprotectedRootAction.java)
-
-Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) for a sample implementation.
+Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) or [catppuccin-theme-plugin](https://github.com/jenkinsci/catppuccin-theme-plugin) for a sample implementation.
 
 You can find all the available variables provided by Jenkins core in [theme.less](https://github.com/jenkinsci/jenkins/blob/master/war/src/main/less/abstracts/theme.less). Plugins may also define their own variables so this list may not be complete, but it should cover most of them.
-
-Don't forget to add `@Extension` to your `descriptor` and `UnprotectedRootAction`.
-
-Add a symbol to your `descriptor` for a nice short name when using configuration-as-code, e.g. `@Symbol("neo2")`.
 
 ## Testing your theme
 
