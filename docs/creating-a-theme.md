@@ -12,7 +12,7 @@ extension point.
 
 Create a plugin from the `theme plugin` [Jenkins archetype](https://github.com/jenkinsci/archetypes/).
 
-You will then need to update the TODO sections your `theme.css`, found in `src/main/webapp`.
+You will need to update the TODO sections your `theme.css`, found in `src/main/webapp`.
 
 Take a look at the [dark-theme-plugin](https://github.com/jenkinsci/dark-theme-plugin) or [catppuccin-theme-plugin](https://github.com/jenkinsci/catppuccin-theme-plugin) for a sample implementation.
 
