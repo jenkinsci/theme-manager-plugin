@@ -40,7 +40,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>4948.vcf1d17350668</version>
+        <version>5054.v620b_5d2b_d5e6</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -48,11 +48,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>blueocean-web</artifactId>
-      <optional>true</optional>
-    </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
