@@ -43,21 +43,12 @@ You can stop users from being able to change their theme by selecting the
 
 ### User
 
-'Your name' profile link (in top right) → Configure → Themes
+Hover over your account icon in the top right and change your theme in the menu.
 
 ### Configuration as Code example
 
-From Jenkins 2.421:
 ```yaml
 appearance:
-  themeManager:
-    disableUserThemes: true
-    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
-```
-
-Previously:
-```yaml
-unclassified:
   themeManager:
     disableUserThemes: true
     theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
