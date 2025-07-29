@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -128,10 +127,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             Set<String> data =
                     new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
             data.addAll(namespacedThemes);
-            return StringUtils.join(data, "\n");
+            return String.join("\n", data);
         }
 
-        return StringUtils.join(namespacedThemes, "\n");
+        return String.join("\n", namespacedThemes);
     }
 
     @SuppressWarnings("unused") // called by jelly
