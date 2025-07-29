@@ -6,7 +6,6 @@
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/theme-manager-plugin.svg?label=changelog)](https://github.com/jenkinsci/theme-manager-plugin/releases/latest)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/theme-manager.svg?color=blue)](https://plugins.jenkins.io/theme-manager)
 
-
 ## Introduction
 
 Adds theme management to Jenkins, at a global or user level.
