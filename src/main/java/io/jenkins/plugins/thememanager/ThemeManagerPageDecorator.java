@@ -59,6 +59,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     public ThemeManagerFactory getTheme() {
+        if (theme == null) {
+            return new NoOpThemeManagerFactory();
+        }
+
         return theme;
     }
 

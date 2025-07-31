@@ -6,7 +6,6 @@
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/theme-manager-plugin.svg?label=changelog)](https://github.com/jenkinsci/theme-manager-plugin/releases/latest)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/theme-manager.svg?color=blue)](https://plugins.jenkins.io/theme-manager)
 
-
 ## Introduction
 
 Adds theme management to Jenkins, at a global or user level.
@@ -15,14 +14,16 @@ Adds theme management to Jenkins, at a global or user level.
 
 There's normally no need to install this plugin directly as the theme you install will depend on this.
 
-First you will want to install a theme plugin through the Jenkins Update Center.
+First, you will want to install a theme plugin through the Jenkins Update Center.
 
-### Known themes
+### Available themes
 
 * [Dark theme](https://github.com/jenkinsci/dark-theme-plugin)
 * [Solarized theme](https://plugins.jenkins.io/solarized-theme/)
 * [Material theme](https://plugins.jenkins.io/material-theme/)
 * [Chocolate theme](https://plugins.jenkins.io/chocolate-theme/)
+* [Catppuccin theme](https://plugins.jenkins.io/catppuccin-theme/)
+* [Nord theme](https://plugins.jenkins.io/nord-theme/)
 
 _Just send a pull request to add your theme to the list if create one_
 
@@ -41,21 +42,12 @@ You can stop users from being able to change their theme by selecting the
 
 ### User
 
-'Your name' profile link (in top right) → Configure → Themes
+Hover over your account icon in the top right and change your theme in the menu.
 
 ### Configuration as Code example
 
-From Jenkins 2.421:
 ```yaml
 appearance:
-  themeManager:
-    disableUserThemes: true
-    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
-```
-
-Previously:
-```yaml
-unclassified:
   themeManager:
     disableUserThemes: true
     theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'

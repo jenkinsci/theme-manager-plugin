@@ -58,7 +58,7 @@ public class ThemeUserProperty extends UserProperty {
         return property.getTheme();
     }
 
-    @Extension
+    @Extension(ordinal = Integer.MAX_VALUE)
     public static class ThemeUserPropertyDescriptor extends UserPropertyDescriptor {
 
         @Override
