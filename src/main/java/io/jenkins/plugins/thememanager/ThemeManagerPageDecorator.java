@@ -164,15 +164,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         }
 
         List<Ancestor> ancestors = req.getAncestors();
-        if (ancestors == null || ancestors.size() == 0) {
-            return false;
-        }
-
-        Ancestor a = ancestors.get(ancestors.size() - 1);
-        Object o = a.getObject();
-
-        // We don't want to style the build-monitor-plugin
-        return !o.getClass().getName().startsWith("com.smartcodeltd.jenkinsci.plugins.buildmonitor");
+        return ancestors != null && !ancestors.isEmpty();
     }
 
     @Extension
