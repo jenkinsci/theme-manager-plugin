@@ -3,7 +3,6 @@ package io.jenkins.plugins.thememanager;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Holds URLs to CSS and JavaScript files.
