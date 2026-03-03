@@ -36,6 +36,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const select = themesTemplate.content;
   userActions.content.querySelector('.jenkins-dropdown [data-dropdown-type="SEPARATOR"]').after(select);
 
+  // Handle keyboard activation for the theme picker.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+    const label = document.querySelector("label[for='account-theme-picker']");
+    if (label && (label === document.activeElement || label.classList.contains('jenkins-dropdown__item--selected'))) {
+      e.preventDefault();
+      document.querySelector('#account-theme-picker').showPicker();
+    }
+  });
+
   // Add an event listener for the themes
   Behaviour.specify(
       '#account-theme-picker',
