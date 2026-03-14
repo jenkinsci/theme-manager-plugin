@@ -33,7 +33,7 @@ You can configure this plugin globally, or each user can configure it in their c
 
 ### Global
 
-Manage Jenkins → Configure System → Themes
+Manage Jenkins → Appearance → Theme
 
 ![Global configuration](docs/images/global-theme-manager.png)
 
