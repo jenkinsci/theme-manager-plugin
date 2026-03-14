@@ -3,13 +3,14 @@ package io.jenkins.plugins.thememanager;
 import hudson.DescriptorExtensionList;
 import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
+import org.jenkins.ui.icon.IconSpec;
 
 /**
  * Definition of a Theme Manager
  *
  * @see ThemeManagerFactory
  */
-public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> {
+public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeManagerFactory> implements IconSpec {
 
     public ThemeManagerFactory getInstance() {
         try {
@@ -81,6 +82,11 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
      */
     public String getThemeJsSuffix() {
         return "theme.js";
+    }
+
+    @Override
+    public String getIconClassName() {
+        return "symbol-water-outline plugin-ionicons-api";
     }
 
     /**

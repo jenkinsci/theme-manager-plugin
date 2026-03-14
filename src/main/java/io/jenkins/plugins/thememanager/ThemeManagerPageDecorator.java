@@ -4,7 +4,11 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import hudson.model.RootAction;
+import hudson.model.User;
+import hudson.util.HttpResponses;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,12 +16,14 @@ import java.util.stream.Collectors;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 @Extension
 @Symbol("themeManager")
@@ -53,6 +59,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     public ThemeManagerFactory getTheme() {
+        if (theme == null) {
+            return new NoOpThemeManagerFactory();
+        }
+
         return theme;
     }
 
@@ -100,6 +110,11 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return new NoOpThemeManagerFactory();
     }
 
+    @NonNull
+    public boolean shouldShowAccountThemePicker() {
+        return User.current() != null && !isDisableUserThemes();
+    }
+
     /** Get the complete header HTML for all configured theme elements. */
     public String getHeaderHtml() {
         boolean injectCss = shouldInjectCss();
@@ -116,10 +131,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             Set<String> data =
                     new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
             data.addAll(namespacedThemes);
-            return StringUtils.join(data, "\n");
+            return String.join("\n", data);
         }
 
-        return StringUtils.join(namespacedThemes, "\n");
+        return String.join("\n", namespacedThemes);
     }
 
     @SuppressWarnings("unused") // called by jelly
@@ -150,5 +165,43 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
         List<Ancestor> ancestors = req.getAncestors();
         return ancestors != null && !ancestors.isEmpty();
+    }
+
+    @Extension
+    public static class ThemeAction implements RootAction {
+        public String getUrlName() {
+            return "theme";
+        }
+
+        public String getDisplayName() {
+            return null;
+        }
+
+        public String getIconFileName() {
+            return null;
+        }
+
+        @RequirePOST
+        public HttpResponse doSet(@QueryParameter String value) throws IOException {
+            if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
+                throw new RuntimeException("Setting user themes is disabled");
+            }
+
+            User user = User.current();
+
+            if (user == null) {
+                throw new RuntimeException("User is not signed in");
+            }
+
+            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
+            p.setTheme(ThemeManagerFactoryDescriptor.all().stream()
+                    .filter(e -> e.getThemeKey().equals(value))
+                    .findFirst()
+                    .orElseThrow()
+                    .getInstance());
+            user.save();
+
+            return HttpResponses.ok();
+        }
     }
 }

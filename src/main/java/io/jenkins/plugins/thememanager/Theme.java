@@ -31,7 +31,6 @@ public class Theme {
 
     private final List<String> cssUrls;
     private final List<String> javascriptUrls;
-    private final boolean blueOceanCompatible;
 
     private final boolean respectSystemAppearance;
     private final Map<String, String> properties;
@@ -39,12 +38,10 @@ public class Theme {
     private Theme(
             List<String> cssUrls,
             List<String> javascriptUrls,
-            boolean blueOceanCompatible,
             boolean respectSystemAppearance,
             Map<String, String> properties) {
         this.cssUrls = cssUrls;
         this.javascriptUrls = javascriptUrls;
-        this.blueOceanCompatible = blueOceanCompatible;
         this.respectSystemAppearance = respectSystemAppearance;
         this.properties = properties;
     }
@@ -91,15 +88,6 @@ public class Theme {
      */
     public List<String> getJavascriptUrls() {
         return javascriptUrls;
-    }
-
-    /**
-     * Whether the theme should be served on Blue Ocean.
-     *
-     * @return if the theme is compatible with blue ocean.
-     */
-    public boolean isBlueOceanCompatible() {
-        return blueOceanCompatible;
     }
 
     public boolean isRespectSystemAppearance() {
@@ -153,7 +141,6 @@ public class Theme {
     public static class Builder {
         private List<String> cssUrls = emptyList();
         private List<String> javascriptUrls = emptyList();
-        private boolean blueOceanCompatible = false;
 
         private boolean respectSystemAppearance = false;
         private final Map<String, String> properties = new HashMap<>();
@@ -191,26 +178,6 @@ public class Theme {
          */
         public Builder withCssUrls(List<String> cssUrls) {
             this.cssUrls = cssUrls;
-            return this;
-        }
-
-        /**
-         * Enables the theme on BlueOcean
-         *
-         * @return the current builder with BlueOcean enabled.
-         */
-        public Builder enableOnBlueOcean() {
-            this.blueOceanCompatible = true;
-            return this;
-        }
-
-        /**
-         * Disables the theme on BlueOcean
-         *
-         * @return the current builder with BlueOcean disabled.
-         */
-        public Builder disableOnBlueOcean() {
-            this.blueOceanCompatible = false;
             return this;
         }
 
@@ -279,7 +246,7 @@ public class Theme {
          * @return the theme.
          */
         public Theme build() {
-            return new Theme(cssUrls, javascriptUrls, blueOceanCompatible, respectSystemAppearance, properties);
+            return new Theme(cssUrls, javascriptUrls, respectSystemAppearance, properties);
         }
     }
 }
