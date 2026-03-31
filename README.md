@@ -24,6 +24,7 @@ First, you will want to install a theme plugin through the Jenkins Update Center
 * [Chocolate theme](https://plugins.jenkins.io/chocolate-theme/)
 * [Catppuccin theme](https://plugins.jenkins.io/catppuccin-theme/)
 * [Nord theme](https://plugins.jenkins.io/nord-theme/)
+* [Gruvbox theme](https://plugins.jenkins.io/gruvbox-theme/)
 
 _Just send a pull request to add your theme to the list if create one_
 
