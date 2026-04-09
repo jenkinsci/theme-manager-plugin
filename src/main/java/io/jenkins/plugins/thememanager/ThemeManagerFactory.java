@@ -4,6 +4,8 @@ import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Pluggable ability to add additional built-in themes. The descriptor's display name will be used
@@ -36,10 +38,16 @@ public abstract class ThemeManagerFactory extends AbstractDescribableImpl<ThemeM
      * Arbitrary asset URL. Useful if you want additional css or js files
      *
      * @param asset additional-stylesheet.css
-     * @return Asset url in the form '$JENKINS_URL/theme-$themeId/$asset-parameter
+     * @return Asset url in the form '$contextPath/theme-$themeId/$asset-parameter
      */
     public String toAssetUrl(String asset) {
         ThemeManagerFactoryDescriptor descriptor = getDescriptor();
+
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
+        if (req != null) {
+            return req.getContextPath() + "/theme-" + descriptor.getThemeId() + "/" + asset;
+        }
+
         return Jenkins.get().getRootUrl() + "theme-" + descriptor.getThemeId() + "/" + asset;
     }
 
