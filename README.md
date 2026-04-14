@@ -1,6 +1,6 @@
 # Theme Manager plugin for Jenkins
 
-[![Build Status](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/)
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins%2Ftheme-manager-plugin%2Fmaster)](https://ci.jenkins.io/job/Plugins/job/theme-manager-plugin/job/master/)
 [![Contributors](https://img.shields.io/github/contributors/jenkinsci/theme-manager-plugin.svg)](https://github.com/jenkinsci/theme-manager-plugin/graphs/contributors)
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/theme-manager.svg)](https://plugins.jenkins.io/theme-manager)
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/theme-manager-plugin.svg?label=changelog)](https://github.com/jenkinsci/theme-manager-plugin/releases/latest)
