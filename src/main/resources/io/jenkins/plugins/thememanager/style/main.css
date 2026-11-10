@@ -1,6 +1,6 @@
 .app-theme-picker {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     grid-gap: var(--section-padding);
     margin-bottom: 1rem;
 }
@@ -20,13 +20,13 @@
     clip-path: inset(50%);
 }
 
-.app-theme-picker__item input:focus + label::before, .app-theme-picker__item input:active + label::before {
+.app-theme-picker__item input:focus + label .app-theme-picker__picker::before, .app-theme-picker__item input:active + label .app-theme-picker__picker::before {
     border-color: var(--focus-input-border);
     box-shadow: var(--form-input-glow--focus);
 }
 
-.app-theme-picker__item input:checked + label::before {
-    border: calc(var(--jenkins-border-width, 2px) * 2) solid var(--focus-input-border);
+.app-theme-picker__item input:checked + label .app-theme-picker__picker::before {
+    border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
 }
 
 .app-theme-picker__item input:checked + label span::before {
@@ -53,21 +53,25 @@
     flex-direction: column;
     text-align: center;
     cursor: pointer;
-    font-weight: var(--font-bold-weight, 450);
+    font-weight: var(--font-bold-weight);
 }
 
-.app-theme-picker__item label div {
+.app-theme-picker__picker {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
     border-radius: var(--form-input-border-radius);
-    margin-bottom: 0.75rem;
-    overflow: hidden;
+    margin-bottom: 0.625rem;
+    box-shadow: var(--elevation-2-box-shadow);
 }
 
-.app-theme-picker__item label div svg {
+.app-theme-picker__picker svg {
+    display: block;
     width: 100%;
     height: auto;
+    border-radius: inherit;
+    overflow: hidden;
 }
 
 .app-theme-picker__item label span {
@@ -114,19 +118,18 @@
     mask-position: center;
 }
 
-.app-theme-picker__item label::before {
+.app-theme-picker__picker::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    border-radius: var(--form-input-border-radius);
-    aspect-ratio: 1.7777777777778;
-    border: var(--jenkins-border-width, 2px) solid var(--input-border);
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    border: var(--jenkins-border);
     box-shadow: var(--form-input-glow);
     transition: var(--standard-transition);
 }
 
-.app-theme-picker__item label:hover::before {
+.app-theme-picker__item label:hover .app-theme-picker__picker::before {
     border-color: var(--input-border-hover);
 }
