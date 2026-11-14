@@ -77,8 +77,8 @@ public class ThemeUserProperty extends UserProperty {
     public static ThemeManagerFactory forCurrentUserFactory() {
         return switch (forCurrentUserTheme()) {
             case null -> null;
-            case JenkinsTheme.StaticTheme st -> st.getTheme();
-            case JenkinsTheme.SystemTheme sy -> sy.getLight();
+            case JenkinsTheme.StaticTheme(var staticTheme) -> staticTheme;
+            case JenkinsTheme.SystemTheme(var light, var dark) -> light;
         };
     }
 

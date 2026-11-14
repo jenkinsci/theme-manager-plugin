@@ -16,32 +16,19 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public sealed interface JenkinsTheme extends Describable<JenkinsTheme>, ExtensionPoint {
 
     @Override
+    @SuppressWarnings("unchecked")
     default Descriptor<JenkinsTheme> getDescriptor() {
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
-    final class StaticTheme implements JenkinsTheme {
-        private final ThemeManagerFactory theme;
-
+    record StaticTheme(ThemeManagerFactory theme) implements JenkinsTheme {
         @DataBoundConstructor
-        public StaticTheme(ThemeManagerFactory theme) {
-            this.theme = Objects.requireNonNullElseGet(theme, NoOpThemeManagerFactory::new);
+        public StaticTheme {
+            theme = Objects.requireNonNullElseGet(theme, NoOpThemeManagerFactory::new);
         }
 
         public ThemeManagerFactory getTheme() {
             return theme;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof StaticTheme that)) return false;
-            return Objects.equals(theme, that.theme);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(theme);
         }
 
         @Extension
@@ -59,14 +46,11 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme>, Extensio
         }
     }
 
-    final class SystemTheme implements JenkinsTheme {
-        private final ThemeManagerFactory light;
-        private final ThemeManagerFactory dark;
-
+    record SystemTheme(ThemeManagerFactory light, ThemeManagerFactory dark) implements JenkinsTheme {
         @DataBoundConstructor
-        public SystemTheme(ThemeManagerFactory light, ThemeManagerFactory dark) {
-            this.light = Objects.requireNonNullElseGet(light, NoOpThemeManagerFactory::new);
-            this.dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
+        public SystemTheme {
+            light = Objects.requireNonNullElseGet(light, NoOpThemeManagerFactory::new);
+            dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
         }
 
         public ThemeManagerFactory getLight() {
@@ -75,18 +59,6 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme>, Extensio
 
         public ThemeManagerFactory getDark() {
             return dark;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof SystemTheme that)) return false;
-            return Objects.equals(light, that.light) && Objects.equals(dark, that.dark);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(light, dark);
         }
 
         @Extension
