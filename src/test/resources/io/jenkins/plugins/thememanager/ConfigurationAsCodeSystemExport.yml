@@ -1,5 +1,5 @@
 disableUserThemes: true
-userTheme:
+theme:
   system:
     dark: "noOp"
     light: "noOp"

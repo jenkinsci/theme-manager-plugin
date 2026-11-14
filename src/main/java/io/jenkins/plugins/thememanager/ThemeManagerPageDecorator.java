@@ -29,7 +29,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Symbol("themeManager")
 public class ThemeManagerPageDecorator extends PageDecorator {
 
-    private UserTheme userTheme;
+    private JenkinsTheme jenkinsTheme;
     private ThemeManagerFactory theme;
     private boolean disableUserThemes;
 
@@ -38,8 +38,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     protected Object readResolve() {
-        if (theme != null && userTheme == null) {
-            userTheme = UserTheme.of(theme);
+        if (theme != null && jenkinsTheme == null) {
+            jenkinsTheme = new JenkinsTheme.StaticTheme(theme);
             theme = null;
         }
         return this;
@@ -63,32 +63,20 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     @DataBoundSetter
-    public void setUserTheme(UserTheme userTheme) {
-        this.userTheme = userTheme;
-    }
-
-    public UserTheme getUserTheme() {
-        if (userTheme == null) {
-            return UserTheme.of(new NoOpThemeManagerFactory());
-        }
-        return userTheme;
+    public void setTheme(JenkinsTheme theme) {
+        this.jenkinsTheme = theme;
     }
 
     @Deprecated
-    @DataBoundSetter
     public void setTheme(ThemeManagerFactory theme) {
-        this.userTheme = theme != null ? UserTheme.of(theme) : null;
+        this.jenkinsTheme = theme != null ? new JenkinsTheme.StaticTheme(theme) : null;
     }
 
-    @Deprecated
-    public ThemeManagerFactory getTheme() {
-        if (userTheme instanceof UserTheme.StaticTheme staticTheme) {
-            return staticTheme.getTheme();
+    public JenkinsTheme getTheme() {
+        if (jenkinsTheme == null) {
+            return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
         }
-        if (userTheme instanceof UserTheme.SystemTheme systemTheme) {
-            return systemTheme.getLight();
-        }
-        return new NoOpThemeManagerFactory();
+        return jenkinsTheme;
     }
 
     public boolean isDisableUserThemes() {
@@ -101,18 +89,18 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     @NonNull
-    public UserTheme findUserTheme() {
+    public JenkinsTheme findJenkinsTheme() {
         if (!disableUserThemes) {
-            UserTheme currentUserTheme = ThemeUserProperty.forCurrentUserTheme();
+            JenkinsTheme currentUserTheme = ThemeUserProperty.forCurrentUserTheme();
             if (currentUserTheme != null) {
                 return currentUserTheme;
             }
         }
 
-        if (userTheme != null) {
-            return userTheme;
+        if (jenkinsTheme != null) {
+            return jenkinsTheme;
         }
-        return UserTheme.of(new NoOpThemeManagerFactory());
+        return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
     }
 
     /**
@@ -129,14 +117,10 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     @Deprecated
     @NonNull
     public ThemeManagerFactory findThemeFactory() {
-        UserTheme activeUserTheme = findUserTheme();
-        if (activeUserTheme instanceof UserTheme.StaticTheme staticTheme) {
-            return staticTheme.getTheme();
-        }
-        if (activeUserTheme instanceof UserTheme.SystemTheme systemTheme) {
-            return systemTheme.getLight();
-        }
-        return new NoOpThemeManagerFactory();
+        return switch (findJenkinsTheme()) {
+            case JenkinsTheme.StaticTheme st -> st.getTheme();
+            case JenkinsTheme.SystemTheme sy -> sy.getLight();
+        };
     }
 
     public boolean shouldShowAccountThemePicker() {
@@ -174,7 +158,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     @SuppressWarnings("unused") // called by jelly
     public boolean isRespectSystemAppearance() {
-        return findUserTheme() instanceof UserTheme.SystemTheme;
+        return findJenkinsTheme() instanceof JenkinsTheme.SystemTheme;
     }
 
     /**
@@ -220,7 +204,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             }
 
             ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
-            p.setUserTheme(UserTheme.of(ThemeManagerFactoryDescriptor.all().stream()
+            p.setTheme(new JenkinsTheme.StaticTheme(ThemeManagerFactoryDescriptor.all().stream()
                     .filter(e -> e.getThemeKey().equals(value))
                     .findFirst()
                     .orElseThrow()

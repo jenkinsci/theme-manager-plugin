@@ -39,10 +39,10 @@ class ThemeManagerJCasCTest {
     void testConfig(JenkinsConfiguredWithCodeRule j) {
         ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
 
-        UserTheme userTheme = decorator.getUserTheme();
-        assertNotNull(userTheme);
-        assertThat(userTheme, instanceOf(UserTheme.StaticTheme.class));
-        assertThat(((UserTheme.StaticTheme) userTheme).getTheme(), instanceOf(NoOpThemeManagerFactory.class));
+        JenkinsTheme jenkinsTheme = decorator.getTheme();
+        assertNotNull(jenkinsTheme);
+        assertThat(jenkinsTheme, instanceOf(JenkinsTheme.StaticTheme.class));
+        assertThat(((JenkinsTheme.StaticTheme) jenkinsTheme).getTheme(), instanceOf(NoOpThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
         assertThat(decorator.isRespectSystemAppearance(), is(false));
@@ -66,10 +66,10 @@ class ThemeManagerJCasCTest {
     void testSystemConfig(JenkinsConfiguredWithCodeRule j) {
         ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
 
-        UserTheme userTheme = decorator.getUserTheme();
-        assertNotNull(userTheme);
-        assertThat(userTheme, instanceOf(UserTheme.SystemTheme.class));
-        UserTheme.SystemTheme systemTheme = (UserTheme.SystemTheme) userTheme;
+        JenkinsTheme jenkinsTheme = decorator.getTheme();
+        assertNotNull(jenkinsTheme);
+        assertThat(jenkinsTheme, instanceOf(JenkinsTheme.SystemTheme.class));
+        JenkinsTheme.SystemTheme systemTheme = (JenkinsTheme.SystemTheme) jenkinsTheme;
         assertThat(systemTheme.getLight(), instanceOf(NoOpThemeManagerFactory.class));
         assertThat(systemTheme.getDark(), instanceOf(NoOpThemeManagerFactory.class));
 
@@ -96,18 +96,18 @@ class ThemeManagerJCasCTest {
                 + "<theme class=\"io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
         ThemeManagerPageDecorator decorator = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(legacyDecoratorXml);
-        assertThat(decorator.getUserTheme(), instanceOf(UserTheme.StaticTheme.class));
+        assertThat(decorator.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
         assertThat(
-                ((UserTheme.StaticTheme) decorator.getUserTheme()).getTheme(),
+                ((JenkinsTheme.StaticTheme) decorator.getTheme()).getTheme(),
                 instanceOf(NoOpThemeManagerFactory.class));
 
         String legacyUserPropertyXml = "<io.jenkins.plugins.thememanager.ThemeUserProperty>"
                 + "<theme class=\"io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeUserProperty>";
         ThemeUserProperty userProperty = (ThemeUserProperty) Jenkins.XSTREAM2.fromXML(legacyUserPropertyXml);
-        assertThat(userProperty.getUserTheme(), instanceOf(UserTheme.StaticTheme.class));
+        assertThat(userProperty.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
         assertThat(
-                ((UserTheme.StaticTheme) userProperty.getUserTheme()).getTheme(),
+                ((JenkinsTheme.StaticTheme) userProperty.getTheme()).getTheme(),
                 instanceOf(NoOpThemeManagerFactory.class));
     }
 }

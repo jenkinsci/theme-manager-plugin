@@ -13,22 +13,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /// Designates the choice of themes the user has available.
 /// It is either going to be a single theme, or if they are following the system then a light/dark mode theme
-public sealed interface UserTheme extends Describable<UserTheme>, ExtensionPoint {
-
-    static StaticTheme of(ThemeManagerFactory theme) {
-        return new StaticTheme(theme);
-    }
-
-    static SystemTheme of(ThemeManagerFactory light, ThemeManagerFactory dark) {
-        return new SystemTheme(light, dark);
-    }
+public sealed interface JenkinsTheme extends Describable<JenkinsTheme>, ExtensionPoint {
 
     @Override
-    default Descriptor<UserTheme> getDescriptor() {
+    default Descriptor<JenkinsTheme> getDescriptor() {
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
-    final class StaticTheme implements UserTheme {
+    final class StaticTheme implements JenkinsTheme {
         private final ThemeManagerFactory theme;
 
         @DataBoundConstructor
@@ -54,7 +46,7 @@ public sealed interface UserTheme extends Describable<UserTheme>, ExtensionPoint
 
         @Extension
         @Symbol("static")
-        public static class DescriptorImpl extends Descriptor<UserTheme> {
+        public static class DescriptorImpl extends Descriptor<JenkinsTheme> {
             public DescriptorImpl() {
                 super(StaticTheme.class);
             }
@@ -67,7 +59,7 @@ public sealed interface UserTheme extends Describable<UserTheme>, ExtensionPoint
         }
     }
 
-    final class SystemTheme implements UserTheme {
+    final class SystemTheme implements JenkinsTheme {
         private final ThemeManagerFactory light;
         private final ThemeManagerFactory dark;
 
@@ -99,7 +91,7 @@ public sealed interface UserTheme extends Describable<UserTheme>, ExtensionPoint
 
         @Extension
         @Symbol("system")
-        public static class DescriptorImpl extends Descriptor<UserTheme> {
+        public static class DescriptorImpl extends Descriptor<JenkinsTheme> {
             public DescriptorImpl() {
                 super(SystemTheme.class);
             }

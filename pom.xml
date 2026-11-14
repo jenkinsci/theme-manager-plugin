@@ -50,17 +50,17 @@
 
   <dependencies>
     <dependency>
+      <groupId>io.jenkins</groupId>
+      <artifactId>configuration-as-code</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jackson3-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.jenkins</groupId>
-      <artifactId>configuration-as-code</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.configuration-as-code</groupId>
@@ -81,4 +81,16 @@
       <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

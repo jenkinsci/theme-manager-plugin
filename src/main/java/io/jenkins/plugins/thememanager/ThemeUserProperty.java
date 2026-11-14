@@ -16,62 +16,50 @@ import org.kohsuke.stapler.DataBoundSetter;
 @Restricted(NoExternalUse.class)
 public class ThemeUserProperty extends UserProperty {
 
-    private UserTheme userTheme;
+    private JenkinsTheme jenkinsTheme;
     private ThemeManagerFactory theme;
 
     @DataBoundConstructor
     public ThemeUserProperty() {}
 
     protected Object readResolve() {
-        if (theme != null && userTheme == null) {
-            userTheme = UserTheme.of(theme);
+        if (theme != null && jenkinsTheme == null) {
+            jenkinsTheme = new JenkinsTheme.StaticTheme(theme);
             theme = null;
         }
         return this;
     }
 
-    public UserTheme getUserTheme() {
-        if (userTheme == null) {
-            return UserTheme.of(new NoOpThemeManagerFactory());
+    public JenkinsTheme getTheme() {
+        if (jenkinsTheme == null) {
+            return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
         }
-        return userTheme;
+        return jenkinsTheme;
     }
 
     @DataBoundSetter
-    public void setUserTheme(UserTheme userTheme) {
-        this.userTheme = userTheme;
+    public void setTheme(JenkinsTheme theme) {
+        this.jenkinsTheme = theme;
     }
 
     @Deprecated
-    public ThemeManagerFactory getTheme() {
-        if (userTheme instanceof UserTheme.StaticTheme staticTheme) {
-            return staticTheme.getTheme();
-        }
-        if (userTheme instanceof UserTheme.SystemTheme systemTheme) {
-            return systemTheme.getLight();
-        }
-        return new NoOpThemeManagerFactory();
-    }
-
-    @Deprecated
-    @DataBoundSetter
     public void setTheme(ThemeManagerFactory theme) {
-        this.userTheme = theme != null ? UserTheme.of(theme) : null;
+        this.jenkinsTheme = theme != null ? new JenkinsTheme.StaticTheme(theme) : null;
     }
 
     @CheckForNull
-    public static UserTheme forCurrentUserTheme() {
+    public static JenkinsTheme forCurrentUserTheme() {
         final User current = User.current();
         if (current == null) {
             return null;
         }
 
         ThemeUserProperty property = current.getProperty(ThemeUserProperty.class);
-        if (property == null || property.userTheme == null) {
+        if (property == null || property.jenkinsTheme == null) {
             return null;
         }
 
-        return property.getUserTheme();
+        return property.getTheme();
     }
 
     @Deprecated
@@ -87,14 +75,11 @@ public class ThemeUserProperty extends UserProperty {
     @Deprecated
     @CheckForNull
     public static ThemeManagerFactory forCurrentUserFactory() {
-        UserTheme currentTheme = forCurrentUserTheme();
-        if (currentTheme instanceof UserTheme.StaticTheme staticTheme) {
-            return staticTheme.getTheme();
-        }
-        if (currentTheme instanceof UserTheme.SystemTheme systemTheme) {
-            return systemTheme.getLight();
-        }
-        return null;
+        return switch (forCurrentUserTheme()) {
+            case null -> null;
+            case JenkinsTheme.StaticTheme st -> st.getTheme();
+            case JenkinsTheme.SystemTheme sy -> sy.getLight();
+        };
     }
 
     @Extension(ordinal = Integer.MAX_VALUE)
