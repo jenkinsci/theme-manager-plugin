@@ -22,6 +22,7 @@ public class ThemeUserProperty extends UserProperty {
     @DataBoundConstructor
     public ThemeUserProperty() {}
 
+    // Migrates legacy <theme> XStream XML entries into JenkinsTheme
     protected Object readResolve() {
         if (theme != null && jenkinsTheme == null) {
             jenkinsTheme = new JenkinsTheme.StaticTheme(theme);

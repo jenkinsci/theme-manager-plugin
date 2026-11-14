@@ -37,6 +37,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         load();
     }
 
+    // Migrates legacy <theme> XStream XML entries into JenkinsTheme
     protected Object readResolve() {
         if (theme != null && jenkinsTheme == null) {
             jenkinsTheme = new JenkinsTheme.StaticTheme(theme);
