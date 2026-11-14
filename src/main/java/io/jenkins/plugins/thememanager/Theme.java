@@ -142,7 +142,6 @@ public class Theme {
         private List<String> cssUrls = emptyList();
         private List<String> javascriptUrls = emptyList();
 
-        private boolean respectSystemAppearance = false;
         private final Map<String, String> properties = new HashMap<>();
 
         Builder() {}
@@ -185,10 +184,12 @@ public class Theme {
          * Marks the theme as a 'system' respecting theme that will adapt to light and dark system
          * configuration
          *
+         * @deprecated now it is NoOp
+         *
          * @return the current builder with respect system appearance enabled.
          */
+        @Deprecated
         public Builder respectSystemAppearance() {
-            this.respectSystemAppearance = true;
             return this;
         }
 
@@ -246,7 +247,7 @@ public class Theme {
          * @return the theme.
          */
         public Theme build() {
-            return new Theme(cssUrls, javascriptUrls, respectSystemAppearance, properties);
+            return new Theme(cssUrls, javascriptUrls, false, properties);
         }
     }
 }

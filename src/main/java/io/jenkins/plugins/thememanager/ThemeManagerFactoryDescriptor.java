@@ -5,6 +5,9 @@ import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import org.jenkins.ui.icon.IconSpec;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Definition of a Theme Manager
  *
@@ -14,9 +17,8 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
 
     public ThemeManagerFactory getInstance() {
         try {
-            //noinspection deprecation
-            return this.clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.clazz.getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to instantiate " + clazz.getName(), e);
         }
     }

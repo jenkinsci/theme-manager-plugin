@@ -110,7 +110,6 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return new NoOpThemeManagerFactory();
     }
 
-    @NonNull
     public boolean shouldShowAccountThemePicker() {
         return User.current() != null && !isDisableUserThemes();
     }

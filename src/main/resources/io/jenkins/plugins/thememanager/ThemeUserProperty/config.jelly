@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:th="/lib/theme-manager">
+<j:jelly xmlns:j="jelly:core" xmlns:th="/lib/theme-manager">
   <th:selector />
 </j:jelly>
