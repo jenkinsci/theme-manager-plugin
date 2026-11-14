@@ -4,5 +4,5 @@ appearance:
     disableUserThemes: true
     theme:
       system:
-        dark: "noOp"
-        light: "noOp"
+        dark: "darkTest"
+        light: "lightTest"

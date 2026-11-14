@@ -32,7 +32,6 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
 
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public JenkinsTheme configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
         if (config == null) {
             return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
@@ -66,7 +65,6 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
 
     @CheckForNull
     @Override
-    @SuppressWarnings("unchecked")
     public CNode describe(JenkinsTheme instance, ConfigurationContext context) throws Exception {
         return switch (instance) {
             case null -> null;

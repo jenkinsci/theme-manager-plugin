@@ -119,7 +119,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     public ThemeManagerFactory findThemeFactory() {
         return switch (findJenkinsTheme()) {
             case JenkinsTheme.StaticTheme(var staticTheme) -> staticTheme;
-            case JenkinsTheme.SystemTheme(var light, var dark) -> light;
+            case JenkinsTheme.SystemTheme(var light, var ignored) -> light;
         };
     }
 

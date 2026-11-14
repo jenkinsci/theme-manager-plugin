@@ -78,7 +78,7 @@ public class ThemeUserProperty extends UserProperty {
         return switch (forCurrentUserTheme()) {
             case null -> null;
             case JenkinsTheme.StaticTheme(var staticTheme) -> staticTheme;
-            case JenkinsTheme.SystemTheme(var light, var dark) -> light;
+            case JenkinsTheme.SystemTheme(var light, var ignored) -> light;
         };
     }
 
