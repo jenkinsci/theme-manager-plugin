@@ -10,57 +10,60 @@
 
   <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
-  <f:entry field="theme">
-    <div class="app-theme-picker">
-      <j:set var="currentInstance" value="${instance['theme']}" />
-      <j:set var="currentDescriptor" value="${currentInstance.descriptor}" />
-      <j:set var="uniqueId" value="${h.generateId()}" />
+  <f:rowSet name="theme">
+    <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$StaticTheme" />
+    <f:entry field="theme">
+      <div class="app-theme-picker">
+        <j:set var="currentInstance" value="${instance['theme'].theme}" />
+        <j:set var="currentDescriptor" value="${currentInstance.descriptor}" />
+        <j:set var="uniqueId" value="${h.generateId()}" />
 
-      <j:forEach var="theme" items="${descriptors}" varStatus="loop">
-        <div class="jenkins-!-display-contents">
-          <!-- this ID marks the beginning -->
-          <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
-            <div class="app-theme-picker__item">
-              <input type="radio"
-                     name="${uniqueId}.theme"
-                     id="${uniqueId}.theme-${loop.index}"
-                     value="${loop.index}"
-                     class="radio-block-control block-control"
-                     data-theme="${theme.themeKey}"
-                     checked="${currentDescriptor == theme ? 'true' : null}"/>
-              <label for="${uniqueId}.theme-${loop.index}">
-                <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
-                  <svg width="320px" height="180px" viewBox="0 0 320 180" version="1.1"
-                       xmlns="http://www.w3.org/2000/svg">
-                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                      <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
+        <j:forEach var="theme" items="${descriptors}" varStatus="loop">
+          <div class="jenkins-!-display-contents">
+            <!-- this ID marks the beginning -->
+            <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+              <div class="app-theme-picker__item">
+                <input type="radio"
+                       name="${uniqueId}.theme"
+                       id="${uniqueId}.theme-${loop.index}"
+                       value="${loop.index}"
+                       class="radio-block-control block-control"
+                       data-theme="${theme.themeKey}"
+                       checked="${currentDescriptor == theme ? 'true' : null}"/>
+                <label for="${uniqueId}.theme-${loop.index}">
+                  <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
+                    <svg width="320px" height="180px" viewBox="0 0 320 180" version="1.1"
+                         xmlns="http://www.w3.org/2000/svg">
+                      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
 
-                      <!-- Top-left logo -->
-                      <rect fill="var(--text-color)" x="20" y="20" width="60" height="12" rx="4"/>
+                        <!-- Top-left logo -->
+                        <rect fill="var(--text-color)" x="20" y="20" width="60" height="12" rx="4"/>
 
-                      <!-- Top-right buttons -->
-                      <rect fill="var(--accent-color)" x="219" y="20" width="23" height="12" rx="4"/>
-                      <rect fill="var(--text-color-secondary)" x="248" y="20" width="23" height="12" rx="4"/>
-                      <rect fill="var(--text-color-secondary)" x="277" y="20" width="23" height="12" rx="4"/>
+                        <!-- Top-right buttons -->
+                        <rect fill="var(--accent-color)" x="219" y="20" width="23" height="12" rx="4"/>
+                        <rect fill="var(--text-color-secondary)" x="248" y="20" width="23" height="12" rx="4"/>
+                        <rect fill="var(--text-color-secondary)" x="277" y="20" width="23" height="12" rx="4"/>
 
-                      <!-- Cards -->
-                      <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="50" width="184" height="84" rx="8" />
-                      <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="50" width="84" height="84" rx="8"/>
-                      <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="148" width="84" height="84" rx="8"/>
-                      <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="118" y="148" width="84" height="84" rx="8"/>
-                      <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="148" width="84" height="84" rx="8"/>
-                    </g>
-                  </svg>
-                </div>
-                <span>${theme.displayName}</span>
-              </label>
+                        <!-- Cards -->
+                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="50" width="184" height="84" rx="8" />
+                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="50" width="84" height="84" rx="8"/>
+                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="148" width="84" height="84" rx="8"/>
+                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="118" y="148" width="84" height="84" rx="8"/>
+                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="148" width="84" height="84" rx="8"/>
+                      </g>
+                    </svg>
+                  </div>
+                  <span>${theme.displayName}</span>
+                </label>
+              </div>
             </div>
+            <f:class-entry descriptor="${theme}" />
+            <!-- end marker -->
+            <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
           </div>
-          <f:class-entry descriptor="${theme}" />
-          <!-- end marker -->
-          <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
-        </div>
-      </j:forEach>
-    </div>
-  </f:entry>
+        </j:forEach>
+      </div>
+    </f:entry>
+  </f:rowSet>
 </j:jelly>

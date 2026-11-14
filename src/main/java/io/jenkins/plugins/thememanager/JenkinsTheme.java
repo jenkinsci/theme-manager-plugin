@@ -17,6 +17,13 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme> {
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
+    default ThemeManagerFactory getTheme() {
+        return switch (this) {
+            case StaticTheme(var theme) -> theme;
+            case SystemTheme(var light, var dark) -> light;
+        };
+    }
+
     record StaticTheme(ThemeManagerFactory theme) implements JenkinsTheme {
         @DataBoundConstructor
         public StaticTheme {
