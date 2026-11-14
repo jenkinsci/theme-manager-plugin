@@ -5,9 +5,6 @@ import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import org.jenkins.ui.icon.IconSpec;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * Definition of a Theme Manager
  *

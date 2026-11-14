@@ -16,24 +16,65 @@ import org.kohsuke.stapler.DataBoundSetter;
 @Restricted(NoExternalUse.class)
 public class ThemeUserProperty extends UserProperty {
 
+    private UserTheme userTheme;
     private ThemeManagerFactory theme;
 
     @DataBoundConstructor
     public ThemeUserProperty() {}
 
-    public ThemeManagerFactory getTheme() {
-        if (theme == null) {
-            return new NoOpThemeManagerFactory();
+    protected Object readResolve() {
+        if (theme != null && userTheme == null) {
+            userTheme = UserTheme.of(theme);
+            theme = null;
         }
+        return this;
+    }
 
-        return theme;
+    public UserTheme getUserTheme() {
+        if (userTheme == null) {
+            return UserTheme.of(new NoOpThemeManagerFactory());
+        }
+        return userTheme;
     }
 
     @DataBoundSetter
-    public void setTheme(ThemeManagerFactory theme) {
-        this.theme = theme;
+    public void setUserTheme(UserTheme userTheme) {
+        this.userTheme = userTheme;
     }
 
+    @Deprecated
+    public ThemeManagerFactory getTheme() {
+        if (userTheme instanceof UserTheme.StaticTheme staticTheme) {
+            return staticTheme.getTheme();
+        }
+        if (userTheme instanceof UserTheme.SystemTheme systemTheme) {
+            return systemTheme.getLight();
+        }
+        return new NoOpThemeManagerFactory();
+    }
+
+    @Deprecated
+    @DataBoundSetter
+    public void setTheme(ThemeManagerFactory theme) {
+        this.userTheme = theme != null ? UserTheme.of(theme) : null;
+    }
+
+    @CheckForNull
+    public static UserTheme forCurrentUserTheme() {
+        final User current = User.current();
+        if (current == null) {
+            return null;
+        }
+
+        ThemeUserProperty property = current.getProperty(ThemeUserProperty.class);
+        if (property == null || property.userTheme == null) {
+            return null;
+        }
+
+        return property.getUserTheme();
+    }
+
+    @Deprecated
     @CheckForNull
     public static Theme forCurrentUser() {
         ThemeManagerFactory factory = forCurrentUserFactory();
@@ -43,19 +84,17 @@ public class ThemeUserProperty extends UserProperty {
         return factory.getTheme();
     }
 
+    @Deprecated
     @CheckForNull
     public static ThemeManagerFactory forCurrentUserFactory() {
-        final User current = User.current();
-        if (current == null) {
-            return null;
+        UserTheme currentTheme = forCurrentUserTheme();
+        if (currentTheme instanceof UserTheme.StaticTheme staticTheme) {
+            return staticTheme.getTheme();
         }
-
-        ThemeUserProperty property = current.getProperty(ThemeUserProperty.class);
-        if (property == null || property.theme == null) {
-            return null;
+        if (currentTheme instanceof UserTheme.SystemTheme systemTheme) {
+            return systemTheme.getLight();
         }
-
-        return property.getTheme();
+        return null;
     }
 
     @Extension(ordinal = Integer.MAX_VALUE)

@@ -20,6 +20,7 @@ import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.Objects;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
+import jenkins.model.Jenkins;
 import org.junit.jupiter.api.Test;
 
 @WithJenkinsConfiguredWithCode
@@ -38,11 +39,13 @@ class ThemeManagerJCasCTest {
     void testConfig(JenkinsConfiguredWithCodeRule j) {
         ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
 
-        ThemeManagerFactory theme = decorator.getTheme();
-        assertNotNull(theme);
+        UserTheme userTheme = decorator.getUserTheme();
+        assertNotNull(userTheme);
+        assertThat(userTheme, instanceOf(UserTheme.StaticTheme.class));
+        assertThat(((UserTheme.StaticTheme) userTheme).getTheme(), instanceOf(NoOpThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
-        assertThat(theme, instanceOf(NoOpThemeManagerFactory.class));
+        assertThat(decorator.isRespectSystemAppearance(), is(false));
     }
 
     @Test
@@ -56,5 +59,55 @@ class ThemeManagerJCasCTest {
         String expected = toStringFromYamlFile(this, "ConfigurationAsCodeExport.yml");
 
         assertThat(exported, is(expected));
+    }
+
+    @Test
+    @ConfiguredWithCode("ConfigurationAsCodeSystem.yml")
+    void testSystemConfig(JenkinsConfiguredWithCodeRule j) {
+        ThemeManagerPageDecorator decorator = ThemeManagerPageDecorator.get();
+
+        UserTheme userTheme = decorator.getUserTheme();
+        assertNotNull(userTheme);
+        assertThat(userTheme, instanceOf(UserTheme.SystemTheme.class));
+        UserTheme.SystemTheme systemTheme = (UserTheme.SystemTheme) userTheme;
+        assertThat(systemTheme.getLight(), instanceOf(NoOpThemeManagerFactory.class));
+        assertThat(systemTheme.getDark(), instanceOf(NoOpThemeManagerFactory.class));
+
+        assertThat(decorator.isDisableUserThemes(), is(true));
+        assertThat(decorator.isRespectSystemAppearance(), is(true));
+    }
+
+    @Test
+    @ConfiguredWithCode("ConfigurationAsCodeSystem.yml")
+    void testSystemExport(JenkinsConfiguredWithCodeRule j) throws Exception {
+        ConfigurationContext context = new ConfigurationContext(ConfiguratorRegistry.get());
+        CNode yourAttribute = getAppearanceRoot(context).get("themeManager");
+
+        String exported = toYamlString(yourAttribute);
+
+        String expected = toStringFromYamlFile(this, "ConfigurationAsCodeSystemExport.yml");
+
+        assertThat(exported, is(expected));
+    }
+
+    @Test
+    void testLegacyXmlMigration(JenkinsConfiguredWithCodeRule j) {
+        String legacyDecoratorXml = "<io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>"
+                + "<theme class=\"io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory\"/>"
+                + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
+        ThemeManagerPageDecorator decorator = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(legacyDecoratorXml);
+        assertThat(decorator.getUserTheme(), instanceOf(UserTheme.StaticTheme.class));
+        assertThat(
+                ((UserTheme.StaticTheme) decorator.getUserTheme()).getTheme(),
+                instanceOf(NoOpThemeManagerFactory.class));
+
+        String legacyUserPropertyXml = "<io.jenkins.plugins.thememanager.ThemeUserProperty>"
+                + "<theme class=\"io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory\"/>"
+                + "</io.jenkins.plugins.thememanager.ThemeUserProperty>";
+        ThemeUserProperty userProperty = (ThemeUserProperty) Jenkins.XSTREAM2.fromXML(legacyUserPropertyXml);
+        assertThat(userProperty.getUserTheme(), instanceOf(UserTheme.StaticTheme.class));
+        assertThat(
+                ((UserTheme.StaticTheme) userProperty.getUserTheme()).getTheme(),
+                instanceOf(NoOpThemeManagerFactory.class));
     }
 }

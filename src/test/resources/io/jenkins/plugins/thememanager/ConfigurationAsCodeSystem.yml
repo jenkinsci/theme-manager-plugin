@@ -1,0 +1,8 @@
+---
+appearance:
+  themeManager:
+    disableUserThemes: true
+    userTheme:
+      system:
+        dark: "noOp"
+        light: "noOp"

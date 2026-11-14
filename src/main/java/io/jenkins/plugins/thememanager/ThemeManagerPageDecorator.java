@@ -29,11 +29,20 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Symbol("themeManager")
 public class ThemeManagerPageDecorator extends PageDecorator {
 
+    private UserTheme userTheme;
     private ThemeManagerFactory theme;
     private boolean disableUserThemes;
 
     public ThemeManagerPageDecorator() {
         load();
+    }
+
+    protected Object readResolve() {
+        if (theme != null && userTheme == null) {
+            userTheme = UserTheme.of(theme);
+            theme = null;
+        }
+        return this;
     }
 
     public static ThemeManagerPageDecorator get() {
@@ -54,16 +63,32 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     @DataBoundSetter
-    public void setTheme(ThemeManagerFactory theme) {
-        this.theme = theme;
+    public void setUserTheme(UserTheme userTheme) {
+        this.userTheme = userTheme;
     }
 
-    public ThemeManagerFactory getTheme() {
-        if (theme == null) {
-            return new NoOpThemeManagerFactory();
+    public UserTheme getUserTheme() {
+        if (userTheme == null) {
+            return UserTheme.of(new NoOpThemeManagerFactory());
         }
+        return userTheme;
+    }
 
-        return theme;
+    @Deprecated
+    @DataBoundSetter
+    public void setTheme(ThemeManagerFactory theme) {
+        this.userTheme = theme != null ? UserTheme.of(theme) : null;
+    }
+
+    @Deprecated
+    public ThemeManagerFactory getTheme() {
+        if (userTheme instanceof UserTheme.StaticTheme staticTheme) {
+            return staticTheme.getTheme();
+        }
+        if (userTheme instanceof UserTheme.SystemTheme systemTheme) {
+            return systemTheme.getLight();
+        }
+        return new NoOpThemeManagerFactory();
     }
 
     public boolean isDisableUserThemes() {
@@ -75,37 +100,41 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         this.disableUserThemes = disableUserThemes;
     }
 
+    @NonNull
+    public UserTheme findUserTheme() {
+        if (!disableUserThemes) {
+            UserTheme currentUserTheme = ThemeUserProperty.forCurrentUserTheme();
+            if (currentUserTheme != null) {
+                return currentUserTheme;
+            }
+        }
+
+        if (userTheme != null) {
+            return userTheme;
+        }
+        return UserTheme.of(new NoOpThemeManagerFactory());
+    }
+
     /**
      * Finds the active theme. Checks User and then global theme.
      *
      * @return the active theme, or a no-op theme if not selected
      */
+    @Deprecated
     @NonNull
     public Theme findTheme() {
-        if (!disableUserThemes) {
-            Theme userTheme = ThemeUserProperty.forCurrentUser();
-            if (userTheme != null) {
-                return userTheme;
-            }
-        }
-
-        if (theme != null) {
-            return theme.getTheme();
-        }
-        return new NoOpThemeManagerFactory().getTheme();
+        return findThemeFactory().getTheme();
     }
 
+    @Deprecated
     @NonNull
     public ThemeManagerFactory findThemeFactory() {
-        if (!disableUserThemes) {
-            ThemeManagerFactory userTheme = ThemeUserProperty.forCurrentUserFactory();
-            if (userTheme != null) {
-                return userTheme;
-            }
+        UserTheme activeUserTheme = findUserTheme();
+        if (activeUserTheme instanceof UserTheme.StaticTheme staticTheme) {
+            return staticTheme.getTheme();
         }
-
-        if (theme != null) {
-            return theme;
+        if (activeUserTheme instanceof UserTheme.SystemTheme systemTheme) {
+            return systemTheme.getLight();
         }
         return new NoOpThemeManagerFactory();
     }
@@ -145,9 +174,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     @SuppressWarnings("unused") // called by jelly
     public boolean isRespectSystemAppearance() {
-        ThemeManagerFactory themeFactory = findThemeFactory();
-
-        return themeFactory.getTheme().isRespectSystemAppearance();
+        return findUserTheme() instanceof UserTheme.SystemTheme;
     }
 
     /**
@@ -193,11 +220,11 @@ public class ThemeManagerPageDecorator extends PageDecorator {
             }
 
             ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
-            p.setTheme(ThemeManagerFactoryDescriptor.all().stream()
+            p.setUserTheme(UserTheme.of(ThemeManagerFactoryDescriptor.all().stream()
                     .filter(e -> e.getThemeKey().equals(value))
                     .findFirst()
                     .orElseThrow()
-                    .getInstance());
+                    .getInstance()));
             user.save();
 
             return HttpResponses.ok();
