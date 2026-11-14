@@ -95,7 +95,7 @@ class ThemeManagerJCasCTest {
         JenkinsTheme jenkinsTheme = decorator.getTheme();
         assertNotNull(jenkinsTheme);
         assertThat(jenkinsTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-        assertThat(((JenkinsTheme.StaticTheme) jenkinsTheme).getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(((JenkinsTheme.StaticTheme) jenkinsTheme).theme(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
         assertThat(decorator.isRespectSystemAppearance(), is(false));
@@ -123,8 +123,8 @@ class ThemeManagerJCasCTest {
         assertNotNull(jenkinsTheme);
         assertThat(jenkinsTheme, instanceOf(JenkinsTheme.SystemTheme.class));
         JenkinsTheme.SystemTheme systemTheme = (JenkinsTheme.SystemTheme) jenkinsTheme;
-        assertThat(systemTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-        assertThat(systemTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(systemTheme.light(), instanceOf(LightTestThemeManagerFactory.class));
+        assertThat(systemTheme.dark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
         assertThat(decorator.isRespectSystemAppearance(), is(true));
@@ -151,7 +151,7 @@ class ThemeManagerJCasCTest {
         ThemeManagerPageDecorator decorator = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(legacyDecoratorXml);
         assertThat(decorator.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
         assertThat(
-                ((JenkinsTheme.StaticTheme) decorator.getTheme()).getTheme(),
+                ((JenkinsTheme.StaticTheme) decorator.getTheme()).theme(),
                 instanceOf(DarkTestThemeManagerFactory.class));
 
         String legacyUserPropertyXml = "<io.jenkins.plugins.thememanager.ThemeUserProperty>"
@@ -160,7 +160,7 @@ class ThemeManagerJCasCTest {
         ThemeUserProperty userProperty = (ThemeUserProperty) Jenkins.XSTREAM2.fromXML(legacyUserPropertyXml);
         assertThat(userProperty.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
         assertThat(
-                ((JenkinsTheme.StaticTheme) userProperty.getTheme()).getTheme(),
+                ((JenkinsTheme.StaticTheme) userProperty.getTheme()).theme(),
                 instanceOf(DarkTestThemeManagerFactory.class));
     }
 }

@@ -32,6 +32,7 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
 
     @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public JenkinsTheme configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
         if (config == null) {
             return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
@@ -39,17 +40,10 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
 
         if (config.getType() == CNode.Type.MAPPING) {
             Mapping mapping = config.asMapping();
-            if (mapping.size() == 1) {
-                if (mapping.containsKey("system")) {
-                    Configurator<JenkinsTheme.SystemTheme> systemConfigurator =
-                            context.lookupOrFail(JenkinsTheme.SystemTheme.class);
-                    return systemConfigurator.configure(mapping.get("system"), context);
-                }
-                if (mapping.containsKey("static")) {
-                    Configurator<JenkinsTheme.StaticTheme> staticConfigurator =
-                            context.lookupOrFail(JenkinsTheme.StaticTheme.class);
-                    return staticConfigurator.configure(mapping.get("static"), context);
-                }
+            if (mapping.size() == 1 && mapping.containsKey("system")) {
+                Configurator<JenkinsTheme.SystemTheme> systemConfigurator =
+                        context.lookupOrFail(JenkinsTheme.SystemTheme.class);
+                return systemConfigurator.configure(mapping.get("system"), context);
             }
         }
 
@@ -65,6 +59,7 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
 
     @CheckForNull
     @Override
+    @SuppressWarnings("unchecked")
     public CNode describe(JenkinsTheme instance, ConfigurationContext context) throws Exception {
         return switch (instance) {
             case null -> null;
