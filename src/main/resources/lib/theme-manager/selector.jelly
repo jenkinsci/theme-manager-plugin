@@ -40,7 +40,7 @@
           <j:forEach var="theme" items="${descriptors}" varStatus="loop">
             <div class="app-theme-picker__item">
               <div class="app-theme-picker__static" field-disabled="${isSystem ? 'true' : null}">
-                <div class="tr radio-block-start row-group-start row-set-start">
+                <div class="tr radio-block-start row-set-start">
                   <input type="radio"
                          name="${uniqueId}.theme"
                          id="${uniqueId}.theme-${loop.index}"
@@ -77,12 +77,12 @@
                   </label>
                 </div>
                 <f:class-entry descriptor="${theme}" />
-                <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+                <div class="tr row-set-end radio-block-end" style="display:none"/>
               </div>
 
               <div class="app-theme-picker__system-controls" field-disabled="${!isSystem ? 'true' : null}">
                 <div class="app-theme-picker__system-option">
-                  <div class="tr radio-block-start row-group-start row-set-start">
+                  <div class="tr radio-block-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.light"
                            id="${uniqueId}.light-${loop.index}"
@@ -100,11 +100,11 @@
                     </label>
                   </div>
                   <f:class-entry descriptor="${theme}" />
-                  <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+                  <div class="tr row-set-end radio-block-end" style="display:none"/>
                 </div>
 
                 <div class="app-theme-picker__system-option">
-                  <div class="tr radio-block-start row-group-start row-set-start">
+                  <div class="tr radio-block-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.dark"
                            id="${uniqueId}.dark-${loop.index}"
@@ -122,7 +122,7 @@
                     </label>
                   </div>
                   <f:class-entry descriptor="${theme}" />
-                  <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+                  <div class="tr row-set-end radio-block-end" style="display:none"/>
                 </div>
               </div>
             </div>
