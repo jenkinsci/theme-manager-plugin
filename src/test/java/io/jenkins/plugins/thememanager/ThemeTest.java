@@ -48,9 +48,22 @@ class ThemeTest {
                 Theme.builder().withProperty("prism-api", "theme", "prism").build();
         Theme dark =
                 Theme.builder().withProperty("prism-api", "theme", "tomorrow").build();
+        ThemeSelection selection = new ThemeSelection(
+                new ThemeManagerFactory() {
+                    @Override
+                    public Theme getTheme() {
+                        return light;
+                    }
+                },
+                new ThemeManagerFactory() {
+                    @Override
+                    public Theme getTheme() {
+                        return dark;
+                    }
+                });
 
         assertThat(
-                Theme.generateProperties(light, dark),
+                selection.generateProperties(),
                 is(
                         "<script id=\"theme-manager-properties\" type=\"application/json\">{\"light\":{\"prism-api:theme\":\"prism\"},\"dark\":{\"prism-api:theme\":\"tomorrow\"}}</script>"));
     }

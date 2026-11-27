@@ -130,7 +130,9 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         boolean injectCss = shouldInjectCss();
         ThemeSelection selection = findThemeSelection();
 
-        Set<String> headerElements = new LinkedHashSet<>(selection.generateHeaderElements(injectCss));
+        Set<String> headerElements = new LinkedHashSet<>();
+        headerElements.add(selection.generateTheme());
+        headerElements.addAll(selection.generateHeaderElements(injectCss));
 
         ThemeManagerFactoryDescriptor.all().stream()
                 .filter(ThemeManagerFactoryDescriptor::isNamespaced)
@@ -141,16 +143,6 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         headerElements.add(selection.generateProperties());
 
         return String.join("\n", headerElements);
-    }
-
-    @SuppressWarnings("unused") // called by jelly
-    public String getLightThemeKey() {
-        return findThemeSelection().getLight().getDescriptor().getThemeKey();
-    }
-
-    @SuppressWarnings("unused") // called by jelly
-    public String getDarkThemeKey() {
-        return findThemeSelection().getDark().getDescriptor().getThemeKey();
     }
 
     @SuppressWarnings("unused") // called by jelly

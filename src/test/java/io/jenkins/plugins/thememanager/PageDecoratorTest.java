@@ -211,7 +211,7 @@ class PageDecoratorTest {
 
             HtmlPage updatedPage = wc.goTo("");
             String updatedHtml = updatedPage.getWebResponse().getContentAsString();
-            assertThat(updatedHtml, containsString("\"light\": \"dark-test\", \"dark\": \"dark-test\""));
+            assertThat(updatedHtml, containsString("{\"light\":\"dark-test\",\"dark\":\"dark-test\"}"));
             assertThat(updatedHtml, containsString("Dark Test"));
         }
     }
@@ -283,7 +283,7 @@ class PageDecoratorTest {
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             HtmlPage loginPage = wc.goTo("login");
             String loginHtml = loginPage.getWebResponse().getContentAsString();
-            assertThat(loginHtml, containsString("\"light\": \"light-test\", \"dark\": \"dark-test\""));
+            assertThat(loginHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
             boolean isDark = Boolean.TRUE.equals(loginPage
                     .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
                     .getJavaScriptResult());
@@ -306,7 +306,7 @@ class PageDecoratorTest {
             wc.login("alice");
             HtmlPage regularPage = wc.goTo("");
             String regularHtml = regularPage.getWebResponse().getContentAsString();
-            assertThat(regularHtml, containsString("\"light\": \"light-test\", \"dark\": \"dark-test\""));
+            assertThat(regularHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
             assertThat(
                     regularPage
                             .executeJavaScript("document.documentElement.dataset.theme")

@@ -6,16 +6,12 @@ import static java.util.Collections.singletonList;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Holds URLs to CSS and JavaScript files.
@@ -25,49 +21,28 @@ import tools.jackson.databind.ObjectMapper;
 public class Theme {
 
     private static final String JS_HTML = "<script type=\"text/javascript\" src=\"{0}\"></script>";
-    private static final String JSON_HTML = "<script id=\"theme-manager-{0}\" type=\"application/json\">{1}</script>";
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private static final String CSS_HTML = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\"/>";
     private static final String CSS_MEDIA_HTML =
             "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\" media=\"{1}\"/>";
 
     private final List<String> cssUrls;
     private final List<String> javascriptUrls;
-
-    private final boolean respectSystemAppearance;
     private final Map<String, String> properties;
 
-    private Theme(
-            List<String> cssUrls,
-            List<String> javascriptUrls,
-            boolean respectSystemAppearance,
-            Map<String, String> properties) {
+    private Theme(List<String> cssUrls, List<String> javascriptUrls, Map<String, String> properties) {
         this.cssUrls = cssUrls;
         this.javascriptUrls = javascriptUrls;
-        this.respectSystemAppearance = respectSystemAppearance;
         this.properties = properties;
     }
 
-    @Restricted(NoExternalUse.class)
-    static String generateProperties(Theme light, Theme dark) {
-        try {
-            Map<String, Map<String, String>> combined = new LinkedHashMap<>();
-            combined.put("light", light.properties);
-            combined.put("dark", dark.properties);
-            return MessageFormat.format(JSON_HTML, "properties", OBJECT_MAPPER.writeValueAsString(combined));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    Map<String, String> getProperties() {
+        return properties;
     }
 
-    @Restricted(NoExternalUse.class)
     Set<String> generateHeaderElements(boolean injectCss) {
         return generateHeaderElements(injectCss, null);
     }
 
-    @Restricted(NoExternalUse.class)
     Set<String> generateHeaderElements(boolean injectCss, @CheckForNull String media) {
         Set<String> headerElements = new LinkedHashSet<>();
 
@@ -105,8 +80,9 @@ public class Theme {
         return javascriptUrls;
     }
 
+    @Deprecated
     public boolean isRespectSystemAppearance() {
-        return respectSystemAppearance;
+        return false;
     }
 
     /**
@@ -262,7 +238,7 @@ public class Theme {
          * @return the theme.
          */
         public Theme build() {
-            return new Theme(cssUrls, javascriptUrls, false, properties);
+            return new Theme(cssUrls, javascriptUrls, properties);
         }
     }
 }
