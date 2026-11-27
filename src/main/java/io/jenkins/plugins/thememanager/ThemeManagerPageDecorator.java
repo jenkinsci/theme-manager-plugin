@@ -137,7 +137,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
 
-        ThemeManagerFactory themeManagerFactory = findThemeFactory();
+        ThemeManagerFactory themeManagerFactory = findJenkinsTheme().getTheme();
         namespacedThemes.add(themeManagerFactory.getTheme().generateProperties());
 
         if (!themeManagerFactory.getDescriptor().isNamespaced()) {
@@ -152,7 +152,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     @SuppressWarnings("unused") // called by jelly
     public String getThemeKey() {
-        ThemeManagerFactory themeFactory = findThemeFactory();
+        ThemeManagerFactory themeFactory = findJenkinsTheme().getTheme();
 
         return themeFactory.getDescriptor().getThemeKey();
     }
