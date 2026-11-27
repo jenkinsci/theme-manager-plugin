@@ -69,6 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
             applyPreview();
         };
 
+        const grid = selector.querySelector(".app-theme-picker");
+        if (grid && grid.id) {
+            toggle.setAttribute("aria-controls", grid.id);
+        }
+        toggle.setAttribute("aria-expanded", String(toggle.checked));
+
         if (!supportsHas) {
             selector.classList.toggle("is-system-theme", toggle.checked);
         }

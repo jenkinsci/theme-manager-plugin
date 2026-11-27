@@ -16,21 +16,18 @@
   <j:set var="currentDarkDescriptor" value="${currentJenkinsTheme.dark.descriptor}" />
   <j:set var="selectorId" value="${h.generateId()}" />
   <j:set var="uniqueId" value="${h.generateId()}" />
-
+  
   <div class="app-theme-selector" id="${selectorId}">
-    <div class="jenkins-form-item app-theme-selector__toggle" field-disabled="true">
-      <span class="jenkins-checkbox">
-        <input type="checkbox"
-               id="${selectorId}-follow-system"
-               class="app-theme-selector__system-toggle"
-               aria-controls="${selectorId}-grid"
-               aria-expanded="${isSystem ? 'true' : 'false'}"
-               checked="${isSystem ? 'true' : null}"/>
-        <label for="${selectorId}-follow-system">${%followSystem}</label>
-      </span>
+    <div class="app-theme-selector__toggle" field-disabled="true">
+      <f:entry>
+        <f:checkbox id="${selectorId}-follow-system"
+                    class="app-theme-selector__system-toggle"
+                    title="${%followSystem}"
+                    checked="${isSystem}" />
+      </f:entry>
     </div>
 
-    <div name="theme">
+    <f:rowSet name="theme">
       <div class="app-theme-selector__class app-theme-selector__class--static" field-disabled="${isSystem ? 'true' : null}">
         <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$StaticTheme" />
       </div>
@@ -132,6 +129,6 @@
           </j:forEach>
         </div>
       </f:entry>
-    </div>
+    </f:rowSet>
   </div>
 </j:jelly>
