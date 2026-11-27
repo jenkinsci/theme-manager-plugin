@@ -5,14 +5,11 @@
   }
 
   const theme = JSON.parse(themeElement.text);
-  const darkMediaQuery = typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-color-scheme: dark)')
-    : null;
+  const darkMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
 
-  const applyTheme = () => {
-    const isDark = Boolean(darkMediaQuery && darkMediaQuery.matches);
+  const applyTheme = (isDark = Boolean(darkMediaQuery?.matches)) => {
     const activeTheme = isDark ? theme.dark : theme.light;
-    if (activeTheme && activeTheme !== '') {
+    if (activeTheme) {
       document.documentElement.dataset.theme = activeTheme;
     }
   };
@@ -20,27 +17,24 @@
   applyTheme();
   window.isSystemRespectingTheme = true;
 
-  if (darkMediaQuery && typeof darkMediaQuery.addEventListener === 'function') {
-    darkMediaQuery.addEventListener('change', () => {
-      if (document.querySelector('.app-theme-picker')) {
-        return;
-      }
-      applyTheme();
-    });
-  }
+  darkMediaQuery?.addEventListener?.('change', (e) => {
+    if (document.querySelector('.app-theme-picker')) {
+      return;
+    }
+    applyTheme(e.matches);
+  });
 
   const propertiesJson = document.getElementById('theme-manager-properties');
   if (propertiesJson) {
     const parsedProperties = JSON.parse(propertiesJson.text);
 
     window.getThemeManagerProperty = function (plugin, propertyName) {
-      const mode = darkMediaQuery && darkMediaQuery.matches ? 'dark' : 'light';
-      const activeProperties = parsedProperties[mode] || {};
+      const mode = darkMediaQuery?.matches ? 'dark' : 'light';
+      const activeProperties = parsedProperties[mode] ?? {};
       const key = `${plugin}:${propertyName}`;
-      if (Object.prototype.hasOwnProperty.call(activeProperties, key)) {
-        return activeProperties[key];
-      }
-      return activeProperties[`${key}-${mode}`];
+      return Object.hasOwn(activeProperties, key)
+        ? activeProperties[key]
+        : activeProperties[`${key}-${mode}`];
     };
   }
 

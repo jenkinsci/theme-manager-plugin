@@ -1,11 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const darkMediaQuery = typeof window.matchMedia === "function"
-        ? window.matchMedia("(prefers-color-scheme: dark)")
-        : null;
+    const darkMediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
 
     document.querySelectorAll(".app-theme-picker").forEach((picker) => {
-        const applyPreview = () => {
-            const role = darkMediaQuery && darkMediaQuery.matches ? "dark" : "light";
+        const applyPreview = (isDark = Boolean(darkMediaQuery?.matches)) => {
+            const role = isDark ? "dark" : "light";
             const checked = picker.querySelector(
                 `.app-theme-picker__input[data-theme-role="${role}"]:checked`,
             );
@@ -15,11 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         picker.querySelectorAll(".app-theme-picker__input").forEach((input) => {
-            input.addEventListener("change", applyPreview);
+            input.addEventListener("change", () => applyPreview());
         });
 
-        if (darkMediaQuery && typeof darkMediaQuery.addEventListener === "function") {
-            darkMediaQuery.addEventListener("change", applyPreview);
-        }
+        darkMediaQuery?.addEventListener?.("change", (e) => applyPreview(e.matches));
     });
 });
