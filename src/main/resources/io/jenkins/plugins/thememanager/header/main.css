@@ -4,7 +4,7 @@
     padding-right: 0.6rem;
     min-width: 220px;
 
-    span {
+    .tm-account-theme-picker-value {
         color: var(--text-color-secondary);
     }
 

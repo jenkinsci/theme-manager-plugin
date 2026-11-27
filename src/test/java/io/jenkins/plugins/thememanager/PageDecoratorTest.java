@@ -190,21 +190,54 @@ class PageDecoratorTest {
         User alice = User.getById("alice", true);
         assertThat(alice, notNullValue());
 
+        ThemeManagerPageDecorator.get().setTheme(ThemeSelection.of(new LightTestThemeManagerFactory()));
+
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             wc.login("alice");
             HtmlPage initialPage = wc.goTo("");
             String initialHtml = initialPage.getWebResponse().getContentAsString();
             assertThat(initialHtml, containsString("account-theme-picker-template"));
+            assertThat(initialHtml, containsString("data-light-label=\"Light theme\""));
+            assertThat(initialHtml, containsString("data-dark-label=\"Dark theme\""));
             assertThat(initialHtml, containsString("value=\"dark-test\""));
 
-            WebRequest request = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
-            request.setRequestParameters(List.of(new NameValuePair("value", "dark-test")));
-            wc.addCrumb(request);
-            WebResponse response = wc.loadWebResponse(request);
-            assertThat(response.getStatusCode(), is(200));
+            // Updating dark mode preserves the inherited global light theme
+            WebRequest darkRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
+            darkRequest.setRequestParameters(
+                    List.of(new NameValuePair("value", "dark-test"), new NameValuePair("mode", "dark")));
+            wc.addCrumb(darkRequest);
+            WebResponse darkResponse = wc.loadWebResponse(darkRequest);
+            assertThat(darkResponse.getStatusCode(), is(200));
 
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
+            ThemeSelection splitTheme = prop.getTheme();
+            assertThat(splitTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+            assertThat(splitTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+
+            HtmlPage splitPage = wc.goTo("");
+            String splitHtml = splitPage.getWebResponse().getContentAsString();
+            assertThat(splitHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
+
+            // Updating light mode preserves the user's dark theme
+            WebRequest lightRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
+            lightRequest.setRequestParameters(
+                    List.of(new NameValuePair("value", "none"), new NameValuePair("mode", "light")));
+            wc.addCrumb(lightRequest);
+            WebResponse lightResponse = wc.loadWebResponse(lightRequest);
+            assertThat(lightResponse.getStatusCode(), is(200));
+
+            ThemeSelection updatedLightTheme = prop.getTheme();
+            assertThat(updatedLightTheme.getLight().getDescriptor().getThemeKey(), is("none"));
+            assertThat(updatedLightTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+
+            // Omitting mode sets both slots for backwards compatibility
+            WebRequest bothRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
+            bothRequest.setRequestParameters(List.of(new NameValuePair("value", "dark-test")));
+            wc.addCrumb(bothRequest);
+            WebResponse bothResponse = wc.loadWebResponse(bothRequest);
+            assertThat(bothResponse.getStatusCode(), is(200));
+
             ThemeSelection userTheme = prop.getTheme();
             assertThat(userTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));

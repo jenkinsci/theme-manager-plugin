@@ -7,10 +7,45 @@
   const theme = JSON.parse(themeElement.text);
   const darkMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
 
+  const getMode = (isDark = Boolean(darkMediaQuery?.matches)) => (isDark ? 'dark' : 'light');
+  let accountThemePickerSelect = null;
+
   const applyTheme = (isDark = Boolean(darkMediaQuery?.matches)) => {
-    const activeTheme = isDark ? theme.dark : theme.light;
+    const activeTheme = theme[getMode(isDark)];
     if (activeTheme) {
       document.documentElement.dataset.theme = activeTheme;
+    }
+  };
+
+  const syncAccountThemePicker = (
+    isDark = Boolean(darkMediaQuery?.matches),
+    selectEl = accountThemePickerSelect ?? document.querySelector('#account-theme-picker'),
+  ) => {
+    const label = selectEl?.closest("label[for='account-theme-picker']");
+    if (!selectEl || !label) {
+      return;
+    }
+
+    const activeTheme = theme[getMode(isDark)];
+    if (activeTheme) {
+      selectEl.value = activeTheme;
+    }
+
+    const labelEl = label.querySelector('.tm-account-theme-picker-label');
+    if (labelEl) {
+      labelEl.textContent = isDark ? labelEl.dataset.darkLabel : labelEl.dataset.lightLabel;
+    }
+
+    const selectedOption = selectEl.selectedOptions[0];
+    const valueEl = label.querySelector('.tm-account-theme-picker-value');
+    if (valueEl && selectedOption) {
+      valueEl.textContent = selectedOption.textContent.trim();
+    }
+
+    const iconTemplate = label.querySelector(`[data-theme-icon='${selectEl.value}']`);
+    const iconEl = label.querySelector('.jenkins-dropdown__item__icon');
+    if (iconEl && iconTemplate) {
+      iconEl.innerHTML = iconTemplate.innerHTML;
     }
   };
 
@@ -22,6 +57,7 @@
       return;
     }
     applyTheme(e.matches);
+    syncAccountThemePicker(e.matches);
   });
 
   const propertiesJson = document.getElementById('theme-manager-properties');
@@ -68,22 +104,24 @@
         '#account-theme-picker',
         "account-theme-picker",
         0,
-        function (e) {
-          e.addEventListener("change", () => {
-            theme.light = e.value;
-            theme.dark = e.value;
-            applyTheme();
-            document.querySelector("label[for='account-theme-picker'] span").innerHTML = e.selectedOptions[0].textContent;
-            document.querySelector("label[for='account-theme-picker'] .jenkins-dropdown__item__icon").innerHTML =
-                document.querySelector("[data-theme-icon='" + e.value + "']").innerHTML;
+        function (selectEl) {
+          accountThemePickerSelect = selectEl;
+          syncAccountThemePicker(undefined, selectEl);
 
-            const root = document.head.dataset.rooturl
-            fetch(root + '/theme/set', {
+          selectEl.addEventListener("change", () => {
+            const mode = getMode();
+            theme[mode] = selectEl.value;
+            applyTheme();
+            syncAccountThemePicker(undefined, selectEl);
+
+            const root = document.head.dataset.rooturl;
+            const body = new URLSearchParams({ value: selectEl.value, mode });
+            fetch(`${root}/theme/set`, {
               method: 'POST',
               headers: Object.assign({}, crumb.wrap({}), {
                 'Content-Type': 'application/x-www-form-urlencoded'
               }),
-              body: 'value=' + e.value
+              body: body.toString()
             });
           });
         },

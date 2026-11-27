@@ -13,8 +13,10 @@
           <div class="jenkins-dropdown__item__icon">
             <l:icon src="${it.findThemeSelection().light.descriptor.iconClassName}" />
           </div>
-          ${%Theme}
-          <span>
+          <span class="tm-account-theme-picker-label"
+                data-light-label="${%Light theme}"
+                data-dark-label="${%Dark theme}">${%Light theme}</span>
+          <span class="tm-account-theme-picker-value">
             ${it.findThemeSelection().light.descriptor.displayName}
           </span>
           <select id="account-theme-picker">

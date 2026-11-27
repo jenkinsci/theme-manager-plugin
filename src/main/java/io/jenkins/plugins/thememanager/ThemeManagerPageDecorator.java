@@ -1,5 +1,6 @@
 package io.jenkins.plugins.thememanager;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
@@ -188,7 +189,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         }
 
         @RequirePOST
-        public HttpResponse doSet(@QueryParameter String value) throws IOException {
+        public HttpResponse doSet(@QueryParameter String value, @CheckForNull @QueryParameter String mode)
+                throws IOException {
             if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
                 throw new RuntimeException("Setting user themes is disabled");
             }
@@ -199,12 +201,23 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 throw new RuntimeException("User is not signed in");
             }
 
-            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
-            p.setTheme(ThemeSelection.of(ThemeManagerFactoryDescriptor.all().stream()
+            ThemeManagerFactory selected = ThemeManagerFactoryDescriptor.all().stream()
                     .filter(e -> e.getThemeKey().equals(value))
                     .findFirst()
                     .orElseThrow()
-                    .getInstance()));
+                    .getInstance();
+
+            ThemeSelection current = ThemeManagerPageDecorator.get().findThemeSelection();
+            ThemeSelection updated = switch (mode) {
+                case null -> ThemeSelection.of(selected);
+                case "light" -> new ThemeSelection(selected, current.getDark());
+                case "dark" -> new ThemeSelection(current.getLight(), selected);
+                case "" -> ThemeSelection.of(selected);
+                default -> throw new IllegalArgumentException("Invalid theme mode: " + mode);
+            };
+
+            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
+            p.setTheme(updated);
             user.save();
 
             return HttpResponses.ok();
