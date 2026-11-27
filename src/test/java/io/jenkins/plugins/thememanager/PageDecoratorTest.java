@@ -112,9 +112,9 @@ class PageDecoratorTest {
 
             j.submit(page.getFormByName("config"));
 
-            JenkinsTheme jenkinsTheme = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(jenkinsTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(jenkinsTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            ThemeSelection themeSelection = ThemeManagerPageDecorator.get().getTheme();
+            assertThat(themeSelection.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+            assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(true));
 
             // Reload and confirm light/dark selections persist
@@ -132,7 +132,7 @@ class PageDecoratorTest {
             sameLightRadio.setChecked(true);
             j.submit(reloaded.getFormByName("config"));
 
-            JenkinsTheme singleTheme = ThemeManagerPageDecorator.get().getTheme();
+            ThemeSelection singleTheme = ThemeManagerPageDecorator.get().getTheme();
             assertThat(singleTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(singleTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(false));
@@ -166,7 +166,7 @@ class PageDecoratorTest {
 
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
-            JenkinsTheme userTheme = prop.getTheme();
+            ThemeSelection userTheme = prop.getTheme();
             assertThat(userTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
             assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
@@ -205,7 +205,7 @@ class PageDecoratorTest {
 
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
-            JenkinsTheme userTheme = prop.getTheme();
+            ThemeSelection userTheme = prop.getTheme();
             assertThat(userTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 

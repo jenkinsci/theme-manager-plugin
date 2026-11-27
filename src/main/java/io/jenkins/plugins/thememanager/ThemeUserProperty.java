@@ -16,47 +16,48 @@ import org.kohsuke.stapler.DataBoundSetter;
 @Restricted(NoExternalUse.class)
 public class ThemeUserProperty extends UserProperty {
 
-    private JenkinsTheme jenkinsTheme;
+    private ThemeSelection themeSelection;
+    // Retained for backwards compatibility with legacy <theme> XStream XML configs
     private ThemeManagerFactory theme;
 
     @DataBoundConstructor
     public ThemeUserProperty() {}
 
-    // Migrates legacy <theme> XStream XML entries into JenkinsTheme
+    // Migrates legacy <theme> XStream XML entries into ThemeSelection
     protected Object readResolve() {
-        if (theme != null && jenkinsTheme == null) {
-            jenkinsTheme = JenkinsTheme.of(theme);
+        if (theme != null && themeSelection == null) {
+            themeSelection = ThemeSelection.of(theme);
             theme = null;
         }
         return this;
     }
 
-    public JenkinsTheme getTheme() {
-        if (jenkinsTheme == null) {
-            return JenkinsTheme.of(new NoOpThemeManagerFactory());
+    public ThemeSelection getTheme() {
+        if (themeSelection == null) {
+            return ThemeSelection.of(new NoOpThemeManagerFactory());
         }
-        return jenkinsTheme;
+        return themeSelection;
     }
 
     @DataBoundSetter
-    public void setTheme(JenkinsTheme theme) {
-        this.jenkinsTheme = theme;
+    public void setTheme(ThemeSelection theme) {
+        this.themeSelection = theme;
     }
 
     @Deprecated
     public void setTheme(ThemeManagerFactory theme) {
-        this.jenkinsTheme = theme != null ? JenkinsTheme.of(theme) : null;
+        this.themeSelection = theme != null ? ThemeSelection.of(theme) : null;
     }
 
     @CheckForNull
-    public static JenkinsTheme forCurrentUserTheme() {
+    public static ThemeSelection forCurrentUserSelection() {
         final User current = User.current();
         if (current == null) {
             return null;
         }
 
         ThemeUserProperty property = current.getProperty(ThemeUserProperty.class);
-        if (property == null || property.jenkinsTheme == null) {
+        if (property == null || property.themeSelection == null) {
             return null;
         }
 
@@ -76,7 +77,7 @@ public class ThemeUserProperty extends UserProperty {
     @Deprecated
     @CheckForNull
     public static ThemeManagerFactory forCurrentUserFactory() {
-        JenkinsTheme current = forCurrentUserTheme();
+        ThemeSelection current = forCurrentUserSelection();
         return current != null ? current.getLight() : null;
     }
 

@@ -9,13 +9,13 @@
   <st:adjunct includes="io.jenkins.plugins.thememanager.style.main" />
   <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
-  <j:set var="currentJenkinsTheme" value="${instance['theme']}" />
-  <j:set var="currentLightDescriptor" value="${currentJenkinsTheme.light.descriptor}" />
-  <j:set var="currentDarkDescriptor" value="${currentJenkinsTheme.dark.descriptor}" />
+  <j:set var="currentSelection" value="${instance['theme']}" />
+  <j:set var="currentLightDescriptor" value="${currentSelection.light.descriptor}" />
+  <j:set var="currentDarkDescriptor" value="${currentSelection.dark.descriptor}" />
   <j:set var="uniqueId" value="${h.generateId()}" />
 
   <f:rowSet name="theme">
-    <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme" />
+    <f:class-entry clazz="io.jenkins.plugins.thememanager.ThemeSelection" />
 
     <f:entry>
       <div class="app-theme-picker">

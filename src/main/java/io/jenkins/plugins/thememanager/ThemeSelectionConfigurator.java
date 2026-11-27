@@ -17,25 +17,25 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension(optional = true)
 @Restricted(NoExternalUse.class)
-public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
+public class ThemeSelectionConfigurator implements Configurator<ThemeSelection> {
 
     @Override
-    public Class<JenkinsTheme> getTarget() {
-        return JenkinsTheme.class;
+    public Class<ThemeSelection> getTarget() {
+        return ThemeSelection.class;
     }
 
     @NonNull
     @Override
-    public Set<Attribute<JenkinsTheme, ?>> describe() {
+    public Set<Attribute<ThemeSelection, ?>> describe() {
         return Collections.emptySet();
     }
 
     @NonNull
     @Override
     @SuppressWarnings("unchecked")
-    public JenkinsTheme configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
+    public ThemeSelection configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
         if (config == null) {
-            return JenkinsTheme.of(new NoOpThemeManagerFactory());
+            return ThemeSelection.of(new NoOpThemeManagerFactory());
         }
 
         Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
@@ -45,7 +45,8 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
             if (mapping.containsKey("light") || mapping.containsKey("dark")) {
                 for (String key : mapping.keySet()) {
                     if (!key.equals("light") && !key.equals("dark")) {
-                        throw new ConfiguratorException(this, "Invalid configuration element for JenkinsTheme: " + key);
+                        throw new ConfiguratorException(
+                                this, "Invalid configuration element for ThemeSelection: " + key);
                     }
                 }
                 ThemeManagerFactory light = mapping.containsKey("light")
@@ -54,23 +55,23 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
                 ThemeManagerFactory dark = mapping.containsKey("dark")
                         ? factoryConfigurator.configure(mapping.get("dark"), context)
                         : new NoOpThemeManagerFactory();
-                return new JenkinsTheme(light, dark);
+                return new ThemeSelection(light, dark);
             }
         }
 
         ThemeManagerFactory factory = factoryConfigurator.configure(config, context);
-        return JenkinsTheme.of(factory);
+        return ThemeSelection.of(factory);
     }
 
     @Override
-    public JenkinsTheme check(CNode config, ConfigurationContext context) throws ConfiguratorException {
+    public ThemeSelection check(CNode config, ConfigurationContext context) throws ConfiguratorException {
         return configure(config, context);
     }
 
     @CheckForNull
     @Override
     @SuppressWarnings("unchecked")
-    public CNode describe(JenkinsTheme instance, ConfigurationContext context) throws Exception {
+    public CNode describe(ThemeSelection instance, ConfigurationContext context) throws Exception {
         if (instance == null) {
             return null;
         }
