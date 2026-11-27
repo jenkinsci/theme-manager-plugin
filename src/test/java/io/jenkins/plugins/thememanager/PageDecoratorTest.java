@@ -36,7 +36,9 @@ class PageDecoratorTest {
 
         @Override
         public Theme getTheme() {
-            return Theme.builder().build();
+            return Theme.builder()
+                    .withProperty("prism-api", "theme", "tomorrow")
+                    .build();
         }
 
         @TestExtension
@@ -61,7 +63,7 @@ class PageDecoratorTest {
 
         @Override
         public Theme getTheme() {
-            return Theme.builder().build();
+            return Theme.builder().withProperty("prism-api", "theme", "prism").build();
         }
 
         @TestExtension
@@ -115,7 +117,6 @@ class PageDecoratorTest {
             ThemeSelection themeSelection = ThemeManagerPageDecorator.get().getTheme();
             assertThat(themeSelection.getLight(), instanceOf(LightTestThemeManagerFactory.class));
             assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
-            assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(true));
 
             // Reload and confirm light/dark selections persist
             HtmlPage reloaded = wc.goTo("manage/appearance");
@@ -135,7 +136,6 @@ class PageDecoratorTest {
             ThemeSelection singleTheme = ThemeManagerPageDecorator.get().getTheme();
             assertThat(singleTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(singleTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
-            assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(false));
         }
     }
 
@@ -211,8 +211,164 @@ class PageDecoratorTest {
 
             HtmlPage updatedPage = wc.goTo("");
             String updatedHtml = updatedPage.getWebResponse().getContentAsString();
-            assertThat(updatedHtml, containsString("\"id\": \"dark-test\""));
+            assertThat(updatedHtml, containsString("\"light\": \"dark-test\", \"dark\": \"dark-test\""));
             assertThat(updatedHtml, containsString("Dark Test"));
+        }
+    }
+
+    public static class CssLightTestThemeManagerFactory extends ThemeManagerFactory {
+        @DataBoundConstructor
+        public CssLightTestThemeManagerFactory() {}
+
+        @Override
+        public Theme getTheme() {
+            return Theme.builder()
+                    .withCssUrl("/theme-css-light/theme.css")
+                    .withProperty("prism-api", "theme", "prism")
+                    .build();
+        }
+
+        @TestExtension
+        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
+            @NonNull
+            @Override
+            public String getDisplayName() {
+                return "CSS Light Test";
+            }
+
+            @Override
+            public String getThemeId() {
+                return "css-light-test";
+            }
+        }
+    }
+
+    public static class CssDarkTestThemeManagerFactory extends ThemeManagerFactory {
+        @DataBoundConstructor
+        public CssDarkTestThemeManagerFactory() {}
+
+        @Override
+        public Theme getTheme() {
+            return Theme.builder()
+                    .withCssUrl("/theme-css-dark/theme.css")
+                    .withProperty("prism-api", "theme", "tomorrow")
+                    .build();
+        }
+
+        @TestExtension
+        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
+            @NonNull
+            @Override
+            public String getDisplayName() {
+                return "CSS Dark Test";
+            }
+
+            @Override
+            public String getThemeId() {
+                return "css-dark-test";
+            }
+        }
+    }
+
+    @Test
+    void testHeaderEmitsLightAndDarkThemesOnRegularAndSimplePages(JenkinsRule j) throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        MockAuthorizationStrategy auth =
+                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
+        j.jenkins.setAuthorizationStrategy(auth);
+
+        ThemeManagerPageDecorator.get()
+                .setTheme(new ThemeSelection(new LightTestThemeManagerFactory(), new DarkTestThemeManagerFactory()));
+
+        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            HtmlPage loginPage = wc.goTo("login");
+            String loginHtml = loginPage.getWebResponse().getContentAsString();
+            assertThat(loginHtml, containsString("\"light\": \"light-test\", \"dark\": \"dark-test\""));
+            boolean isDark = Boolean.TRUE.equals(loginPage
+                    .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
+                    .getJavaScriptResult());
+            assertThat(
+                    loginPage
+                            .executeJavaScript("document.documentElement.dataset.theme")
+                            .getJavaScriptResult(),
+                    is(isDark ? "dark-test" : "light-test"));
+            assertThat(
+                    loginPage
+                            .executeJavaScript("window.isSystemRespectingTheme")
+                            .getJavaScriptResult(),
+                    is(true));
+            assertThat(
+                    loginPage
+                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
+                            .getJavaScriptResult(),
+                    is(isDark ? "tomorrow" : "prism"));
+
+            wc.login("alice");
+            HtmlPage regularPage = wc.goTo("");
+            String regularHtml = regularPage.getWebResponse().getContentAsString();
+            assertThat(regularHtml, containsString("\"light\": \"light-test\", \"dark\": \"dark-test\""));
+            assertThat(
+                    regularPage
+                            .executeJavaScript("document.documentElement.dataset.theme")
+                            .getJavaScriptResult(),
+                    is(isDark ? "dark-test" : "light-test"));
+            assertThat(
+                    regularPage
+                            .executeJavaScript("window.isSystemRespectingTheme")
+                            .getJavaScriptResult(),
+                    is(true));
+            assertThat(
+                    regularPage
+                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
+                            .getJavaScriptResult(),
+                    is(isDark ? "tomorrow" : "prism"));
+        }
+    }
+
+    @Test
+    void testNonNamespacedCssUsesMediaQueriesWhenThemesDiffer(JenkinsRule j) throws Exception {
+        ThemeManagerPageDecorator.get()
+                .setTheme(new ThemeSelection(
+                        new CssLightTestThemeManagerFactory(), new CssDarkTestThemeManagerFactory()));
+
+        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.getOptions().setCssEnabled(false);
+            HtmlPage splitPage = wc.goTo("");
+            String splitHtml = splitPage.getWebResponse().getContentAsString();
+            assertThat(
+                    splitHtml,
+                    containsString(
+                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-light/theme.css\" media=\"(prefers-color-scheme: light)\"/>"));
+            assertThat(
+                    splitHtml,
+                    containsString(
+                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
+            boolean isDark = Boolean.TRUE.equals(splitPage
+                    .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
+                    .getJavaScriptResult());
+            assertThat(
+                    splitPage
+                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
+                            .getJavaScriptResult(),
+                    is(isDark ? "tomorrow" : "prism"));
+
+            ThemeManagerPageDecorator.get().setTheme(ThemeSelection.of(new CssDarkTestThemeManagerFactory()));
+            HtmlPage samePage = wc.goTo("");
+            String sameHtml = samePage.getWebResponse().getContentAsString();
+            assertThat(
+                    sameHtml,
+                    containsString(
+                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: light)\"/>"));
+            assertThat(
+                    sameHtml,
+                    containsString(
+                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
+            assertThat(
+                    samePage.executeJavaScript("window.isSystemRespectingTheme").getJavaScriptResult(), is(true));
+            assertThat(
+                    samePage.executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
+                            .getJavaScriptResult(),
+                    is("tomorrow"));
         }
     }
 }

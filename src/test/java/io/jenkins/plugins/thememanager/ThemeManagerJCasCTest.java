@@ -98,7 +98,6 @@ class ThemeManagerJCasCTest {
         assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
-        assertThat(decorator.isRespectSystemAppearance(), is(false));
     }
 
     @Test
@@ -125,7 +124,6 @@ class ThemeManagerJCasCTest {
         assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
-        assertThat(decorator.isRespectSystemAppearance(), is(true));
     }
 
     @Test

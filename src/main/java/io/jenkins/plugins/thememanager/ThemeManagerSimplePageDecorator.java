@@ -17,12 +17,17 @@ public class ThemeManagerSimplePageDecorator extends SimplePageDecorator {
         return ThemeManagerPageDecorator.get().getHeaderHtml();
     }
 
-    public String getThemeKey() {
-        return ThemeManagerPageDecorator.get().getThemeKey();
+    @SuppressWarnings("unused") // called by jelly
+    public String getLightThemeKey() {
+        return ThemeManagerPageDecorator.get().getLightThemeKey();
     }
 
     @SuppressWarnings("unused") // called by jelly
-    public boolean isRespectSystemAppearance() {
-        return ThemeManagerPageDecorator.get().isRespectSystemAppearance();
+    public String getDarkThemeKey() {
+        return ThemeManagerPageDecorator.get().getDarkThemeKey();
+    }
+
+    public String getThemeKey() {
+        return ThemeManagerPageDecorator.get().getThemeKey();
     }
 }

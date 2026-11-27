@@ -3,9 +3,11 @@ package io.jenkins.plugins.thememanager;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +30,8 @@ public class Theme {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String CSS_HTML = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\"/>";
+    private static final String CSS_MEDIA_HTML =
+            "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\" media=\"{1}\"/>";
 
     private final List<String> cssUrls;
     private final List<String> javascriptUrls;
@@ -47,9 +51,12 @@ public class Theme {
     }
 
     @Restricted(NoExternalUse.class)
-    String generateProperties() {
+    static String generateProperties(Theme light, Theme dark) {
         try {
-            return MessageFormat.format(JSON_HTML, "properties", OBJECT_MAPPER.writeValueAsString(properties));
+            Map<String, Map<String, String>> combined = new LinkedHashMap<>();
+            combined.put("light", light.properties);
+            combined.put("dark", dark.properties);
+            return MessageFormat.format(JSON_HTML, "properties", OBJECT_MAPPER.writeValueAsString(combined));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -57,11 +64,19 @@ public class Theme {
 
     @Restricted(NoExternalUse.class)
     Set<String> generateHeaderElements(boolean injectCss) {
-        Set<String> headerElements = new HashSet<>();
+        return generateHeaderElements(injectCss, null);
+    }
+
+    @Restricted(NoExternalUse.class)
+    Set<String> generateHeaderElements(boolean injectCss, @CheckForNull String media) {
+        Set<String> headerElements = new LinkedHashSet<>();
 
         if (injectCss) {
             for (String cssUrl : cssUrls) {
-                headerElements.add(MessageFormat.format(CSS_HTML, cssUrl));
+                headerElements.add(
+                        media != null
+                                ? MessageFormat.format(CSS_MEDIA_HTML, cssUrl, media)
+                                : MessageFormat.format(CSS_HTML, cssUrl));
             }
         }
 

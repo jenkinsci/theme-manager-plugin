@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
@@ -129,23 +128,29 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     /** Get the complete header HTML for all configured theme elements. */
     public String getHeaderHtml() {
         boolean injectCss = shouldInjectCss();
-        Set<String> namespacedThemes = ThemeManagerFactoryDescriptor.all().stream()
+        ThemeSelection selection = findThemeSelection();
+
+        Set<String> headerElements = new LinkedHashSet<>(selection.generateHeaderElements(injectCss));
+
+        ThemeManagerFactoryDescriptor.all().stream()
                 .filter(ThemeManagerFactoryDescriptor::isNamespaced)
                 .map(desc -> desc.getInstance().getTheme().generateHeaderElements(injectCss))
                 .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+                .forEach(headerElements::add);
 
-        ThemeManagerFactory themeManagerFactory = findThemeSelection().getLight();
-        namespacedThemes.add(themeManagerFactory.getTheme().generateProperties());
+        headerElements.add(selection.generateProperties());
 
-        if (!themeManagerFactory.getDescriptor().isNamespaced()) {
-            Set<String> data =
-                    new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
-            data.addAll(namespacedThemes);
-            return String.join("\n", data);
-        }
+        return String.join("\n", headerElements);
+    }
 
-        return String.join("\n", namespacedThemes);
+    @SuppressWarnings("unused") // called by jelly
+    public String getLightThemeKey() {
+        return findThemeSelection().getLight().getDescriptor().getThemeKey();
+    }
+
+    @SuppressWarnings("unused") // called by jelly
+    public String getDarkThemeKey() {
+        return findThemeSelection().getDark().getDescriptor().getThemeKey();
     }
 
     @SuppressWarnings("unused") // called by jelly
@@ -155,9 +160,9 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return themeFactory.getDescriptor().getThemeKey();
     }
 
-    @SuppressWarnings("unused") // called by jelly
+    @Deprecated
     public boolean isRespectSystemAppearance() {
-        return !findThemeSelection().isSameTheme();
+        return true;
     }
 
     /**

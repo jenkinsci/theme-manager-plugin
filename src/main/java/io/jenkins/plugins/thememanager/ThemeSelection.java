@@ -1,7 +1,9 @@
 package io.jenkins.plugins.thememanager;
 
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /// Designates the light and dark themes selected for Jenkins.
@@ -28,8 +30,19 @@ public final class ThemeSelection {
         return dark;
     }
 
-    public boolean isSameTheme() {
-        return Objects.equals(light.getDescriptor(), dark.getDescriptor());
+    Set<String> generateHeaderElements(boolean injectCss) {
+        Set<String> headerElements = new LinkedHashSet<>();
+        if (!light.getDescriptor().isNamespaced()) {
+            headerElements.addAll(light.getTheme().generateHeaderElements(injectCss, "(prefers-color-scheme: light)"));
+        }
+        if (!dark.getDescriptor().isNamespaced()) {
+            headerElements.addAll(dark.getTheme().generateHeaderElements(injectCss, "(prefers-color-scheme: dark)"));
+        }
+        return headerElements;
+    }
+
+    String generateProperties() {
+        return Theme.generateProperties(light.getTheme(), dark.getTheme());
     }
 
     @Override
