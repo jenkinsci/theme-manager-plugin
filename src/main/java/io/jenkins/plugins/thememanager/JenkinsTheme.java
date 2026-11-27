@@ -4,7 +4,6 @@ import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.Objects;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-/// Designates the light and dark themes selected for Jenkins.
 public final class JenkinsTheme {
 
     private final ThemeManagerFactory light;

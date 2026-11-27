@@ -76,10 +76,6 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
         }
 
         Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
-        if (instance.isSameTheme()) {
-            return factoryConfigurator.describe(instance.getLight(), context);
-        }
-
         Mapping mapping = new Mapping();
         mapping.put("dark", factoryConfigurator.describe(instance.getDark(), context));
         mapping.put("light", factoryConfigurator.describe(instance.getLight(), context));
