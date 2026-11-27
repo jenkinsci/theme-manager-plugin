@@ -6,10 +6,6 @@
             display: flex;
         }
 
-        .app-theme-picker__card {
-            cursor: default;
-        }
-
         .app-theme-picker__item:has(.app-theme-picker__system-input:checked) .app-theme-picker__picker::before {
             border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
         }
@@ -41,6 +37,14 @@
 }
 
 .app-theme-picker__static-input:not(:disabled) {
+    & + .app-theme-picker__card {
+        cursor: pointer;
+
+        &:hover .app-theme-picker__picker::before {
+            border-color: var(--input-border-hover);
+        }
+    }
+
     &:is(:focus-visible, :active) + .app-theme-picker__card .app-theme-picker__picker::before {
         border-color: var(--focus-input-border);
         box-shadow: var(--form-input-glow--focus);
@@ -51,27 +55,21 @@
             border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
         }
 
-        .app-theme-picker__title::before {
-            transition: var(--standard-transition);
-            width: 18px;
-            min-width: 18px;
-            margin-inline-end: 1ch;
-            transform: scale(1);
-            opacity: 1;
-            font-size: 10px;
-        }
+        .app-theme-picker__title {
+            &::before,
+            &::after {
+                transition: var(--standard-transition);
+                width: 18px;
+                min-width: 18px;
+                transform: scale(1);
+                opacity: 1;
+            }
 
-        .app-theme-picker__title::after {
-            transition: var(--standard-transition);
-            width: 18px;
-            min-width: 18px;
-            transform: scale(1);
-            opacity: 1;
+            &::before {
+                margin-inline-end: 1ch;
+                font-size: 10px;
+            }
         }
-    }
-
-    & + .app-theme-picker__card:hover .app-theme-picker__picker::before {
-        border-color: var(--input-border-hover);
     }
 }
 
@@ -80,7 +78,6 @@
     flex-direction: column;
     justify-content: flex-start;
     text-align: center;
-    cursor: pointer;
     font-weight: var(--font-bold-weight);
 }
 
