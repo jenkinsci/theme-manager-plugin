@@ -24,6 +24,10 @@ public final class ThemeSelection {
         this.dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
     }
 
+    private Object readResolve() {
+        return new ThemeSelection(light, dark);
+    }
+
     public static ThemeSelection of(ThemeManagerFactory theme) {
         return new ThemeSelection(theme, theme);
     }

@@ -16,6 +16,7 @@ import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
 import io.jenkins.plugins.casc.misc.junit.jupiter.WithJenkinsConfiguredWithCode;
 import io.jenkins.plugins.casc.model.CNode;
 import io.jenkins.plugins.casc.model.Mapping;
+import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.Objects;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
@@ -117,5 +118,33 @@ class ThemeManagerJCasCTest {
                 (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(splitDecorator));
         assertThat(deserializedSplit.getTheme().getLight(), instanceOf(TestThemes.Light.class));
         assertThat(deserializedSplit.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
+    }
+
+    @Test
+    void testMissingThemeClassFallsBackToNoOp(JenkinsConfiguredWithCodeRule j) {
+        String missingSingleSlotXml = "<io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>"
+                + "<themeSelection>"
+                + "<light class=\"io.jenkins.plugins.thememanager.MissingTheme\"/>"
+                + "<dark class=\"io.jenkins.plugins.thememanager.TestThemes$Dark\"/>"
+                + "</themeSelection>"
+                + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
+        ThemeManagerPageDecorator partial = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(missingSingleSlotXml);
+        assertThat(partial.getTheme().getLight(), instanceOf(NoOpThemeManagerFactory.class));
+        assertThat(partial.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
+        assertThat(
+                partial.getTheme().generateTheme(),
+                is(
+                        "<script id=\"theme-manager-theme\" type=\"application/json\">{\"light\":\"none\",\"dark\":\"dark-test\"}</script>"));
+
+        String missingReferencedXml = "<io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>"
+                + "<themeSelection>"
+                + "<light class=\"io.jenkins.plugins.thememanager.MissingTheme\"/>"
+                + "<dark reference=\"../light\"/>"
+                + "</themeSelection>"
+                + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
+        ThemeManagerPageDecorator bothMissing =
+                (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(missingReferencedXml);
+        assertThat(bothMissing.getTheme().getLight(), instanceOf(NoOpThemeManagerFactory.class));
+        assertThat(bothMissing.getTheme().getDark(), instanceOf(NoOpThemeManagerFactory.class));
     }
 }
