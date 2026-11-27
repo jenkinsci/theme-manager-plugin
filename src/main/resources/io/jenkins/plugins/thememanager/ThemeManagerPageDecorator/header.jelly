@@ -12,11 +12,11 @@
         <label class="jenkins-dropdown__item tm-account-theme-picker-select"
                for="account-theme-picker">
           <div class="jenkins-dropdown__item__icon">
-            <l:icon src="${it.findJenkinsTheme().theme.descriptor.iconClassName}" />
+            <l:icon src="${it.findJenkinsTheme().light.descriptor.iconClassName}" />
           </div>
           ${%Theme}
           <span>
-            ${it.findJenkinsTheme().theme.descriptor.displayName}
+            ${it.findJenkinsTheme().light.descriptor.displayName}
           </span>
           <select id="account-theme-picker">
             <j:forEach var="theme" items="${descriptors}">

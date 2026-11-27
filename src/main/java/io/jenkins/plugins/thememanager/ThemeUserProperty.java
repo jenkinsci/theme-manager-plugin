@@ -25,7 +25,7 @@ public class ThemeUserProperty extends UserProperty {
     // Migrates legacy <theme> XStream XML entries into JenkinsTheme
     protected Object readResolve() {
         if (theme != null && jenkinsTheme == null) {
-            jenkinsTheme = new JenkinsTheme.StaticTheme(theme);
+            jenkinsTheme = JenkinsTheme.of(theme);
             theme = null;
         }
         return this;
@@ -33,7 +33,7 @@ public class ThemeUserProperty extends UserProperty {
 
     public JenkinsTheme getTheme() {
         if (jenkinsTheme == null) {
-            return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
+            return JenkinsTheme.of(new NoOpThemeManagerFactory());
         }
         return jenkinsTheme;
     }
@@ -45,7 +45,7 @@ public class ThemeUserProperty extends UserProperty {
 
     @Deprecated
     public void setTheme(ThemeManagerFactory theme) {
-        this.jenkinsTheme = theme != null ? new JenkinsTheme.StaticTheme(theme) : null;
+        this.jenkinsTheme = theme != null ? JenkinsTheme.of(theme) : null;
     }
 
     @CheckForNull
@@ -76,11 +76,8 @@ public class ThemeUserProperty extends UserProperty {
     @Deprecated
     @CheckForNull
     public static ThemeManagerFactory forCurrentUserFactory() {
-        return switch (forCurrentUserTheme()) {
-            case null -> null;
-            case JenkinsTheme.StaticTheme st -> st.getTheme();
-            case JenkinsTheme.SystemTheme sy -> sy.getLight();
-        };
+        JenkinsTheme current = forCurrentUserTheme();
+        return current != null ? current.getLight() : null;
     }
 
     @Extension(ordinal = Integer.MAX_VALUE)

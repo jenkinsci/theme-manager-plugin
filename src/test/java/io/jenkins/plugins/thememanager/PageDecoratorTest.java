@@ -15,7 +15,6 @@ import jenkins.model.Jenkins;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
 import org.htmlunit.WebResponse;
-import org.htmlunit.html.HtmlCheckBoxInput;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlRadioButtonInput;
@@ -102,78 +101,40 @@ class PageDecoratorTest {
                     page.querySelectorAll(".app-theme-picker__item"),
                     hasSize(ThemeManagerFactoryDescriptor.all().size()));
 
+            HtmlRadioButtonInput lightRadio =
+                    page.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
             HtmlRadioButtonInput darkRadio =
-                    page.querySelector(".app-theme-picker__static-input[data-theme='dark-test']");
-            assertThat(darkRadio, notNullValue());
-            darkRadio.setChecked(true);
-
-            HtmlForm form = page.getFormByName("config");
-            j.submit(form);
-
-            JenkinsTheme jenkinsTheme = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(jenkinsTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(jenkinsTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
-
-            HtmlPage reloaded = wc.goTo("manage/appearance");
-            HtmlCheckBoxInput followSystem = reloaded.querySelector(".app-theme-selector__system-toggle");
-            assertThat(followSystem.isChecked(), is(false));
-            HtmlRadioButtonInput reloadedDarkRadio =
-                    reloaded.querySelector(".app-theme-picker__static-input[data-theme='dark-test']");
-            assertThat(reloadedDarkRadio.isChecked(), is(true));
-        }
-    }
-
-    @Test
-    void testAppearanceFormSystemThemeRoundtrip(JenkinsRule j) throws Exception {
-        try (JenkinsRule.WebClient wc = j.createWebClient()) {
-            HtmlPage page = wc.goTo("manage/appearance");
-            HtmlCheckBoxInput followSystem = page.querySelector(".app-theme-selector__system-toggle");
-            assertThat(followSystem, notNullValue());
-            assertThat(followSystem.isChecked(), is(false));
-            followSystem.click();
-
-            HtmlRadioButtonInput lightRadio = page.querySelector(
-                    ".app-theme-picker__system-input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput darkRadio = page.querySelector(
-                    ".app-theme-picker__system-input[data-theme-role='dark'][data-theme='dark-test']");
+                    page.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
             assertThat(lightRadio, notNullValue());
             assertThat(darkRadio, notNullValue());
-            assertThat(lightRadio.isDisabled(), is(false));
-            assertThat(darkRadio.isDisabled(), is(false));
             lightRadio.setChecked(true);
             darkRadio.setChecked(true);
 
             j.submit(page.getFormByName("config"));
 
             JenkinsTheme jenkinsTheme = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(jenkinsTheme, instanceOf(JenkinsTheme.SystemTheme.class));
-            JenkinsTheme.SystemTheme systemTheme = (JenkinsTheme.SystemTheme) jenkinsTheme;
-            assertThat(systemTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(systemTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(jenkinsTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+            assertThat(jenkinsTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(true));
 
-            // Reload and confirm system checkbox + light/dark icon selections persist
+            // Reload and confirm light/dark selections persist
             HtmlPage reloaded = wc.goTo("manage/appearance");
-            HtmlCheckBoxInput reloadedToggle = reloaded.querySelector(".app-theme-selector__system-toggle");
-            assertThat(reloadedToggle.isChecked(), is(true));
             HtmlRadioButtonInput reloadedLightRadio = reloaded.querySelector(
-                    ".app-theme-picker__system-input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput reloadedDarkRadio = reloaded.querySelector(
-                    ".app-theme-picker__system-input[data-theme-role='dark'][data-theme='dark-test']");
+                    ".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
+            HtmlRadioButtonInput reloadedDarkRadio =
+                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
             assertThat(reloadedLightRadio.isChecked(), is(true));
             assertThat(reloadedDarkRadio.isChecked(), is(true));
 
-            // Uncheck follow system theme and switch back to static theme
-            reloadedToggle.click();
-            HtmlRadioButtonInput staticDarkRadio =
-                    reloaded.querySelector(".app-theme-picker__static-input[data-theme='dark-test']");
-            assertThat(staticDarkRadio.isDisabled(), is(false));
-            staticDarkRadio.setChecked(true);
+            // Select the same theme for both light and dark
+            HtmlRadioButtonInput sameLightRadio =
+                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='dark-test']");
+            sameLightRadio.setChecked(true);
             j.submit(reloaded.getFormByName("config"));
 
-            JenkinsTheme revertedTheme = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(revertedTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(revertedTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+            JenkinsTheme singleTheme = ThemeManagerPageDecorator.get().getTheme();
+            assertThat(singleTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(singleTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(false));
         }
     }
@@ -191,9 +152,13 @@ class PageDecoratorTest {
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             wc.login("alice");
             HtmlPage page = wc.goTo("user/alice/appearance");
+            HtmlRadioButtonInput lightRadio =
+                    page.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
             HtmlRadioButtonInput darkRadio =
-                    page.querySelector(".app-theme-picker__static-input[data-theme='dark-test']");
+                    page.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
+            assertThat(lightRadio, notNullValue());
             assertThat(darkRadio, notNullValue());
+            lightRadio.setChecked(true);
             darkRadio.setChecked(true);
 
             HtmlForm form = page.getFormByName("config");
@@ -202,12 +167,15 @@ class PageDecoratorTest {
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
             JenkinsTheme userTheme = prop.getTheme();
-            assertThat(userTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(userTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(userTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+            assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
             HtmlPage reloaded = wc.goTo("user/alice/appearance");
+            HtmlRadioButtonInput reloadedLightRadio = reloaded.querySelector(
+                    ".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
             HtmlRadioButtonInput reloadedDarkRadio =
-                    reloaded.querySelector(".app-theme-picker__static-input[data-theme='dark-test']");
+                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
+            assertThat(reloadedLightRadio.isChecked(), is(true));
             assertThat(reloadedDarkRadio.isChecked(), is(true));
         }
     }
@@ -238,8 +206,8 @@ class PageDecoratorTest {
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
             JenkinsTheme userTheme = prop.getTheme();
-            assertThat(userTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(userTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(userTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
             HtmlPage updatedPage = wc.goTo("");
             String updatedHtml = updatedPage.getWebResponse().getContentAsString();

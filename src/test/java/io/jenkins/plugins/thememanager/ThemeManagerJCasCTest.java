@@ -94,8 +94,8 @@ class ThemeManagerJCasCTest {
 
         JenkinsTheme jenkinsTheme = decorator.getTheme();
         assertNotNull(jenkinsTheme);
-        assertThat(jenkinsTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-        assertThat(((JenkinsTheme.StaticTheme) jenkinsTheme).getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(jenkinsTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(jenkinsTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
         assertThat(decorator.isRespectSystemAppearance(), is(false));
@@ -121,10 +121,8 @@ class ThemeManagerJCasCTest {
 
         JenkinsTheme jenkinsTheme = decorator.getTheme();
         assertNotNull(jenkinsTheme);
-        assertThat(jenkinsTheme, instanceOf(JenkinsTheme.SystemTheme.class));
-        JenkinsTheme.SystemTheme systemTheme = (JenkinsTheme.SystemTheme) jenkinsTheme;
-        assertThat(systemTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-        assertThat(systemTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(jenkinsTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+        assertThat(jenkinsTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
         assertThat(decorator.isRespectSystemAppearance(), is(true));
@@ -149,37 +147,32 @@ class ThemeManagerJCasCTest {
                 + "<theme class=\"io.jenkins.plugins.thememanager.ThemeManagerJCasCTest$DarkTestThemeManagerFactory\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
         ThemeManagerPageDecorator decorator = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(legacyDecoratorXml);
-        assertThat(decorator.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
-        assertThat(
-                ((JenkinsTheme.StaticTheme) decorator.getTheme()).getTheme(),
-                instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(decorator.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(decorator.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
         String legacyUserPropertyXml = "<io.jenkins.plugins.thememanager.ThemeUserProperty>"
                 + "<theme class=\"io.jenkins.plugins.thememanager.ThemeManagerJCasCTest$DarkTestThemeManagerFactory\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeUserProperty>";
         ThemeUserProperty userProperty = (ThemeUserProperty) Jenkins.XSTREAM2.fromXML(legacyUserPropertyXml);
-        assertThat(userProperty.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
-        assertThat(
-                ((JenkinsTheme.StaticTheme) userProperty.getTheme()).getTheme(),
-                instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(userProperty.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(userProperty.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
     }
 
     @Test
     void testXStreamRoundtrip(JenkinsConfiguredWithCodeRule j) {
-        ThemeManagerPageDecorator staticDecorator = new ThemeManagerPageDecorator();
-        staticDecorator.setTheme(new JenkinsTheme.StaticTheme(new DarkTestThemeManagerFactory()));
-        ThemeManagerPageDecorator deserializedStatic =
-                (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(staticDecorator));
-        assertThat(deserializedStatic.getTheme(), instanceOf(JenkinsTheme.StaticTheme.class));
-        assertThat(deserializedStatic.getTheme().getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
+        ThemeManagerPageDecorator singleDecorator = new ThemeManagerPageDecorator();
+        singleDecorator.setTheme(JenkinsTheme.of(new DarkTestThemeManagerFactory()));
+        ThemeManagerPageDecorator deserializedSingle =
+                (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(singleDecorator));
+        assertThat(deserializedSingle.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(deserializedSingle.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
 
-        ThemeManagerPageDecorator systemDecorator = new ThemeManagerPageDecorator();
-        systemDecorator.setTheme(
-                new JenkinsTheme.SystemTheme(new LightTestThemeManagerFactory(), new DarkTestThemeManagerFactory()));
-        ThemeManagerPageDecorator deserializedSystem =
-                (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(systemDecorator));
-        assertThat(deserializedSystem.getTheme(), instanceOf(JenkinsTheme.SystemTheme.class));
-        assertThat(deserializedSystem.getTheme().getLight(), instanceOf(LightTestThemeManagerFactory.class));
-        assertThat(deserializedSystem.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        ThemeManagerPageDecorator splitDecorator = new ThemeManagerPageDecorator();
+        splitDecorator.setTheme(
+                new JenkinsTheme(new LightTestThemeManagerFactory(), new DarkTestThemeManagerFactory()));
+        ThemeManagerPageDecorator deserializedSplit =
+                (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(splitDecorator));
+        assertThat(deserializedSplit.getTheme().getLight(), instanceOf(LightTestThemeManagerFactory.class));
+        assertThat(deserializedSplit.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
     }
 }

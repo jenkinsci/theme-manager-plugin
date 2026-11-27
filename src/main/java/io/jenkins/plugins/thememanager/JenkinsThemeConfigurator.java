@@ -35,21 +35,31 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
     @SuppressWarnings("unchecked")
     public JenkinsTheme configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
         if (config == null) {
-            return new JenkinsTheme.StaticTheme(new NoOpThemeManagerFactory());
-        }
-
-        if (config.getType() == CNode.Type.MAPPING) {
-            Mapping mapping = config.asMapping();
-            if (mapping.size() == 1 && mapping.containsKey("system")) {
-                Configurator<JenkinsTheme.SystemTheme> systemConfigurator =
-                        context.lookupOrFail(JenkinsTheme.SystemTheme.class);
-                return systemConfigurator.configure(mapping.get("system"), context);
-            }
+            return JenkinsTheme.of(new NoOpThemeManagerFactory());
         }
 
         Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
+
+        if (config.getType() == CNode.Type.MAPPING) {
+            Mapping mapping = config.asMapping();
+            if (mapping.containsKey("light") || mapping.containsKey("dark")) {
+                for (String key : mapping.keySet()) {
+                    if (!key.equals("light") && !key.equals("dark")) {
+                        throw new ConfiguratorException(this, "Invalid configuration element for JenkinsTheme: " + key);
+                    }
+                }
+                ThemeManagerFactory light = mapping.containsKey("light")
+                        ? factoryConfigurator.configure(mapping.get("light"), context)
+                        : new NoOpThemeManagerFactory();
+                ThemeManagerFactory dark = mapping.containsKey("dark")
+                        ? factoryConfigurator.configure(mapping.get("dark"), context)
+                        : new NoOpThemeManagerFactory();
+                return new JenkinsTheme(light, dark);
+            }
+        }
+
         ThemeManagerFactory factory = factoryConfigurator.configure(config, context);
-        return new JenkinsTheme.StaticTheme(factory);
+        return JenkinsTheme.of(factory);
     }
 
     @Override
@@ -61,20 +71,18 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
     @Override
     @SuppressWarnings("unchecked")
     public CNode describe(JenkinsTheme instance, ConfigurationContext context) throws Exception {
-        return switch (instance) {
-            case null -> null;
-            case JenkinsTheme.StaticTheme st -> {
-                Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
-                yield factoryConfigurator.describe(st.getTheme(), context);
-            }
-            case JenkinsTheme.SystemTheme sy -> {
-                Configurator<JenkinsTheme.SystemTheme> systemConfigurator =
-                        context.lookupOrFail(JenkinsTheme.SystemTheme.class);
-                CNode node = systemConfigurator.describe(sy, context);
-                Mapping mapping = new Mapping();
-                mapping.put("system", node);
-                yield mapping;
-            }
-        };
+        if (instance == null) {
+            return null;
+        }
+
+        Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
+        if (instance.isSameTheme()) {
+            return factoryConfigurator.describe(instance.getLight(), context);
+        }
+
+        Mapping mapping = new Mapping();
+        mapping.put("dark", factoryConfigurator.describe(instance.getDark(), context));
+        mapping.put("light", factoryConfigurator.describe(instance.getLight(), context));
+        return mapping;
     }
 }

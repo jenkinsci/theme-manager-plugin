@@ -3,6 +3,5 @@ appearance:
   themeManager:
     disableUserThemes: true
     theme:
-      system:
-        dark: "darkTest"
-        light: "lightTest"
+      dark: "darkTest"
+      light: "lightTest"
