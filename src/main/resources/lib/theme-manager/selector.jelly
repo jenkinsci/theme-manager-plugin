@@ -40,7 +40,7 @@
           <j:forEach var="theme" items="${descriptors}" varStatus="loop">
             <div class="app-theme-picker__item">
               <div class="app-theme-picker__static" field-disabled="${isSystem ? 'true' : null}">
-                <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                <div class="tr radio-block-start row-group-start row-set-start">
                   <input type="radio"
                          name="${uniqueId}.theme"
                          id="${uniqueId}.theme-${loop.index}"
@@ -82,7 +82,7 @@
 
               <div class="app-theme-picker__system-controls" field-disabled="${!isSystem ? 'true' : null}">
                 <div class="app-theme-picker__system-option">
-                  <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                  <div class="tr radio-block-start row-group-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.light"
                            id="${uniqueId}.light-${loop.index}"
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="app-theme-picker__system-option">
-                  <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                  <div class="tr radio-block-start row-group-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.dark"
                            id="${uniqueId}.dark-${loop.index}"
