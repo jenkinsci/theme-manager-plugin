@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
   <div class="jenkins-section__description">
     ${%description}
   </div>
@@ -7,63 +7,131 @@
   <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
 
   <st:adjunct includes="io.jenkins.plugins.thememanager.style.main" />
-
   <st:adjunct includes="lib.form.radioBlock.radioBlock"/>
 
-  <f:rowSet name="theme">
-    <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$StaticTheme" />
-    <f:entry field="theme">
-      <div class="app-theme-picker">
-        <j:set var="currentInstance" value="${instance['theme'].theme}" />
-        <j:set var="currentDescriptor" value="${currentInstance.descriptor}" />
-        <j:set var="uniqueId" value="${h.generateId()}" />
+  <j:set var="currentJenkinsTheme" value="${instance['theme']}" />
+  <j:set var="isSystem" value="${currentJenkinsTheme.system}" />
+  <j:set var="currentStaticDescriptor" value="${currentJenkinsTheme.theme.descriptor}" />
+  <j:set var="currentLightDescriptor" value="${currentJenkinsTheme.light.descriptor}" />
+  <j:set var="currentDarkDescriptor" value="${currentJenkinsTheme.dark.descriptor}" />
+  <j:set var="selectorId" value="${h.generateId()}" />
+  <j:set var="uniqueId" value="${h.generateId()}" />
 
-        <j:forEach var="theme" items="${descriptors}" varStatus="loop">
-          <div class="jenkins-!-display-contents">
-            <!-- this ID marks the beginning -->
-            <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
-              <div class="app-theme-picker__item">
-                <input type="radio"
-                       name="${uniqueId}.theme"
-                       id="${uniqueId}.theme-${loop.index}"
-                       value="${loop.index}"
-                       class="radio-block-control block-control"
-                       data-theme="${theme.themeKey}"
-                       checked="${currentDescriptor == theme ? 'true' : null}"/>
-                <label for="${uniqueId}.theme-${loop.index}">
-                  <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
-                    <svg width="320px" height="180px" viewBox="0 0 320 180" version="1.1"
-                         xmlns="http://www.w3.org/2000/svg">
-                      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
+  <div class="app-theme-selector ${isSystem ? 'is-system-theme' : ''}" id="${selectorId}">
+    <div class="jenkins-form-item app-theme-selector__toggle" field-disabled="true">
+      <span class="jenkins-checkbox">
+        <input type="checkbox"
+               id="${selectorId}-follow-system"
+               class="app-theme-selector__system-toggle"
+               aria-controls="${selectorId}-grid"
+               aria-expanded="${isSystem ? 'true' : 'false'}"
+               checked="${isSystem ? 'true' : null}"/>
+        <label for="${selectorId}-follow-system">${%followSystem}</label>
+      </span>
+    </div>
 
-                        <!-- Top-left logo -->
-                        <rect fill="var(--text-color)" x="20" y="20" width="60" height="12" rx="4"/>
+    <div name="theme">
+      <div class="app-theme-selector__class app-theme-selector__class--static" field-disabled="${isSystem ? 'true' : null}">
+        <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$StaticTheme" />
+      </div>
+      <div class="app-theme-selector__class app-theme-selector__class--system" field-disabled="${!isSystem ? 'true' : null}">
+        <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$SystemTheme" />
+      </div>
 
-                        <!-- Top-right buttons -->
-                        <rect fill="var(--accent-color)" x="219" y="20" width="23" height="12" rx="4"/>
-                        <rect fill="var(--text-color-secondary)" x="248" y="20" width="23" height="12" rx="4"/>
-                        <rect fill="var(--text-color-secondary)" x="277" y="20" width="23" height="12" rx="4"/>
+      <f:entry>
+        <div id="${selectorId}-grid" class="app-theme-picker">
+          <j:forEach var="theme" items="${descriptors}" varStatus="loop">
+            <div class="app-theme-picker__item">
+              <div class="app-theme-picker__static" field-disabled="${isSystem ? 'true' : null}">
+                <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                  <input type="radio"
+                         name="${uniqueId}.theme"
+                         id="${uniqueId}.theme-${loop.index}"
+                         value="${loop.index}"
+                         class="radio-block-control block-control app-theme-picker__static-input"
+                         data-theme="${theme.themeKey}"
+                         disabled="${isSystem ? 'true' : null}"
+                         checked="${currentStaticDescriptor == theme ? 'true' : null}"/>
+                  <label for="${uniqueId}.theme-${loop.index}" class="app-theme-picker__card">
+                    <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
+                      <svg aria-hidden="true" width="320px" height="180px" viewBox="0 0 320 180" version="1.1"
+                           xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
 
-                        <!-- Cards -->
-                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="50" width="184" height="84" rx="8" />
-                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="50" width="84" height="84" rx="8"/>
-                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="148" width="84" height="84" rx="8"/>
-                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="118" y="148" width="84" height="84" rx="8"/>
-                        <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="148" width="84" height="84" rx="8"/>
-                      </g>
-                    </svg>
+                          <!-- Top-left logo -->
+                          <rect fill="var(--text-color)" x="20" y="20" width="60" height="12" rx="4"/>
+
+                          <!-- Top-right buttons -->
+                          <rect fill="var(--accent-color)" x="219" y="20" width="23" height="12" rx="4"/>
+                          <rect fill="var(--text-color-secondary)" x="248" y="20" width="23" height="12" rx="4"/>
+                          <rect fill="var(--text-color-secondary)" x="277" y="20" width="23" height="12" rx="4"/>
+
+                          <!-- Cards -->
+                          <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="50" width="184" height="84" rx="8" />
+                          <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="50" width="84" height="84" rx="8"/>
+                          <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="20" y="148" width="84" height="84" rx="8"/>
+                          <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="118" y="148" width="84" height="84" rx="8"/>
+                          <rect fill="color-mix(in oklch, var(--card-background) 95%, var(--text-color-secondary))" stroke="var(--jenkins-border-color)" x="216" y="148" width="84" height="84" rx="8"/>
+                        </g>
+                      </svg>
+                    </div>
+                    <span class="app-theme-picker__title">${theme.displayName}</span>
+                  </label>
+                </div>
+                <f:class-entry descriptor="${theme}" />
+                <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+              </div>
+
+              <div class="app-theme-picker__system-controls" field-disabled="${!isSystem ? 'true' : null}">
+                <div class="app-theme-picker__system-option">
+                  <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                    <input type="radio"
+                           name="${uniqueId}.light"
+                           id="${uniqueId}.light-${loop.index}"
+                           value="${loop.index}"
+                           class="radio-block-control block-control app-theme-picker__system-input app-theme-picker__system-input--light"
+                           data-theme="${theme.themeKey}"
+                           data-theme-role="light"
+                           disabled="${!isSystem ? 'true' : null}"
+                           checked="${currentLightDescriptor == theme ? 'true' : null}"/>
+                    <label for="${uniqueId}.light-${loop.index}"
+                           class="app-theme-picker__system-btn app-theme-picker__system-btn--light"
+                           title="${%lightTheme}">
+                      <l:icon src="symbol-sunny-outline plugin-ionicons-api" aria-hidden="true" />
+                      <span class="app-theme-picker__sr-only">${%lightThemeOption(theme.displayName)}</span>
+                    </label>
                   </div>
-                  <span>${theme.displayName}</span>
-                </label>
+                  <f:class-entry descriptor="${theme}" />
+                  <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+                </div>
+
+                <div class="app-theme-picker__system-option">
+                  <div class="tr help-sibling radio-block-start row-group-start row-set-start" hasHelp="false">
+                    <input type="radio"
+                           name="${uniqueId}.dark"
+                           id="${uniqueId}.dark-${loop.index}"
+                           value="${loop.index}"
+                           class="radio-block-control block-control app-theme-picker__system-input app-theme-picker__system-input--dark"
+                           data-theme="${theme.themeKey}"
+                           data-theme-role="dark"
+                           disabled="${!isSystem ? 'true' : null}"
+                           checked="${currentDarkDescriptor == theme ? 'true' : null}"/>
+                    <label for="${uniqueId}.dark-${loop.index}"
+                           class="app-theme-picker__system-btn app-theme-picker__system-btn--dark"
+                           title="${%darkTheme}">
+                      <l:icon src="symbol-moon-outline plugin-ionicons-api" aria-hidden="true" />
+                      <span class="app-theme-picker__sr-only">${%darkThemeOption(theme.displayName)}</span>
+                    </label>
+                  </div>
+                  <f:class-entry descriptor="${theme}" />
+                  <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
+                </div>
               </div>
             </div>
-            <f:class-entry descriptor="${theme}" />
-            <!-- end marker -->
-            <div class="tr row-set-end radio-block-end row-group-end" style="display:none"/>
-          </div>
-        </j:forEach>
-      </div>
-    </f:entry>
-  </f:rowSet>
+          </j:forEach>
+        </div>
+      </f:entry>
+    </div>
+  </div>
 </j:jelly>

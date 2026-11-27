@@ -17,10 +17,28 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme> {
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
+    default boolean isSystem() {
+        return this instanceof SystemTheme;
+    }
+
     default ThemeManagerFactory getTheme() {
         return switch (this) {
             case StaticTheme(var theme) -> theme;
-            case SystemTheme(var light, var dark) -> light;
+            case SystemTheme(var light, var ignored) -> light;
+        };
+    }
+
+    default ThemeManagerFactory getLight() {
+        return switch (this) {
+            case StaticTheme(var theme) -> theme;
+            case SystemTheme(var light, var ignored) -> light;
+        };
+    }
+
+    default ThemeManagerFactory getDark() {
+        return switch (this) {
+            case StaticTheme(var theme) -> theme;
+            case SystemTheme(var ignored, var dark) -> dark;
         };
     }
 
@@ -36,14 +54,6 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme> {
         public SystemTheme {
             light = Objects.requireNonNullElseGet(light, NoOpThemeManagerFactory::new);
             dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
-        }
-
-        public ThemeManagerFactory getLight() {
-            return light;
-        }
-
-        public ThemeManagerFactory getDark() {
-            return dark;
         }
     }
 }

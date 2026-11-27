@@ -1,3 +1,7 @@
+.app-theme-selector__toggle {
+    margin-block-end: 1rem;
+}
+
 .app-theme-picker {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -9,7 +13,7 @@
     position: relative;
 }
 
-.app-theme-picker__item input {
+.app-theme-picker__item input[type="radio"] {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -20,16 +24,29 @@
     clip-path: inset(50%);
 }
 
-.app-theme-picker__item input:focus + label .app-theme-picker__picker::before, .app-theme-picker__item input:active + label .app-theme-picker__picker::before {
+.app-theme-picker__sr-only {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
+
+.app-theme-picker__static-input:focus-visible + label .app-theme-picker__picker::before,
+.app-theme-picker__static-input:active + label .app-theme-picker__picker::before {
     border-color: var(--focus-input-border);
     box-shadow: var(--form-input-glow--focus);
 }
 
-.app-theme-picker__item input:checked + label .app-theme-picker__picker::before {
+.app-theme-picker__static-input:checked + label .app-theme-picker__picker::before {
     border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
 }
 
-.app-theme-picker__item input:checked + label span::before {
+.app-theme-picker__static-input:checked + label .app-theme-picker__title::before {
     transition: var(--standard-transition);
     width: 18px;
     min-width: 18px;
@@ -39,7 +56,7 @@
     font-size: 10px;
 }
 
-.app-theme-picker__item input:checked + label span::after {
+.app-theme-picker__static-input:checked + label .app-theme-picker__title::after {
     transition: var(--standard-transition);
     width: 18px;
     min-width: 18px;
@@ -47,7 +64,7 @@
     opacity: 1;
 }
 
-.app-theme-picker__item label {
+.app-theme-picker__card {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
@@ -74,7 +91,7 @@
     overflow: hidden;
 }
 
-.app-theme-picker__item label span {
+.app-theme-picker__title {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,7 +99,7 @@
     margin: auto;
 }
 
-.app-theme-picker__item label span::before {
+.app-theme-picker__title::before {
     content: "";
     width: 0;
     height: 18px;
@@ -95,7 +112,7 @@
     transition: width var(--standard-transition) 0.2s, min-width var(--standard-transition) 0.2s, margin-right var(--standard-transition) 0.2s, transform var(--standard-transition), opacity var(--standard-transition);
 }
 
-.app-theme-picker__item label span::after {
+.app-theme-picker__title::after {
     content: "";
     position: absolute;
     top: 0;
@@ -130,6 +147,112 @@
     transition: var(--standard-transition);
 }
 
-.app-theme-picker__item label:hover .app-theme-picker__picker::before {
+.app-theme-picker__card:hover .app-theme-picker__picker::before {
     border-color: var(--input-border-hover);
+}
+
+/* System mode: sun & moon selector controls */
+.app-theme-picker__system-controls {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: 0.5rem;
+}
+
+.app-theme-picker__system-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 32px;
+    min-block-size: 32px;
+    padding: 0.25rem;
+    border-radius: 999px;
+    border: var(--jenkins-border);
+    background: var(--card-background);
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: var(--standard-transition);
+}
+
+.app-theme-picker__system-btn svg {
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+}
+
+.app-theme-picker__system-btn:hover {
+    border-color: var(--input-border-hover);
+    color: var(--text-color);
+}
+
+.app-theme-picker__system-input:focus-visible + .app-theme-picker__system-btn {
+    outline: 2px solid var(--focus-input-border);
+    outline-offset: 2px;
+}
+
+.app-theme-picker__system-input:checked + .app-theme-picker__system-btn {
+    background: var(--focus-input-border);
+    border-color: var(--focus-input-border);
+    color: var(--background);
+}
+
+@media (pointer: coarse) {
+    .app-theme-picker__system-btn {
+        min-inline-size: 44px;
+        min-block-size: 44px;
+    }
+}
+
+/* State-based mode switching via :has() */
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__system-controls {
+    display: flex;
+}
+
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__card {
+    cursor: default;
+}
+
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__card:hover .app-theme-picker__picker::before {
+    border-color: var(--jenkins-border-color);
+}
+
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__static-input:checked + label .app-theme-picker__picker::before {
+    border: var(--jenkins-border);
+}
+
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__static-input:checked + label .app-theme-picker__title::before,
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__static-input:checked + label .app-theme-picker__title::after {
+    width: 0;
+    min-width: 0;
+    margin-right: 0;
+    transform: scale(0);
+    opacity: 0;
+}
+
+.app-theme-selector:has(.app-theme-selector__system-toggle:checked) .app-theme-picker__item:has(.app-theme-picker__system-input:checked) .app-theme-picker__picker::before {
+    border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
+}
+
+@supports not selector(:has(*)) {
+    .app-theme-selector.is-system-theme .app-theme-picker__system-controls {
+        display: flex;
+    }
+
+    .app-theme-selector.is-system-theme .app-theme-picker__card {
+        cursor: default;
+    }
+
+    .app-theme-selector.is-system-theme .app-theme-picker__static-input:checked + label .app-theme-picker__picker::before {
+        border: var(--jenkins-border);
+    }
+
+    .app-theme-selector.is-system-theme .app-theme-picker__static-input:checked + label .app-theme-picker__title::before,
+    .app-theme-selector.is-system-theme .app-theme-picker__static-input:checked + label .app-theme-picker__title::after {
+        width: 0;
+        min-width: 0;
+        margin-right: 0;
+        transform: scale(0);
+        opacity: 0;
+    }
 }
