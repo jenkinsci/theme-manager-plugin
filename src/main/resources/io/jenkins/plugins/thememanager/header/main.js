@@ -65,7 +65,7 @@
     const parsedProperties = JSON.parse(propertiesJson.text);
 
     window.getThemeManagerProperty = function (plugin, propertyName) {
-      const mode = darkMediaQuery?.matches ? 'dark' : 'light';
+      const mode = getMode();
       const activeProperties = parsedProperties[mode] ?? {};
       const key = `${plugin}:${propertyName}`;
       return Object.hasOwn(activeProperties, key)
@@ -95,7 +95,7 @@
       const label = document.querySelector("label[for='account-theme-picker']");
       if (label && (label === document.activeElement || label.classList.contains('jenkins-dropdown__item--selected'))) {
         e.preventDefault();
-        document.querySelector('#account-theme-picker').showPicker();
+        document.querySelector('#account-theme-picker')?.showPicker?.();
       }
     });
 

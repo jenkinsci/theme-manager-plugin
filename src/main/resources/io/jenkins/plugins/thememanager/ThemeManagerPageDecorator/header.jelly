@@ -6,22 +6,23 @@
   <j:if test="${it.shouldShowAccountThemePicker()}">
     <template id="account-theme-picker-template">
       <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
+      <j:set var="currentLight" value="${it.findThemeSelection().light.descriptor}" />
 
       <dd:custom>
         <label class="jenkins-dropdown__item tm-account-theme-picker-select"
                for="account-theme-picker">
           <div class="jenkins-dropdown__item__icon">
-            <l:icon src="${it.findThemeSelection().light.descriptor.iconClassName}" />
+            <l:icon src="${currentLight.iconClassName}" />
           </div>
           <span class="tm-account-theme-picker-label"
                 data-light-label="${%Light theme}"
                 data-dark-label="${%Dark theme}">${%Light theme}</span>
           <span class="tm-account-theme-picker-value">
-            ${it.findThemeSelection().light.descriptor.displayName}
+            ${currentLight.displayName}
           </span>
           <select id="account-theme-picker">
             <j:forEach var="theme" items="${descriptors}">
-              <option value="${theme.themeKey}" selected="${it.themeKey == theme.themeKey ? 'true' : null}">
+              <option value="${theme.themeKey}" selected="${currentLight.themeKey == theme.themeKey ? 'true' : null}">
                 ${theme.displayName}
               </option>
             </j:forEach>

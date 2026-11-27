@@ -51,7 +51,9 @@ Hover over your account icon in the top right and change your theme in the menu.
 appearance:
   themeManager:
     disableUserThemes: true
-    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
+    theme:
+      light: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using
+      dark: "dark"
 ```
 
 ## Creating a new theme

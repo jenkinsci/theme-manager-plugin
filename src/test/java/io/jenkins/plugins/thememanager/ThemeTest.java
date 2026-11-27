@@ -10,6 +10,50 @@ import org.junit.jupiter.api.Test;
 
 class ThemeTest {
 
+    private static class StubThemeManagerFactory extends ThemeManagerFactory {
+        private final Theme theme;
+        private final DescriptorImpl descriptor;
+
+        StubThemeManagerFactory(String themeId, boolean namespaced, Theme theme) {
+            this.theme = theme;
+            this.descriptor = new DescriptorImpl(themeId, namespaced);
+        }
+
+        @Override
+        public Theme getTheme() {
+            return theme;
+        }
+
+        @Override
+        public ThemeManagerFactoryDescriptor getDescriptor() {
+            return descriptor;
+        }
+
+        private static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
+            private final String themeId;
+            private final boolean namespaced;
+
+            DescriptorImpl(String themeId, boolean namespaced) {
+                this.themeId = themeId;
+                this.namespaced = namespaced;
+            }
+
+            @Override
+            public String getThemeId() {
+                return themeId;
+            }
+
+            @Override
+            public boolean isNamespaced() {
+                return namespaced;
+            }
+        }
+    }
+
+    private static ThemeManagerFactory stubFactory(String themeId, boolean namespaced, Theme theme) {
+        return new StubThemeManagerFactory(themeId, namespaced, theme);
+    }
+
     @Test
     void getPropertyReturnsKeyIfPresent() {
         Theme theme =
@@ -28,42 +72,48 @@ class ThemeTest {
     }
 
     @Test
-    void generateHeaderElementsSupportsMediaQuery() {
-        Theme theme = Theme.builder().withCssUrl("/theme-dark/theme.css").build();
+    void generateHeaderElementsScopesNonNamespacedCssByColorScheme() {
+        ThemeManagerFactory light = stubFactory(
+                "light-css",
+                false,
+                Theme.builder().withCssUrl("/theme-light/theme.css").build());
+        ThemeManagerFactory dark = stubFactory(
+                "dark-css",
+                false,
+                Theme.builder().withCssUrl("/theme-dark/theme.css").build());
+        ThemeManagerFactory namespaced = stubFactory(
+                "namespaced",
+                true,
+                Theme.builder().withCssUrl("/theme-ns/theme.css").build());
 
-        Set<String> unconditional = theme.generateHeaderElements(true);
+        Set<String> splitElements = new ThemeSelection(light, dark).generateHeaderElements(true);
         assertThat(
-                unconditional, contains("<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-dark/theme.css\"/>"));
+                splitElements,
+                contains(
+                        "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-light/theme.css\" media=\"(prefers-color-scheme: light)\"/>",
+                        "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
 
-        Set<String> mediaScoped = theme.generateHeaderElements(true, "(prefers-color-scheme: dark)");
+        // Namespaced themes are loaded unconditionally by ThemeManagerPageDecorator, so ThemeSelection skips them
+        Set<String> mixedElements = new ThemeSelection(namespaced, dark).generateHeaderElements(true);
         assertThat(
-                mediaScoped,
+                mixedElements,
                 contains(
                         "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
     }
 
     @Test
     void generatePropertiesIncludesBothLightAndDark() {
-        Theme light =
-                Theme.builder().withProperty("prism-api", "theme", "prism").build();
-        Theme dark =
-                Theme.builder().withProperty("prism-api", "theme", "tomorrow").build();
-        ThemeSelection selection = new ThemeSelection(
-                new ThemeManagerFactory() {
-                    @Override
-                    public Theme getTheme() {
-                        return light;
-                    }
-                },
-                new ThemeManagerFactory() {
-                    @Override
-                    public Theme getTheme() {
-                        return dark;
-                    }
-                });
+        ThemeManagerFactory light = stubFactory(
+                "light-test",
+                true,
+                Theme.builder().withProperty("prism-api", "theme", "prism").build());
+        ThemeManagerFactory dark = stubFactory(
+                "dark-test",
+                true,
+                Theme.builder().withProperty("prism-api", "theme", "tomorrow").build());
 
         assertThat(
-                selection.generateProperties(),
+                new ThemeSelection(light, dark).generateProperties(),
                 is(
                         "<script id=\"theme-manager-properties\" type=\"application/json\">{\"light\":{\"prism-api:theme\":\"prism\"},\"dark\":{\"prism-api:theme\":\"tomorrow\"}}</script>"));
     }

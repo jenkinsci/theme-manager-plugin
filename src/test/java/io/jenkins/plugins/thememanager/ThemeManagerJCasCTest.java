@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import io.jenkins.plugins.casc.ConfigurationContext;
 import io.jenkins.plugins.casc.ConfiguratorRegistry;
@@ -21,63 +20,10 @@ import java.util.Objects;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
-import org.jenkinsci.Symbol;
 import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.TestExtension;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 @WithJenkinsConfiguredWithCode
 class ThemeManagerJCasCTest {
-
-    public static class DarkTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public DarkTestThemeManagerFactory() {}
-
-        @Override
-        public Theme getTheme() {
-            return Theme.builder().build();
-        }
-
-        @TestExtension
-        @Symbol("darkTest")
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "Dark Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "dark-test";
-            }
-        }
-    }
-
-    public static class LightTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public LightTestThemeManagerFactory() {}
-
-        @Override
-        public Theme getTheme() {
-            return Theme.builder().build();
-        }
-
-        @TestExtension
-        @Symbol("lightTest")
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "Light Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "light-test";
-            }
-        }
-    }
 
     private static Mapping getAppearanceRoot(ConfigurationContext context) {
         GlobalConfigurationCategory category =
@@ -94,8 +40,8 @@ class ThemeManagerJCasCTest {
 
         ThemeSelection themeSelection = decorator.getTheme();
         assertNotNull(themeSelection);
-        assertThat(themeSelection.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-        assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(themeSelection.getLight(), instanceOf(TestThemes.Dark.class));
+        assertThat(themeSelection.getDark(), instanceOf(TestThemes.Dark.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
     }
@@ -120,8 +66,8 @@ class ThemeManagerJCasCTest {
 
         ThemeSelection themeSelection = decorator.getTheme();
         assertNotNull(themeSelection);
-        assertThat(themeSelection.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-        assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(themeSelection.getLight(), instanceOf(TestThemes.Light.class));
+        assertThat(themeSelection.getDark(), instanceOf(TestThemes.Dark.class));
 
         assertThat(decorator.isDisableUserThemes(), is(true));
     }
@@ -142,35 +88,34 @@ class ThemeManagerJCasCTest {
     @Test
     void testLegacyXmlMigration(JenkinsConfiguredWithCodeRule j) {
         String legacyDecoratorXml = "<io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>"
-                + "<theme class=\"io.jenkins.plugins.thememanager.ThemeManagerJCasCTest$DarkTestThemeManagerFactory\"/>"
+                + "<theme class=\"io.jenkins.plugins.thememanager.TestThemes$Dark\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeManagerPageDecorator>";
         ThemeManagerPageDecorator decorator = (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(legacyDecoratorXml);
-        assertThat(decorator.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-        assertThat(decorator.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(decorator.getTheme().getLight(), instanceOf(TestThemes.Dark.class));
+        assertThat(decorator.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
 
         String legacyUserPropertyXml = "<io.jenkins.plugins.thememanager.ThemeUserProperty>"
-                + "<theme class=\"io.jenkins.plugins.thememanager.ThemeManagerJCasCTest$DarkTestThemeManagerFactory\"/>"
+                + "<theme class=\"io.jenkins.plugins.thememanager.TestThemes$Dark\"/>"
                 + "</io.jenkins.plugins.thememanager.ThemeUserProperty>";
         ThemeUserProperty userProperty = (ThemeUserProperty) Jenkins.XSTREAM2.fromXML(legacyUserPropertyXml);
-        assertThat(userProperty.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-        assertThat(userProperty.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(userProperty.getTheme().getLight(), instanceOf(TestThemes.Dark.class));
+        assertThat(userProperty.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
     }
 
     @Test
     void testXStreamRoundtrip(JenkinsConfiguredWithCodeRule j) {
         ThemeManagerPageDecorator singleDecorator = new ThemeManagerPageDecorator();
-        singleDecorator.setTheme(ThemeSelection.of(new DarkTestThemeManagerFactory()));
+        singleDecorator.setTheme(ThemeSelection.of(new TestThemes.Dark()));
         ThemeManagerPageDecorator deserializedSingle =
                 (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(singleDecorator));
-        assertThat(deserializedSingle.getTheme().getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-        assertThat(deserializedSingle.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(deserializedSingle.getTheme().getLight(), instanceOf(TestThemes.Dark.class));
+        assertThat(deserializedSingle.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
 
         ThemeManagerPageDecorator splitDecorator = new ThemeManagerPageDecorator();
-        splitDecorator.setTheme(
-                new ThemeSelection(new LightTestThemeManagerFactory(), new DarkTestThemeManagerFactory()));
+        splitDecorator.setTheme(new ThemeSelection(new TestThemes.Light(), new TestThemes.Dark()));
         ThemeManagerPageDecorator deserializedSplit =
                 (ThemeManagerPageDecorator) Jenkins.XSTREAM2.fromXML(Jenkins.XSTREAM2.toXML(splitDecorator));
-        assertThat(deserializedSplit.getTheme().getLight(), instanceOf(LightTestThemeManagerFactory.class));
-        assertThat(deserializedSplit.getTheme().getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+        assertThat(deserializedSplit.getTheme().getLight(), instanceOf(TestThemes.Light.class));
+        assertThat(deserializedSplit.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
     }
 }

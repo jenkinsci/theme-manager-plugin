@@ -44,13 +44,8 @@ public class ThemeUserProperty extends UserProperty {
         this.themeSelection = theme;
     }
 
-    @Deprecated
-    public void setTheme(ThemeManagerFactory theme) {
-        this.themeSelection = theme != null ? ThemeSelection.of(theme) : null;
-    }
-
     @CheckForNull
-    public static ThemeSelection forCurrentUserSelection() {
+    public static ThemeSelection forCurrentUser() {
         final User current = User.current();
         if (current == null) {
             return null;
@@ -62,23 +57,6 @@ public class ThemeUserProperty extends UserProperty {
         }
 
         return property.getTheme();
-    }
-
-    @Deprecated
-    @CheckForNull
-    public static Theme forCurrentUser() {
-        ThemeManagerFactory factory = forCurrentUserFactory();
-        if (factory == null) {
-            return null;
-        }
-        return factory.getTheme();
-    }
-
-    @Deprecated
-    @CheckForNull
-    public static ThemeManagerFactory forCurrentUserFactory() {
-        ThemeSelection current = forCurrentUserSelection();
-        return current != null ? current.getLight() : null;
     }
 
     @Extension(ordinal = Integer.MAX_VALUE)

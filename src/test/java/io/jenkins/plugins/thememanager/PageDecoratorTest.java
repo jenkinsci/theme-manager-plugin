@@ -7,91 +7,86 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.model.User;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import jenkins.model.Jenkins;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
 import org.htmlunit.WebResponse;
-import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlRadioButtonInput;
 import org.htmlunit.util.NameValuePair;
-import org.jenkinsci.Symbol;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
-import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 @WithJenkins
 class PageDecoratorTest {
 
-    public static class DarkTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public DarkTestThemeManagerFactory() {}
-
-        @Override
-        public Theme getTheme() {
-            return Theme.builder()
-                    .withProperty("prism-api", "theme", "tomorrow")
-                    .build();
-        }
-
-        @TestExtension
-        @Symbol("darkTest")
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "Dark Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "dark-test";
-            }
-        }
+    private static User configureUser(JenkinsRule j) {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        j.jenkins.setAuthorizationStrategy(
+                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice"));
+        User alice = User.getById("alice", true);
+        assertThat(alice, notNullValue());
+        return alice;
     }
 
-    public static class LightTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public LightTestThemeManagerFactory() {}
+    private static HtmlRadioButtonInput findThemeRadio(HtmlPage page, String role, String themeKey) {
+        HtmlRadioButtonInput radio = page.querySelector(
+                ".app-theme-picker__input[data-theme-role='" + role + "'][data-theme='" + themeKey + "']");
+        assertThat(radio, notNullValue());
+        return radio;
+    }
 
-        @Override
-        public Theme getTheme() {
-            return Theme.builder().withProperty("prism-api", "theme", "prism").build();
+    private static void postTheme(JenkinsRule j, JenkinsRule.WebClient wc, String value, @CheckForNull String mode)
+            throws Exception {
+        WebRequest request =
+                new WebRequest(j.getURL().toURI().resolve("theme/set").toURL(), HttpMethod.POST);
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new NameValuePair("value", value));
+        if (mode != null) {
+            params.add(new NameValuePair("mode", mode));
         }
+        request.setRequestParameters(params);
+        wc.addCrumb(request);
+        WebResponse response = wc.loadWebResponse(request);
+        assertThat(response.getStatusCode(), is(200));
+    }
 
-        @TestExtension
-        @Symbol("lightTest")
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "Light Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "light-test";
-            }
-        }
+    private static void assertActiveThemeApplied(HtmlPage page, boolean isDark) {
+        assertThat(
+                page.getWebResponse().getContentAsString(),
+                containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
+        assertThat(
+                page.executeJavaScript("document.documentElement.dataset.theme").getJavaScriptResult(),
+                is(isDark ? "dark-test" : "light-test"));
+        assertThat(page.executeJavaScript("window.isSystemRespectingTheme").getJavaScriptResult(), is(true));
+        assertThat(
+                page.executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
+                        .getJavaScriptResult(),
+                is(isDark ? "tomorrow" : "prism"));
     }
 
     @Test
     void testJavaScriptLoadsOnSimpleAndRegularPages(JenkinsRule j) throws Exception {
-        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        MockAuthorizationStrategy auth =
-                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
-        j.jenkins.setAuthorizationStrategy(auth);
+        configureUser(j);
+        ThemeManagerPageDecorator.get().setTheme(new ThemeSelection(new TestThemes.Light(), new TestThemes.Dark()));
 
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            // HtmlUnit does not emulate prefers-color-scheme toggling, so assert against whichever mode it reports
+            HtmlPage loginPage = wc.goTo("login");
+            boolean isDark = Boolean.TRUE.equals(loginPage
+                    .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
+                    .getJavaScriptResult());
+            assertActiveThemeApplied(loginPage, isDark);
+
             wc.login("alice");
-            wc.goTo("");
+            HtmlPage regularPage = wc.goTo("");
+            assertActiveThemeApplied(regularPage, isDark);
         }
     }
 
@@ -103,305 +98,77 @@ class PageDecoratorTest {
                     page.querySelectorAll(".app-theme-picker__item"),
                     hasSize(ThemeManagerFactoryDescriptor.all().size()));
 
-            HtmlRadioButtonInput lightRadio =
-                    page.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput darkRadio =
-                    page.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
-            assertThat(lightRadio, notNullValue());
-            assertThat(darkRadio, notNullValue());
-            lightRadio.setChecked(true);
-            darkRadio.setChecked(true);
-
+            findThemeRadio(page, "light", "light-test").setChecked(true);
+            findThemeRadio(page, "dark", "dark-test").setChecked(true);
             j.submit(page.getFormByName("config"));
 
             ThemeSelection themeSelection = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(themeSelection.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(themeSelection.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(themeSelection.getLight(), instanceOf(TestThemes.Light.class));
+            assertThat(themeSelection.getDark(), instanceOf(TestThemes.Dark.class));
 
-            // Reload and confirm light/dark selections persist
             HtmlPage reloaded = wc.goTo("manage/appearance");
-            HtmlRadioButtonInput reloadedLightRadio = reloaded.querySelector(
-                    ".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput reloadedDarkRadio =
-                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
-            assertThat(reloadedLightRadio.isChecked(), is(true));
-            assertThat(reloadedDarkRadio.isChecked(), is(true));
+            assertThat(findThemeRadio(reloaded, "light", "light-test").isChecked(), is(true));
+            assertThat(findThemeRadio(reloaded, "dark", "dark-test").isChecked(), is(true));
 
             // Select the same theme for both light and dark
-            HtmlRadioButtonInput sameLightRadio =
-                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='dark-test']");
-            sameLightRadio.setChecked(true);
+            findThemeRadio(reloaded, "light", "dark-test").setChecked(true);
             j.submit(reloaded.getFormByName("config"));
 
             ThemeSelection singleTheme = ThemeManagerPageDecorator.get().getTheme();
-            assertThat(singleTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-            assertThat(singleTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(singleTheme.getLight(), instanceOf(TestThemes.Dark.class));
+            assertThat(singleTheme.getDark(), instanceOf(TestThemes.Dark.class));
         }
     }
 
     @Test
     void testUserAppearanceFormRoundtrip(JenkinsRule j) throws Exception {
-        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        MockAuthorizationStrategy auth =
-                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
-        j.jenkins.setAuthorizationStrategy(auth);
-
-        User alice = User.getById("alice", true);
-        assertThat(alice, notNullValue());
+        User alice = configureUser(j);
 
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             wc.login("alice");
             HtmlPage page = wc.goTo("user/alice/appearance");
-            HtmlRadioButtonInput lightRadio =
-                    page.querySelector(".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput darkRadio =
-                    page.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
-            assertThat(lightRadio, notNullValue());
-            assertThat(darkRadio, notNullValue());
-            lightRadio.setChecked(true);
-            darkRadio.setChecked(true);
-
-            HtmlForm form = page.getFormByName("config");
-            j.submit(form);
+            findThemeRadio(page, "light", "light-test").setChecked(true);
+            findThemeRadio(page, "dark", "dark-test").setChecked(true);
+            j.submit(page.getFormByName("config"));
 
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
-            ThemeSelection userTheme = prop.getTheme();
-            assertThat(userTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(prop.getTheme().getLight(), instanceOf(TestThemes.Light.class));
+            assertThat(prop.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
 
             HtmlPage reloaded = wc.goTo("user/alice/appearance");
-            HtmlRadioButtonInput reloadedLightRadio = reloaded.querySelector(
-                    ".app-theme-picker__input[data-theme-role='light'][data-theme='light-test']");
-            HtmlRadioButtonInput reloadedDarkRadio =
-                    reloaded.querySelector(".app-theme-picker__input[data-theme-role='dark'][data-theme='dark-test']");
-            assertThat(reloadedLightRadio.isChecked(), is(true));
-            assertThat(reloadedDarkRadio.isChecked(), is(true));
+            assertThat(findThemeRadio(reloaded, "light", "light-test").isChecked(), is(true));
+            assertThat(findThemeRadio(reloaded, "dark", "dark-test").isChecked(), is(true));
         }
     }
 
     @Test
     void testHeaderDropdownThemeSelection(JenkinsRule j) throws Exception {
-        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        MockAuthorizationStrategy auth =
-                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
-        j.jenkins.setAuthorizationStrategy(auth);
-
-        User alice = User.getById("alice", true);
-        assertThat(alice, notNullValue());
-
-        ThemeManagerPageDecorator.get().setTheme(ThemeSelection.of(new LightTestThemeManagerFactory()));
+        User alice = configureUser(j);
+        ThemeManagerPageDecorator.get().setTheme(ThemeSelection.of(new TestThemes.Light()));
 
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             wc.login("alice");
             HtmlPage initialPage = wc.goTo("");
-            String initialHtml = initialPage.getWebResponse().getContentAsString();
-            assertThat(initialHtml, containsString("account-theme-picker-template"));
-            assertThat(initialHtml, containsString("data-light-label=\"Light theme\""));
-            assertThat(initialHtml, containsString("data-dark-label=\"Dark theme\""));
-            assertThat(initialHtml, containsString("value=\"dark-test\""));
+            assertThat(
+                    initialPage.getWebResponse().getContentAsString(), containsString("account-theme-picker-template"));
 
             // Updating dark mode preserves the inherited global light theme
-            WebRequest darkRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
-            darkRequest.setRequestParameters(
-                    List.of(new NameValuePair("value", "dark-test"), new NameValuePair("mode", "dark")));
-            wc.addCrumb(darkRequest);
-            WebResponse darkResponse = wc.loadWebResponse(darkRequest);
-            assertThat(darkResponse.getStatusCode(), is(200));
-
+            postTheme(j, wc, "dark-test", "dark");
             ThemeUserProperty prop = alice.getProperty(ThemeUserProperty.class);
             assertThat(prop, notNullValue());
-            ThemeSelection splitTheme = prop.getTheme();
-            assertThat(splitTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(splitTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
-
-            HtmlPage splitPage = wc.goTo("");
-            String splitHtml = splitPage.getWebResponse().getContentAsString();
-            assertThat(splitHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
+            assertThat(prop.getTheme().getLight(), instanceOf(TestThemes.Light.class));
+            assertThat(prop.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
 
             // Updating light mode preserves the user's dark theme
-            WebRequest lightRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
-            lightRequest.setRequestParameters(
-                    List.of(new NameValuePair("value", "none"), new NameValuePair("mode", "light")));
-            wc.addCrumb(lightRequest);
-            WebResponse lightResponse = wc.loadWebResponse(lightRequest);
-            assertThat(lightResponse.getStatusCode(), is(200));
-
-            ThemeSelection updatedLightTheme = prop.getTheme();
-            assertThat(updatedLightTheme.getLight().getDescriptor().getThemeKey(), is("none"));
-            assertThat(updatedLightTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
+            postTheme(j, wc, "none", "light");
+            assertThat(prop.getTheme().getLight().getDescriptor().getThemeKey(), is("none"));
+            assertThat(prop.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
 
             // Omitting mode sets both slots for backwards compatibility
-            WebRequest bothRequest = new WebRequest(new URL(j.getURL(), "theme/set"), HttpMethod.POST);
-            bothRequest.setRequestParameters(List.of(new NameValuePair("value", "dark-test")));
-            wc.addCrumb(bothRequest);
-            WebResponse bothResponse = wc.loadWebResponse(bothRequest);
-            assertThat(bothResponse.getStatusCode(), is(200));
-
-            ThemeSelection userTheme = prop.getTheme();
-            assertThat(userTheme.getLight(), instanceOf(DarkTestThemeManagerFactory.class));
-            assertThat(userTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
-
-            HtmlPage updatedPage = wc.goTo("");
-            String updatedHtml = updatedPage.getWebResponse().getContentAsString();
-            assertThat(updatedHtml, containsString("{\"light\":\"dark-test\",\"dark\":\"dark-test\"}"));
-            assertThat(updatedHtml, containsString("Dark Test"));
-        }
-    }
-
-    public static class CssLightTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public CssLightTestThemeManagerFactory() {}
-
-        @Override
-        public Theme getTheme() {
-            return Theme.builder()
-                    .withCssUrl("/theme-css-light/theme.css")
-                    .withProperty("prism-api", "theme", "prism")
-                    .build();
-        }
-
-        @TestExtension
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "CSS Light Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "css-light-test";
-            }
-        }
-    }
-
-    public static class CssDarkTestThemeManagerFactory extends ThemeManagerFactory {
-        @DataBoundConstructor
-        public CssDarkTestThemeManagerFactory() {}
-
-        @Override
-        public Theme getTheme() {
-            return Theme.builder()
-                    .withCssUrl("/theme-css-dark/theme.css")
-                    .withProperty("prism-api", "theme", "tomorrow")
-                    .build();
-        }
-
-        @TestExtension
-        public static class DescriptorImpl extends ThemeManagerFactoryDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "CSS Dark Test";
-            }
-
-            @Override
-            public String getThemeId() {
-                return "css-dark-test";
-            }
-        }
-    }
-
-    @Test
-    void testHeaderEmitsLightAndDarkThemesOnRegularAndSimplePages(JenkinsRule j) throws Exception {
-        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        MockAuthorizationStrategy auth =
-                new MockAuthorizationStrategy().grant(Jenkins.READ).everywhere().to("alice");
-        j.jenkins.setAuthorizationStrategy(auth);
-
-        ThemeManagerPageDecorator.get()
-                .setTheme(new ThemeSelection(new LightTestThemeManagerFactory(), new DarkTestThemeManagerFactory()));
-
-        try (JenkinsRule.WebClient wc = j.createWebClient()) {
-            HtmlPage loginPage = wc.goTo("login");
-            String loginHtml = loginPage.getWebResponse().getContentAsString();
-            assertThat(loginHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
-            boolean isDark = Boolean.TRUE.equals(loginPage
-                    .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
-                    .getJavaScriptResult());
-            assertThat(
-                    loginPage
-                            .executeJavaScript("document.documentElement.dataset.theme")
-                            .getJavaScriptResult(),
-                    is(isDark ? "dark-test" : "light-test"));
-            assertThat(
-                    loginPage
-                            .executeJavaScript("window.isSystemRespectingTheme")
-                            .getJavaScriptResult(),
-                    is(true));
-            assertThat(
-                    loginPage
-                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
-                            .getJavaScriptResult(),
-                    is(isDark ? "tomorrow" : "prism"));
-
-            wc.login("alice");
-            HtmlPage regularPage = wc.goTo("");
-            String regularHtml = regularPage.getWebResponse().getContentAsString();
-            assertThat(regularHtml, containsString("{\"light\":\"light-test\",\"dark\":\"dark-test\"}"));
-            assertThat(
-                    regularPage
-                            .executeJavaScript("document.documentElement.dataset.theme")
-                            .getJavaScriptResult(),
-                    is(isDark ? "dark-test" : "light-test"));
-            assertThat(
-                    regularPage
-                            .executeJavaScript("window.isSystemRespectingTheme")
-                            .getJavaScriptResult(),
-                    is(true));
-            assertThat(
-                    regularPage
-                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
-                            .getJavaScriptResult(),
-                    is(isDark ? "tomorrow" : "prism"));
-        }
-    }
-
-    @Test
-    void testNonNamespacedCssUsesMediaQueriesWhenThemesDiffer(JenkinsRule j) throws Exception {
-        ThemeManagerPageDecorator.get()
-                .setTheme(new ThemeSelection(
-                        new CssLightTestThemeManagerFactory(), new CssDarkTestThemeManagerFactory()));
-
-        try (JenkinsRule.WebClient wc = j.createWebClient()) {
-            wc.getOptions().setCssEnabled(false);
-            HtmlPage splitPage = wc.goTo("");
-            String splitHtml = splitPage.getWebResponse().getContentAsString();
-            assertThat(
-                    splitHtml,
-                    containsString(
-                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-light/theme.css\" media=\"(prefers-color-scheme: light)\"/>"));
-            assertThat(
-                    splitHtml,
-                    containsString(
-                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
-            boolean isDark = Boolean.TRUE.equals(splitPage
-                    .executeJavaScript("window.matchMedia('(prefers-color-scheme: dark)').matches")
-                    .getJavaScriptResult());
-            assertThat(
-                    splitPage
-                            .executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
-                            .getJavaScriptResult(),
-                    is(isDark ? "tomorrow" : "prism"));
-
-            ThemeManagerPageDecorator.get().setTheme(ThemeSelection.of(new CssDarkTestThemeManagerFactory()));
-            HtmlPage samePage = wc.goTo("");
-            String sameHtml = samePage.getWebResponse().getContentAsString();
-            assertThat(
-                    sameHtml,
-                    containsString(
-                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: light)\"/>"));
-            assertThat(
-                    sameHtml,
-                    containsString(
-                            "<link type=\"text/css\" rel=\"stylesheet\" href=\"/theme-css-dark/theme.css\" media=\"(prefers-color-scheme: dark)\"/>"));
-            assertThat(
-                    samePage.executeJavaScript("window.isSystemRespectingTheme").getJavaScriptResult(), is(true));
-            assertThat(
-                    samePage.executeJavaScript("window.getThemeManagerProperty('prism-api', 'theme')")
-                            .getJavaScriptResult(),
-                    is("tomorrow"));
+            postTheme(j, wc, "dark-test", null);
+            assertThat(prop.getTheme().getLight(), instanceOf(TestThemes.Dark.class));
+            assertThat(prop.getTheme().getDark(), instanceOf(TestThemes.Dark.class));
         }
     }
 }

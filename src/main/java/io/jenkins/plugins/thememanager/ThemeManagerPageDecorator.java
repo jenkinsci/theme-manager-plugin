@@ -93,9 +93,9 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     @NonNull
     public ThemeSelection findThemeSelection() {
         if (!disableUserThemes) {
-            ThemeSelection currentUserSelection = ThemeUserProperty.forCurrentUserSelection();
-            if (currentUserSelection != null) {
-                return currentUserSelection;
+            ThemeSelection userSelection = ThemeUserProperty.forCurrentUser();
+            if (userSelection != null) {
+                return userSelection;
             }
         }
 
@@ -146,7 +146,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return String.join("\n", headerElements);
     }
 
-    @SuppressWarnings("unused") // called by jelly
+    @Deprecated
     public String getThemeKey() {
         ThemeManagerFactory themeFactory = findThemeSelection().getLight();
 
