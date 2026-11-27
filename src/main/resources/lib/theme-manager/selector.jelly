@@ -17,7 +17,7 @@
   <j:set var="selectorId" value="${h.generateId()}" />
   <j:set var="uniqueId" value="${h.generateId()}" />
 
-  <div class="app-theme-selector ${isSystem ? 'is-system-theme' : ''}" id="${selectorId}">
+  <div class="app-theme-selector" id="${selectorId}">
     <div class="jenkins-form-item app-theme-selector__toggle" field-disabled="true">
       <span class="jenkins-checkbox">
         <input type="checkbox"

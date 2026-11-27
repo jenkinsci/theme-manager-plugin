@@ -69,6 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
             applyPreview();
         };
 
+        if (!supportsHas) {
+            selector.classList.toggle("is-system-theme", toggle.checked);
+        }
+
         toggle.addEventListener("change", syncMode);
 
         selector.querySelectorAll('input[type="radio"]').forEach((item) => {
