@@ -16,9 +16,9 @@
   <j:set var="currentDarkDescriptor" value="${currentJenkinsTheme.dark.descriptor}" />
   <j:set var="selectorId" value="${h.generateId()}" />
   <j:set var="uniqueId" value="${h.generateId()}" />
-  
-  <div class="app-theme-selector" id="${selectorId}">
-    <div class="app-theme-selector__toggle" field-disabled="true">
+
+  <div class="app-theme-selector">
+    <div field-disabled="true">
       <f:entry>
         <f:checkbox id="${selectorId}-follow-system"
                     class="app-theme-selector__system-toggle"
@@ -28,10 +28,10 @@
     </div>
 
     <f:rowSet name="theme">
-      <div class="app-theme-selector__class app-theme-selector__class--static" field-disabled="${isSystem ? 'true' : null}">
+      <div class="app-theme-selector__class--static" field-disabled="${isSystem ? 'true' : null}">
         <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$StaticTheme" />
       </div>
-      <div class="app-theme-selector__class app-theme-selector__class--system" field-disabled="${!isSystem ? 'true' : null}">
+      <div class="app-theme-selector__class--system" field-disabled="${!isSystem ? 'true' : null}">
         <f:class-entry clazz="io.jenkins.plugins.thememanager.JenkinsTheme$SystemTheme" />
       </div>
 
@@ -40,18 +40,18 @@
           <j:forEach var="theme" items="${descriptors}" varStatus="loop">
             <div class="app-theme-picker__item">
               <div class="app-theme-picker__static" field-disabled="${isSystem ? 'true' : null}">
-                <div class="tr radio-block-start row-set-start">
+                <div class="radio-block-start row-set-start">
                   <input type="radio"
                          name="${uniqueId}.theme"
                          id="${uniqueId}.theme-${loop.index}"
                          value="${loop.index}"
-                         class="radio-block-control block-control app-theme-picker__static-input"
+                         class="radio-block-control app-theme-picker__static-input"
                          data-theme="${theme.themeKey}"
                          disabled="${isSystem ? 'true' : null}"
                          checked="${currentStaticDescriptor == theme ? 'true' : null}"/>
                   <label for="${uniqueId}.theme-${loop.index}" class="app-theme-picker__card">
                     <div class="app-theme-picker__picker" data-theme="${theme.themeKey}">
-                      <svg aria-hidden="true" width="320px" height="180px" viewBox="0 0 320 180" version="1.1"
+                      <svg aria-hidden="true" width="320px" height="180px" viewBox="0 0 320 180"
                            xmlns="http://www.w3.org/2000/svg">
                         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                           <rect fill="var(--background)" x="0" y="0" width="320" height="180"/>
@@ -81,19 +81,19 @@
               </div>
 
               <div class="app-theme-picker__system-controls" field-disabled="${!isSystem ? 'true' : null}">
-                <div class="app-theme-picker__system-option">
-                  <div class="tr radio-block-start row-set-start">
+                <div>
+                  <div class="radio-block-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.light"
                            id="${uniqueId}.light-${loop.index}"
                            value="${loop.index}"
-                           class="radio-block-control block-control app-theme-picker__system-input app-theme-picker__system-input--light"
+                           class="radio-block-control app-theme-picker__system-input"
                            data-theme="${theme.themeKey}"
                            data-theme-role="light"
                            disabled="${!isSystem ? 'true' : null}"
                            checked="${currentLightDescriptor == theme ? 'true' : null}"/>
                     <label for="${uniqueId}.light-${loop.index}"
-                           class="app-theme-picker__system-btn app-theme-picker__system-btn--light"
+                           class="app-theme-picker__system-btn"
                            title="${%lightTheme}">
                       <l:icon src="symbol-sunny-outline plugin-ionicons-api" aria-hidden="true" />
                       <span class="app-theme-picker__sr-only">${%lightThemeOption(theme.displayName)}</span>
@@ -103,19 +103,19 @@
                   <div class="tr row-set-end radio-block-end" style="display:none"/>
                 </div>
 
-                <div class="app-theme-picker__system-option">
-                  <div class="tr radio-block-start row-set-start">
+                <div>
+                  <div class="radio-block-start row-set-start">
                     <input type="radio"
                            name="${uniqueId}.dark"
                            id="${uniqueId}.dark-${loop.index}"
                            value="${loop.index}"
-                           class="radio-block-control block-control app-theme-picker__system-input app-theme-picker__system-input--dark"
+                           class="radio-block-control app-theme-picker__system-input"
                            data-theme="${theme.themeKey}"
                            data-theme-role="dark"
                            disabled="${!isSystem ? 'true' : null}"
                            checked="${currentDarkDescriptor == theme ? 'true' : null}"/>
                     <label for="${uniqueId}.dark-${loop.index}"
-                           class="app-theme-picker__system-btn app-theme-picker__system-btn--dark"
+                           class="app-theme-picker__system-btn"
                            title="${%darkTheme}">
                       <l:icon src="symbol-moon-outline plugin-ionicons-api" aria-hidden="true" />
                       <span class="app-theme-picker__sr-only">${%darkThemeOption(theme.displayName)}</span>
