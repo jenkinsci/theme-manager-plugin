@@ -119,8 +119,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     @NonNull
     public ThemeManagerFactory findThemeFactory() {
         return switch (findJenkinsTheme()) {
-            case JenkinsTheme.StaticTheme(var staticTheme) -> staticTheme;
-            case JenkinsTheme.SystemTheme(var light, var ignored) -> light;
+            case JenkinsTheme.StaticTheme st -> st.getTheme();
+            case JenkinsTheme.SystemTheme sy -> sy.getLight();
         };
     }
 

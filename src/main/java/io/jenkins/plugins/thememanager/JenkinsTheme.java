@@ -23,37 +23,80 @@ public sealed interface JenkinsTheme extends Describable<JenkinsTheme> {
 
     default ThemeManagerFactory getTheme() {
         return switch (this) {
-            case StaticTheme(var theme) -> theme;
-            case SystemTheme(var light, var ignored) -> light;
+            case StaticTheme st -> st.getTheme();
+            case SystemTheme sy -> sy.getLight();
         };
     }
 
     default ThemeManagerFactory getLight() {
         return switch (this) {
-            case StaticTheme(var theme) -> theme;
-            case SystemTheme(var light, var ignored) -> light;
+            case StaticTheme st -> st.getTheme();
+            case SystemTheme sy -> sy.getLight();
         };
     }
 
     default ThemeManagerFactory getDark() {
         return switch (this) {
-            case StaticTheme(var theme) -> theme;
-            case SystemTheme(var ignored, var dark) -> dark;
+            case StaticTheme st -> st.getTheme();
+            case SystemTheme sy -> sy.getDark();
         };
     }
 
-    record StaticTheme(ThemeManagerFactory theme) implements JenkinsTheme {
+    final class StaticTheme implements JenkinsTheme {
+        private final ThemeManagerFactory theme;
+
         @DataBoundConstructor
-        public StaticTheme {
-            theme = Objects.requireNonNullElseGet(theme, NoOpThemeManagerFactory::new);
+        public StaticTheme(ThemeManagerFactory theme) {
+            this.theme = Objects.requireNonNullElseGet(theme, NoOpThemeManagerFactory::new);
+        }
+
+        @Override
+        public ThemeManagerFactory getTheme() {
+            return theme;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o || (o instanceof StaticTheme that && Objects.equals(theme, that.theme));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(theme);
         }
     }
 
-    record SystemTheme(ThemeManagerFactory light, ThemeManagerFactory dark) implements JenkinsTheme {
+    final class SystemTheme implements JenkinsTheme {
+        private final ThemeManagerFactory light;
+        private final ThemeManagerFactory dark;
+
         @DataBoundConstructor
-        public SystemTheme {
-            light = Objects.requireNonNullElseGet(light, NoOpThemeManagerFactory::new);
-            dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
+        public SystemTheme(ThemeManagerFactory light, ThemeManagerFactory dark) {
+            this.light = Objects.requireNonNullElseGet(light, NoOpThemeManagerFactory::new);
+            this.dark = Objects.requireNonNullElseGet(dark, NoOpThemeManagerFactory::new);
+        }
+
+        @Override
+        public ThemeManagerFactory getLight() {
+            return light;
+        }
+
+        @Override
+        public ThemeManagerFactory getDark() {
+            return dark;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o
+                    || (o instanceof SystemTheme that
+                            && Objects.equals(light, that.light)
+                            && Objects.equals(dark, that.dark));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(light, dark);
         }
     }
 }

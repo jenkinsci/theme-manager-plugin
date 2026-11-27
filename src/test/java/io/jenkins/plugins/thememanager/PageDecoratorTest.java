@@ -112,9 +112,7 @@ class PageDecoratorTest {
 
             JenkinsTheme jenkinsTheme = ThemeManagerPageDecorator.get().getTheme();
             assertThat(jenkinsTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(
-                    ((JenkinsTheme.StaticTheme) jenkinsTheme).theme(),
-                    instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(jenkinsTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
 
             HtmlPage reloaded = wc.goTo("manage/appearance");
             HtmlCheckBoxInput followSystem = reloaded.querySelector(".app-theme-selector__system-toggle");
@@ -150,8 +148,8 @@ class PageDecoratorTest {
             JenkinsTheme jenkinsTheme = ThemeManagerPageDecorator.get().getTheme();
             assertThat(jenkinsTheme, instanceOf(JenkinsTheme.SystemTheme.class));
             JenkinsTheme.SystemTheme systemTheme = (JenkinsTheme.SystemTheme) jenkinsTheme;
-            assertThat(systemTheme.light(), instanceOf(LightTestThemeManagerFactory.class));
-            assertThat(systemTheme.dark(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(systemTheme.getLight(), instanceOf(LightTestThemeManagerFactory.class));
+            assertThat(systemTheme.getDark(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(true));
 
             // Reload and confirm system checkbox + light/dark icon selections persist
@@ -175,9 +173,7 @@ class PageDecoratorTest {
 
             JenkinsTheme revertedTheme = ThemeManagerPageDecorator.get().getTheme();
             assertThat(revertedTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(
-                    ((JenkinsTheme.StaticTheme) revertedTheme).theme(),
-                    instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(revertedTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
             assertThat(ThemeManagerPageDecorator.get().isRespectSystemAppearance(), is(false));
         }
     }
@@ -207,8 +203,7 @@ class PageDecoratorTest {
             assertThat(prop, notNullValue());
             JenkinsTheme userTheme = prop.getTheme();
             assertThat(userTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(
-                    ((JenkinsTheme.StaticTheme) userTheme).theme(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(userTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
 
             HtmlPage reloaded = wc.goTo("user/alice/appearance");
             HtmlRadioButtonInput reloadedDarkRadio =
@@ -244,8 +239,7 @@ class PageDecoratorTest {
             assertThat(prop, notNullValue());
             JenkinsTheme userTheme = prop.getTheme();
             assertThat(userTheme, instanceOf(JenkinsTheme.StaticTheme.class));
-            assertThat(
-                    ((JenkinsTheme.StaticTheme) userTheme).theme(), instanceOf(DarkTestThemeManagerFactory.class));
+            assertThat(userTheme.getTheme(), instanceOf(DarkTestThemeManagerFactory.class));
 
             HtmlPage updatedPage = wc.goTo("");
             String updatedHtml = updatedPage.getWebResponse().getContentAsString();

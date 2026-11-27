@@ -63,9 +63,9 @@ public class JenkinsThemeConfigurator implements Configurator<JenkinsTheme> {
     public CNode describe(JenkinsTheme instance, ConfigurationContext context) throws Exception {
         return switch (instance) {
             case null -> null;
-            case JenkinsTheme.StaticTheme(var theme) -> {
+            case JenkinsTheme.StaticTheme st -> {
                 Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
-                yield factoryConfigurator.describe(theme, context);
+                yield factoryConfigurator.describe(st.getTheme(), context);
             }
             case JenkinsTheme.SystemTheme sy -> {
                 Configurator<JenkinsTheme.SystemTheme> systemConfigurator =
