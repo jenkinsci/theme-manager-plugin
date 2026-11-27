@@ -16,8 +16,4 @@ public class ThemeManagerSimplePageDecorator extends SimplePageDecorator {
     public String getHeaderHtml() {
         return ThemeManagerPageDecorator.get().getHeaderHtml();
     }
-
-    public String getThemeKey() {
-        return ThemeManagerPageDecorator.get().getThemeKey();
-    }
 }
