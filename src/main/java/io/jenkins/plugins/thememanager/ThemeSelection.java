@@ -64,17 +64,4 @@ public final class ThemeSelection {
     private static String generateJsonScript(String id, Object value) {
         return MessageFormat.format(JSON_HTML, id, OBJECT_MAPPER.writeValueAsString(value));
     }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o
-                || (o instanceof ThemeSelection that
-                        && Objects.equals(light, that.light)
-                        && Objects.equals(dark, that.dark));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(light, dark);
-    }
 }
