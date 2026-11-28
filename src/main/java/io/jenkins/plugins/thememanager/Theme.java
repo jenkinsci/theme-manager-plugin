@@ -213,6 +213,9 @@ public class Theme {
          * <p>The {@code theme.css} suffix can be changed by overriding {@link
          * ThemeManagerFactoryDescriptor#getThemeJsSuffix()}.
          *
+         * <p>Scripts are loaded regardless of the active light/dark mode; check {@code
+         * document.documentElement.dataset.theme} if behavior should only run while active.
+         *
          * @param javascriptUrl url to a JavaScript file that you want loaded.
          * @return the current builder with a JavaScript URL added to it.
          */
