@@ -29,9 +29,9 @@
       selectEl.value = activeTheme;
     }
 
-    const labelEl = label.querySelector('.tm-account-theme-picker-label');
-    if (labelEl) {
-      labelEl.textContent = mode === 'dark' ? labelEl.dataset.darkLabel : labelEl.dataset.lightLabel;
+    const modeEl = label.querySelector('.tm-account-theme-picker-mode');
+    if (modeEl) {
+      modeEl.dataset.mode = mode;
     }
 
     const selectedOption = selectEl.selectedOptions[0];

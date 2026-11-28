@@ -14,11 +14,12 @@
           <div class="jenkins-dropdown__item__icon">
             <l:icon src="${currentLight.iconClassName}" />
           </div>
-          <span class="tm-account-theme-picker-label"
-                data-light-label="${%Light theme}"
-                data-dark-label="${%Dark theme}">${%Light theme}</span>
           <span class="tm-account-theme-picker-value">
             ${currentLight.displayName}
+          </span>
+          <span class="tm-account-theme-picker-mode" data-mode="light" aria-hidden="true">
+            <span class="tm-account-theme-picker-mode__light"><l:icon src="symbol-sunny-outline plugin-ionicons-api" /></span>
+            <span class="tm-account-theme-picker-mode__dark"><l:icon src="symbol-moon-outline plugin-ionicons-api" /></span>
           </span>
           <select id="account-theme-picker">
             <j:forEach var="theme" items="${descriptors}">
