@@ -105,9 +105,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     /**
-     * Finds the active theme. Checks User and then global theme.
-     *
-     * @return the active theme, or a no-op theme if not selected
+     * @deprecated Only returns the light theme; use {@link #findThemeSelection()} or {@code
+     *     window.getThemeManagerProperty} in JavaScript instead.
      */
     @Deprecated
     @NonNull
@@ -115,6 +114,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return findThemeFactory().getTheme();
     }
 
+    /** @deprecated Only returns the light theme; use {@link #findThemeSelection()} instead. */
     @Deprecated
     @NonNull
     public ThemeManagerFactory findThemeFactory() {
@@ -145,6 +145,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         return String.join("\n", headerElements);
     }
 
+    /** @deprecated Only returns the light theme key; use {@link #findThemeSelection()} instead. */
     @Deprecated
     public String getThemeKey() {
         ThemeManagerFactory themeFactory = findThemeSelection().getLight();
