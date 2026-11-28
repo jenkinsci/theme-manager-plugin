@@ -189,7 +189,8 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         }
 
         @RequirePOST
-        public HttpResponse doSet(@QueryParameter String value, @CheckForNull @QueryParameter(fixEmpty = true) String mode)
+        public HttpResponse doSet(
+                @QueryParameter String value, @CheckForNull @QueryParameter(fixEmpty = true) String mode)
                 throws IOException {
             if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
                 throw new RuntimeException("Setting user themes is disabled");
