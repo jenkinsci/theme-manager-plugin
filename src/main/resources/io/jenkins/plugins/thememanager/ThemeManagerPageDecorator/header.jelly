@@ -1,26 +1,29 @@
-<?jelly escape-by-default='false'?>
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dd="/lib/layout/dropdowns">
-  <script id="theme-manager-theme" type="application/json">{ "id": "${it.themeKey}", "respect_system_appearance":  ${it.respectSystemAppearance} }</script>
-  ${it.getHeaderHtml()}
+  <j:out value="${it.getHeaderHtml()}"/>
   <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
 
   <j:if test="${it.shouldShowAccountThemePicker()}">
     <template id="account-theme-picker-template">
       <j:invokeStatic var="descriptors" className="io.jenkins.plugins.thememanager.ThemeManagerFactoryDescriptor" method="all"/>
+      <j:set var="currentLight" value="${it.findThemeSelection().light.descriptor}" />
 
       <dd:custom>
         <label class="jenkins-dropdown__item tm-account-theme-picker-select"
                for="account-theme-picker">
           <div class="jenkins-dropdown__item__icon">
-            <l:icon src="${it.findThemeFactory().descriptor.iconClassName}" />
+            <l:icon src="${currentLight.iconClassName}" />
           </div>
-          ${%Theme}
-          <span>
-            ${it.findThemeFactory().descriptor.displayName}
+          <span class="tm-account-theme-picker-value">
+            ${currentLight.displayName}
+          </span>
+          <span class="tm-account-theme-picker-mode" data-mode="light" aria-hidden="true">
+            <span class="tm-account-theme-picker-mode__light"><l:icon src="symbol-sunny-outline plugin-ionicons-api" /></span>
+            <span class="tm-account-theme-picker-mode__dark"><l:icon src="symbol-moon-outline plugin-ionicons-api" /></span>
           </span>
           <select id="account-theme-picker">
             <j:forEach var="theme" items="${descriptors}">
-              <option value="${theme.themeKey}" selected="${it.themeKey == theme.themeKey ? 'true' : null}">
+              <option value="${theme.themeKey}" selected="${currentLight.themeKey == theme.themeKey ? 'true' : null}">
                 ${theme.displayName}
               </option>
             </j:forEach>

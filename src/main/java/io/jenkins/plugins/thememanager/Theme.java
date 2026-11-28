@@ -3,17 +3,15 @@ package io.jenkins.plugins.thememanager;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Holds URLs to CSS and JavaScript files.
@@ -23,45 +21,37 @@ import tools.jackson.databind.ObjectMapper;
 public class Theme {
 
     private static final String JS_HTML = "<script type=\"text/javascript\" src=\"{0}\"></script>";
-    private static final String JSON_HTML = "<script id=\"theme-manager-{0}\" type=\"application/json\">{1}</script>";
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private static final String CSS_HTML = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\"/>";
+    private static final String CSS_MEDIA_HTML =
+            "<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\" media=\"{1}\"/>";
 
     private final List<String> cssUrls;
     private final List<String> javascriptUrls;
-
-    private final boolean respectSystemAppearance;
     private final Map<String, String> properties;
 
-    private Theme(
-            List<String> cssUrls,
-            List<String> javascriptUrls,
-            boolean respectSystemAppearance,
-            Map<String, String> properties) {
+    private Theme(List<String> cssUrls, List<String> javascriptUrls, Map<String, String> properties) {
         this.cssUrls = cssUrls;
         this.javascriptUrls = javascriptUrls;
-        this.respectSystemAppearance = respectSystemAppearance;
         this.properties = properties;
     }
 
-    @Restricted(NoExternalUse.class)
-    String generateProperties() {
-        try {
-            return MessageFormat.format(JSON_HTML, "properties", OBJECT_MAPPER.writeValueAsString(properties));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    Map<String, String> getProperties() {
+        return properties;
     }
 
-    @Restricted(NoExternalUse.class)
     Set<String> generateHeaderElements(boolean injectCss) {
-        Set<String> headerElements = new HashSet<>();
+        return generateHeaderElements(injectCss, null);
+    }
+
+    Set<String> generateHeaderElements(boolean injectCss, @CheckForNull String media) {
+        Set<String> headerElements = new LinkedHashSet<>();
 
         if (injectCss) {
             for (String cssUrl : cssUrls) {
-                headerElements.add(MessageFormat.format(CSS_HTML, cssUrl));
+                headerElements.add(
+                        media != null
+                                ? MessageFormat.format(CSS_MEDIA_HTML, cssUrl, media)
+                                : MessageFormat.format(CSS_HTML, cssUrl));
             }
         }
 
@@ -90,8 +80,9 @@ public class Theme {
         return javascriptUrls;
     }
 
+    @Deprecated
     public boolean isRespectSystemAppearance() {
-        return respectSystemAppearance;
+        return false;
     }
 
     /**
@@ -142,7 +133,6 @@ public class Theme {
         private List<String> cssUrls = emptyList();
         private List<String> javascriptUrls = emptyList();
 
-        private boolean respectSystemAppearance = false;
         private final Map<String, String> properties = new HashMap<>();
 
         Builder() {}
@@ -185,10 +175,12 @@ public class Theme {
          * Marks the theme as a 'system' respecting theme that will adapt to light and dark system
          * configuration
          *
+         * @deprecated now it is NoOp
+         *
          * @return the current builder with respect system appearance enabled.
          */
+        @Deprecated
         public Builder respectSystemAppearance() {
-            this.respectSystemAppearance = true;
             return this;
         }
 
@@ -221,6 +213,9 @@ public class Theme {
          * <p>The {@code theme.css} suffix can be changed by overriding {@link
          * ThemeManagerFactoryDescriptor#getThemeJsSuffix()}.
          *
+         * <p>Scripts are loaded regardless of the active light/dark mode; check {@code
+         * document.documentElement.dataset.theme} if behavior should only run while active.
+         *
          * @param javascriptUrl url to a JavaScript file that you want loaded.
          * @return the current builder with a JavaScript URL added to it.
          */
@@ -246,7 +241,7 @@ public class Theme {
          * @return the theme.
          */
         public Theme build() {
-            return new Theme(cssUrls, javascriptUrls, respectSystemAppearance, properties);
+            return new Theme(cssUrls, javascriptUrls, properties);
         }
     }
 }

@@ -26,7 +26,7 @@ First, you will want to install a theme plugin through the Jenkins Update Center
 * [Nord theme](https://plugins.jenkins.io/nord-theme/)
 * [Gruvbox theme](https://plugins.jenkins.io/gruvbox-theme/)
 
-_Just send a pull request to add your theme to the list if create one_
+_Just send a pull request to add your theme to the list if you create one_
 
 ### Configuring the plugin
 
@@ -43,7 +43,11 @@ You can stop users from being able to change their theme by selecting the
 
 ### User
 
-Hover over your account icon in the top right and change your theme in the menu.
+Hover over your account icon in the top right to change the theme for your current mode (light or dark).
+
+![User appearance menu](docs/images/user-appearance-menu.png)
+
+Alternatively, you can set both via User → Appearance → Theme.
 
 ### Configuration as Code example
 
@@ -51,7 +55,9 @@ Hover over your account icon in the top right and change your theme in the menu.
 appearance:
   themeManager:
     disableUserThemes: true
-    theme: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using, i.g. 'darkSystem'
+    theme:
+      light: "noOp" # noOp is no theme, change this to the name of the theme plugin you're using
+      dark: "dark"
 ```
 
 ## Creating a new theme

@@ -14,9 +14,8 @@ public abstract class ThemeManagerFactoryDescriptor extends Descriptor<ThemeMana
 
     public ThemeManagerFactory getInstance() {
         try {
-            //noinspection deprecation
-            return this.clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.clazz.getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to instantiate " + clazz.getName(), e);
         }
     }

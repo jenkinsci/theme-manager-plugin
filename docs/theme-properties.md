@@ -27,17 +27,10 @@ The artifactId will be prepended to the property name with a : separator, this i
 
 ## Consumer guide
 
-Retrieve the active theme from `ThemeManagerPageDecorator`, a `NoOp` theme will be provided if none is selected.
+Retrieve a property for the active theme (automatically resolving light/dark mode) from JavaScript using `window.getThemeManagerProperty`:
 
-```java
-
-public class YourPluginCode {
-    public String getThemeName() {
-        Theme theme = ThemeManagerPageDecorator.get().findTheme();
-        return theme.getProperty("prism-api", "theme").orElse("prism");
-    }
-}
-
+```js
+const themeName = window.getThemeManagerProperty?.("prism-api", "theme") ?? "prism";
 ```
 
 ## Existing implementations

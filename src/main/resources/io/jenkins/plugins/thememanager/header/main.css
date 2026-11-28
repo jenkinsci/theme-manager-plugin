@@ -4,8 +4,26 @@
     padding-right: 0.6rem;
     min-width: 220px;
 
-    span {
+    .tm-account-theme-picker-mode {
+        display: inline-flex;
+        align-items: center;
+        justify-self: end;
         color: var(--text-color-secondary);
+
+        svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+    }
+
+    .tm-account-theme-picker-mode[data-mode="light"] .tm-account-theme-picker-mode__dark,
+    .tm-account-theme-picker-mode[data-mode="dark"] .tm-account-theme-picker-mode__light {
+        display: none;
+    }
+
+    .tm-account-theme-picker-mode__light,
+    .tm-account-theme-picker-mode__dark {
+        display: inline-flex;
     }
 
     select {

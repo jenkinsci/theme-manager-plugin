@@ -1,4 +1,4 @@
-<?jelly escape-by-default='false'?>
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <j:new var="h" className="hudson.Functions"/>
   <!-- Load the default styles -->
@@ -6,7 +6,6 @@
               page="simple-head.jelly"
               optional="true"/>
 
-  <script id="theme-manager-theme" type="application/json">{ "id": "${it.themeKey}", "respect_system_appearance":  ${it.respectSystemAppearance} }</script>
+  <j:out value="${it.getHeaderHtml()}"/>
   <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
-  ${it.getHeaderHtml()}
 </j:jelly>

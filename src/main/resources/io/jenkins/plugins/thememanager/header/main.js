@@ -1,74 +1,130 @@
 (function () {
-  const themeJson = document.getElementById('theme-manager-theme').text
-  const theme = JSON.parse(themeJson);
-
-  if (theme.id && theme.id !== '') {
-    document.documentElement.dataset.theme = theme.id
+  const themeElement = document.getElementById('theme-manager-theme');
+  if (!themeElement) {
+    return;
   }
-  window.isSystemRespectingTheme = theme.respect_system_appearance
 
-  const propertiesJson = document.getElementById('theme-manager-properties')
+  const theme = JSON.parse(themeElement.text);
+  const darkMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+
+  const currentMode = (isDark = darkMediaQuery?.matches) => (isDark ? 'dark' : 'light');
+  let accountThemePickerSelect = null;
+
+  const applyTheme = (mode = currentMode()) => {
+    const activeTheme = theme[mode];
+    if (activeTheme) {
+      document.documentElement.dataset.theme = activeTheme;
+    }
+  };
+
+  const syncAccountThemePicker = (mode = currentMode()) => {
+    const selectEl = accountThemePickerSelect ?? document.querySelector('#account-theme-picker');
+    const label = selectEl?.closest("label[for='account-theme-picker']");
+    if (!selectEl || !label) {
+      return;
+    }
+
+    const activeTheme = theme[mode];
+    if (activeTheme) {
+      selectEl.value = activeTheme;
+    }
+
+    const modeEl = label.querySelector('.tm-account-theme-picker-mode');
+    if (modeEl) {
+      modeEl.dataset.mode = mode;
+    }
+
+    const selectedOption = selectEl.selectedOptions[0];
+    const valueEl = label.querySelector('.tm-account-theme-picker-value');
+    if (valueEl && selectedOption) {
+      valueEl.textContent = selectedOption.textContent.trim();
+    }
+
+    const iconTemplate = label.querySelector(`[data-theme-icon='${selectEl.value}']`);
+    const iconEl = label.querySelector('.jenkins-dropdown__item__icon');
+    if (iconEl && iconTemplate) {
+      iconEl.innerHTML = iconTemplate.innerHTML;
+    }
+  };
+
+  applyTheme();
+  window.isSystemRespectingTheme = true;
+
+  darkMediaQuery?.addEventListener?.('change', (e) => {
+    if (document.querySelector('.app-theme-picker')) {
+      return;
+    }
+    const mode = currentMode(e.matches);
+    applyTheme(mode);
+    syncAccountThemePicker(mode);
+  });
+
+  const propertiesJson = document.getElementById('theme-manager-properties');
   if (propertiesJson) {
     const parsedProperties = JSON.parse(propertiesJson.text);
 
     window.getThemeManagerProperty = function (plugin, propertyName) {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-      let propertyNameNormalised = propertyName
-      if (isSystemRespectingTheme) {
-        propertyNameNormalised = isDark ? `${propertyName}-dark` : `${propertyName}-light`
-      }
-      return parsedProperties[`${plugin}:${propertyNameNormalised}`]
-    }
-  }
-})()
-
-document.addEventListener('DOMContentLoaded', function () {
-  const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
-  const themesTemplate = document.querySelector("#account-theme-picker-template");
-  let userActions = document.querySelector("#root-action-UserAction + template");
-
-  if (isAppearancePage || !themesTemplate || !userActions) {
-    return;
+      const mode = currentMode();
+      const activeProperties = parsedProperties[mode] ?? {};
+      const key = `${plugin}:${propertyName}`;
+      const modeKey = `${key}-${mode}`;
+      return Object.hasOwn(activeProperties, modeKey)
+        ? activeProperties[modeKey]
+        : activeProperties[key];
+    };
   }
 
-  // Copy the <select> and its options and add it to the account menu
-  const select = themesTemplate.content;
-  userActions.content.querySelector('.jenkins-dropdown [data-dropdown-type="SEPARATOR"]').after(select);
+  document.addEventListener('DOMContentLoaded', function () {
+    const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
+    const themesTemplate = document.querySelector("#account-theme-picker-template");
+    const userActions = document.querySelector("#root-action-UserAction + template");
 
-  // Handle keyboard activation for the theme picker.
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Enter' && e.key !== ' ') {
+    if (isAppearancePage || !themesTemplate || !userActions) {
       return;
     }
-    const label = document.querySelector("label[for='account-theme-picker']");
-    if (label && (label === document.activeElement || label.classList.contains('jenkins-dropdown__item--selected'))) {
-      e.preventDefault();
-      document.querySelector('#account-theme-picker').showPicker();
-    }
-  });
 
-  // Add an event listener for the themes
-  Behaviour.specify(
-      '#account-theme-picker',
-      "account-theme-picker",
-      0,
-      function (e) {
-        e.addEventListener("change", () => {
-          document.documentElement.dataset.theme = e.value;
-          document.querySelector("label[for='account-theme-picker'] span").innerHTML = e.selectedOptions[0].textContent;
-          document.querySelector("label[for='account-theme-picker'] .jenkins-dropdown__item__icon").innerHTML =
-              document.querySelector("[data-theme-icon='" + e.value + "']").innerHTML;
+    // Copy the <select> and its options and add it to the account menu
+    const select = themesTemplate.content;
+    userActions.content.querySelector('.jenkins-dropdown [data-dropdown-type="SEPARATOR"]').after(select);
 
-          const root = document.head.dataset.rooturl
-          fetch(root + '/theme/set', {
-            method: 'POST',
-            headers: Object.assign({}, crumb.wrap({}), {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-            body: 'value=' + e.value
+    // Handle keyboard activation for the theme picker.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') {
+        return;
+      }
+      const label = document.querySelector("label[for='account-theme-picker']");
+      if (label && (label === document.activeElement || label.classList.contains('jenkins-dropdown__item--selected'))) {
+        e.preventDefault();
+        document.querySelector('#account-theme-picker')?.showPicker?.();
+      }
+    });
+
+    // Add an event listener for the themes
+    Behaviour.specify(
+        '#account-theme-picker',
+        "account-theme-picker",
+        0,
+        function (selectEl) {
+          accountThemePickerSelect = selectEl;
+          syncAccountThemePicker();
+
+          selectEl.addEventListener("change", () => {
+            const mode = currentMode();
+            theme[mode] = selectEl.value;
+            applyTheme(mode);
+            syncAccountThemePicker(mode);
+
+            const root = document.head.dataset.rooturl;
+            const body = new URLSearchParams({ value: selectEl.value, mode });
+            fetch(`${root}/theme/set`, {
+              method: 'POST',
+              headers: Object.assign({}, crumb.wrap({}), {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }),
+              body: body.toString()
+            });
           });
-        });
-      },
-  );
-})
+        },
+    );
+  });
+})();

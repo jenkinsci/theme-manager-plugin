@@ -1,5 +1,6 @@
 package io.jenkins.plugins.thememanager;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
@@ -7,12 +8,10 @@ import hudson.model.PageDecorator;
 import hudson.model.RootAction;
 import hudson.model.User;
 import hudson.util.HttpResponses;
-import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
 import net.sf.json.JSONObject;
@@ -29,11 +28,22 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Symbol("themeManager")
 public class ThemeManagerPageDecorator extends PageDecorator {
 
+    private ThemeSelection themeSelection;
+    // Retained for backwards compatibility with legacy <theme> XStream XML configs
     private ThemeManagerFactory theme;
     private boolean disableUserThemes;
 
     public ThemeManagerPageDecorator() {
         load();
+    }
+
+    // Migrates legacy <theme> XStream XML entries into ThemeSelection
+    protected Object readResolve() {
+        if (theme != null && themeSelection == null) {
+            themeSelection = ThemeSelection.of(theme);
+            theme = null;
+        }
+        return this;
     }
 
     public static ThemeManagerPageDecorator get() {
@@ -54,16 +64,20 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     }
 
     @DataBoundSetter
-    public void setTheme(ThemeManagerFactory theme) {
-        this.theme = theme;
+    public void setTheme(ThemeSelection theme) {
+        this.themeSelection = theme;
     }
 
-    public ThemeManagerFactory getTheme() {
-        if (theme == null) {
-            return new NoOpThemeManagerFactory();
-        }
+    @Deprecated
+    public void setTheme(ThemeManagerFactory theme) {
+        this.themeSelection = theme != null ? ThemeSelection.of(theme) : null;
+    }
 
-        return theme;
+    public ThemeSelection getTheme() {
+        if (themeSelection == null) {
+            return ThemeSelection.none();
+        }
+        return themeSelection;
     }
 
     public boolean isDisableUserThemes() {
@@ -75,42 +89,38 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         this.disableUserThemes = disableUserThemes;
     }
 
+    @NonNull
+    public ThemeSelection findThemeSelection() {
+        if (!disableUserThemes) {
+            ThemeSelection userSelection = ThemeUserProperty.forCurrentUser();
+            if (userSelection != null) {
+                return userSelection;
+            }
+        }
+
+        if (themeSelection != null) {
+            return themeSelection;
+        }
+        return ThemeSelection.none();
+    }
+
     /**
-     * Finds the active theme. Checks User and then global theme.
-     *
-     * @return the active theme, or a no-op theme if not selected
+     * @deprecated Only returns the light theme; use {@link #findThemeSelection()} or {@code
+     *     window.getThemeManagerProperty} in JavaScript instead.
      */
+    @Deprecated
     @NonNull
     public Theme findTheme() {
-        if (!disableUserThemes) {
-            Theme userTheme = ThemeUserProperty.forCurrentUser();
-            if (userTheme != null) {
-                return userTheme;
-            }
-        }
-
-        if (theme != null) {
-            return theme.getTheme();
-        }
-        return new NoOpThemeManagerFactory().getTheme();
+        return findThemeFactory().getTheme();
     }
 
+    /** @deprecated Only returns the light theme; use {@link #findThemeSelection()} instead. */
+    @Deprecated
     @NonNull
     public ThemeManagerFactory findThemeFactory() {
-        if (!disableUserThemes) {
-            ThemeManagerFactory userTheme = ThemeUserProperty.forCurrentUserFactory();
-            if (userTheme != null) {
-                return userTheme;
-            }
-        }
-
-        if (theme != null) {
-            return theme;
-        }
-        return new NoOpThemeManagerFactory();
+        return findThemeSelection().getLight();
     }
 
-    @NonNull
     public boolean shouldShowAccountThemePicker() {
         return User.current() != null && !isDisableUserThemes();
     }
@@ -118,37 +128,34 @@ public class ThemeManagerPageDecorator extends PageDecorator {
     /** Get the complete header HTML for all configured theme elements. */
     public String getHeaderHtml() {
         boolean injectCss = shouldInjectCss();
-        Set<String> namespacedThemes = ThemeManagerFactoryDescriptor.all().stream()
+        ThemeSelection selection = findThemeSelection();
+
+        Set<String> headerElements = new LinkedHashSet<>();
+        headerElements.add(selection.generateTheme());
+        headerElements.addAll(selection.generateHeaderElements(injectCss));
+
+        ThemeManagerFactoryDescriptor.all().stream()
                 .filter(ThemeManagerFactoryDescriptor::isNamespaced)
                 .map(desc -> desc.getInstance().getTheme().generateHeaderElements(injectCss))
                 .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+                .forEach(headerElements::add);
 
-        ThemeManagerFactory themeManagerFactory = findThemeFactory();
-        namespacedThemes.add(themeManagerFactory.getTheme().generateProperties());
+        headerElements.add(selection.generateProperties());
 
-        if (!themeManagerFactory.getDescriptor().isNamespaced()) {
-            Set<String> data =
-                    new LinkedHashSet<>(themeManagerFactory.getTheme().generateHeaderElements(injectCss));
-            data.addAll(namespacedThemes);
-            return String.join("\n", data);
-        }
-
-        return String.join("\n", namespacedThemes);
+        return String.join("\n", headerElements);
     }
 
-    @SuppressWarnings("unused") // called by jelly
+    /** @deprecated Only returns the light theme key; use {@link #findThemeSelection()} instead. */
+    @Deprecated
     public String getThemeKey() {
-        ThemeManagerFactory themeFactory = findThemeFactory();
+        ThemeManagerFactory themeFactory = findThemeSelection().getLight();
 
         return themeFactory.getDescriptor().getThemeKey();
     }
 
-    @SuppressWarnings("unused") // called by jelly
+    @Deprecated
     public boolean isRespectSystemAppearance() {
-        ThemeManagerFactory themeFactory = findThemeFactory();
-
-        return themeFactory.getTheme().isRespectSystemAppearance();
+        return true;
     }
 
     /**
@@ -182,7 +189,9 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         }
 
         @RequirePOST
-        public HttpResponse doSet(@QueryParameter String value) throws IOException {
+        public HttpResponse doSet(
+                @QueryParameter String value, @CheckForNull @QueryParameter(fixEmpty = true) String mode)
+                throws IOException {
             if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
                 throw new RuntimeException("Setting user themes is disabled");
             }
@@ -193,12 +202,22 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 throw new RuntimeException("User is not signed in");
             }
 
-            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
-            p.setTheme(ThemeManagerFactoryDescriptor.all().stream()
+            ThemeManagerFactory selected = ThemeManagerFactoryDescriptor.all().stream()
                     .filter(e -> e.getThemeKey().equals(value))
                     .findFirst()
                     .orElseThrow()
-                    .getInstance());
+                    .getInstance();
+
+            ThemeSelection current = ThemeManagerPageDecorator.get().findThemeSelection();
+            ThemeSelection updated = switch (mode) {
+                case null -> ThemeSelection.of(selected);
+                case "light" -> new ThemeSelection(selected, current.getDark());
+                case "dark" -> new ThemeSelection(current.getLight(), selected);
+                default -> throw new IllegalArgumentException("Invalid theme mode: " + mode);
+            };
+
+            ThemeUserProperty p = user.getProperty(ThemeUserProperty.class);
+            p.setTheme(updated);
             user.save();
 
             return HttpResponses.ok();

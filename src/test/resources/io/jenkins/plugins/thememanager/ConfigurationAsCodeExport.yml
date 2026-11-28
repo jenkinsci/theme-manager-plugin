@@ -1,2 +1,4 @@
 disableUserThemes: true
-theme: "noOp"
+theme:
+  dark: "darkTest"
+  light: "darkTest"
