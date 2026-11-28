@@ -68,16 +68,17 @@
       const mode = getMode();
       const activeProperties = parsedProperties[mode] ?? {};
       const key = `${plugin}:${propertyName}`;
-      return Object.hasOwn(activeProperties, key)
-        ? activeProperties[key]
-        : activeProperties[`${key}-${mode}`];
+      const modeKey = `${key}-${mode}`
+      return Object.hasOwn(activeProperties, modeKey)
+        ? activeProperties[modeKey]
+        : activeProperties[key];
     };
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     const isAppearancePage = document.querySelector("[data-model-type='hudson.model.userproperty.UserPropertyCategoryAppearanceAction']");
     const themesTemplate = document.querySelector("#account-theme-picker-template");
-    let userActions = document.querySelector("#root-action-UserAction + template");
+    const userActions = document.querySelector("#root-action-UserAction + template");
 
     if (isAppearancePage || !themesTemplate || !userActions) {
       return;
