@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import hudson.ExtensionList;
 import io.jenkins.plugins.casc.ConfigurationContext;
 import io.jenkins.plugins.casc.ConfiguratorRegistry;
+import io.jenkins.plugins.casc.SchemaGeneration;
 import io.jenkins.plugins.casc.impl.configurators.GlobalConfigurationCategoryConfigurator;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
@@ -19,6 +20,7 @@ import io.jenkins.plugins.casc.model.Mapping;
 import java.util.Objects;
 import jenkins.appearance.AppearanceCategory;
 import jenkins.model.GlobalConfigurationCategory;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 @WithJenkinsConfiguredWithCode
@@ -82,5 +84,18 @@ class ThemeManagerJCasCTest {
         String expected = toStringFromYamlFile(this, "ConfigurationAsCodeSystemExport.yml");
 
         assertThat(exported, is(expected));
+    }
+
+    @Test
+    void testSchemaIncludesLightAndDark(JenkinsConfiguredWithCodeRule j) {
+        JSONObject schema = SchemaGeneration.generateSchema();
+        JSONObject definitions = schema.getJSONObject("definitions");
+        JSONObject themeSelection = definitions.getJSONObject(ThemeSelection.class.getName());
+        JSONObject properties = themeSelection.getJSONObject("properties");
+
+        String factoryRef = "#/definitions/" + ThemeManagerFactory.class.getName();
+        assertThat(properties.getJSONObject("light").getString("$ref"), is(factoryRef));
+        assertThat(properties.getJSONObject("dark").getString("$ref"), is(factoryRef));
+        assertThat(definitions.has(ThemeManagerFactory.class.getName()), is(true));
     }
 }

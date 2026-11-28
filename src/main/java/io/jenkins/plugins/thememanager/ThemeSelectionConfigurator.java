@@ -7,10 +7,10 @@ import io.jenkins.plugins.casc.Attribute;
 import io.jenkins.plugins.casc.ConfigurationContext;
 import io.jenkins.plugins.casc.Configurator;
 import io.jenkins.plugins.casc.ConfiguratorException;
+import io.jenkins.plugins.casc.impl.attributes.DescribableAttribute;
 import io.jenkins.plugins.casc.model.CNode;
 import io.jenkins.plugins.casc.model.Mapping;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
-import java.util.Collections;
 import java.util.Set;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -27,15 +27,18 @@ public class ThemeSelectionConfigurator implements Configurator<ThemeSelection> 
     @NonNull
     @Override
     public Set<Attribute<ThemeSelection, ?>> describe() {
-        return Collections.emptySet();
+        return Set.of(
+                new DescribableAttribute<ThemeSelection, ThemeManagerFactory>("light", ThemeManagerFactory.class)
+                        .getter(ThemeSelection::getLight),
+                new DescribableAttribute<ThemeSelection, ThemeManagerFactory>("dark", ThemeManagerFactory.class)
+                        .getter(ThemeSelection::getDark));
     }
 
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public ThemeSelection configure(CNode config, ConfigurationContext context) throws ConfiguratorException {
         if (config == null) {
-            return ThemeSelection.of(new NoOpThemeManagerFactory());
+            return ThemeSelection.none();
         }
 
         Configurator<ThemeManagerFactory> factoryConfigurator = context.lookupOrFail(ThemeManagerFactory.class);
@@ -70,7 +73,6 @@ public class ThemeSelectionConfigurator implements Configurator<ThemeSelection> 
 
     @CheckForNull
     @Override
-    @SuppressWarnings("unchecked")
     public CNode describe(ThemeSelection instance, ConfigurationContext context) throws Exception {
         if (instance == null) {
             return null;
