@@ -189,7 +189,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         }
 
         @RequirePOST
-        public HttpResponse doSet(@QueryParameter String value, @CheckForNull @QueryParameter String mode)
+        public HttpResponse doSet(@QueryParameter String value, @CheckForNull @QueryParameter(fixEmpty = true) String mode)
                 throws IOException {
             if (ThemeManagerPageDecorator.get().isDisableUserThemes()) {
                 throw new RuntimeException("Setting user themes is disabled");
@@ -212,7 +212,6 @@ public class ThemeManagerPageDecorator extends PageDecorator {
                 case null -> ThemeSelection.of(selected);
                 case "light" -> new ThemeSelection(selected, current.getDark());
                 case "dark" -> new ThemeSelection(current.getLight(), selected);
-                case "" -> ThemeSelection.of(selected);
                 default -> throw new IllegalArgumentException("Invalid theme mode: " + mode);
             };
 
