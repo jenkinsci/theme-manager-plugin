@@ -2,7 +2,6 @@ package io.jenkins.plugins.thememanager;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.Extension;
 import io.jenkins.plugins.casc.Attribute;
 import io.jenkins.plugins.casc.ConfigurationContext;
 import io.jenkins.plugins.casc.Configurator;
@@ -12,10 +11,11 @@ import io.jenkins.plugins.casc.model.CNode;
 import io.jenkins.plugins.casc.model.Mapping;
 import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.util.Set;
+import org.jenkinsci.plugins.variant.OptionalExtension;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-@Extension(optional = true)
+@OptionalExtension(requirePlugins = "configuration-as-code")
 @Restricted(NoExternalUse.class)
 public class ThemeSelectionConfigurator implements Configurator<ThemeSelection> {
 
