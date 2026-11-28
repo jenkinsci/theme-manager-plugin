@@ -7,33 +7,31 @@
   const theme = JSON.parse(themeElement.text);
   const darkMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
 
-  const getMode = (isDark = Boolean(darkMediaQuery?.matches)) => (isDark ? 'dark' : 'light');
+  const currentMode = (isDark = darkMediaQuery?.matches) => (isDark ? 'dark' : 'light');
   let accountThemePickerSelect = null;
 
-  const applyTheme = (isDark = Boolean(darkMediaQuery?.matches)) => {
-    const activeTheme = theme[getMode(isDark)];
+  const applyTheme = (mode = currentMode()) => {
+    const activeTheme = theme[mode];
     if (activeTheme) {
       document.documentElement.dataset.theme = activeTheme;
     }
   };
 
-  const syncAccountThemePicker = (
-    isDark = Boolean(darkMediaQuery?.matches),
-    selectEl = accountThemePickerSelect ?? document.querySelector('#account-theme-picker'),
-  ) => {
+  const syncAccountThemePicker = (mode = currentMode()) => {
+    const selectEl = accountThemePickerSelect ?? document.querySelector('#account-theme-picker');
     const label = selectEl?.closest("label[for='account-theme-picker']");
     if (!selectEl || !label) {
       return;
     }
 
-    const activeTheme = theme[getMode(isDark)];
+    const activeTheme = theme[mode];
     if (activeTheme) {
       selectEl.value = activeTheme;
     }
 
     const labelEl = label.querySelector('.tm-account-theme-picker-label');
     if (labelEl) {
-      labelEl.textContent = isDark ? labelEl.dataset.darkLabel : labelEl.dataset.lightLabel;
+      labelEl.textContent = mode === 'dark' ? labelEl.dataset.darkLabel : labelEl.dataset.lightLabel;
     }
 
     const selectedOption = selectEl.selectedOptions[0];
@@ -56,8 +54,9 @@
     if (document.querySelector('.app-theme-picker')) {
       return;
     }
-    applyTheme(e.matches);
-    syncAccountThemePicker(e.matches);
+    const mode = currentMode(e.matches);
+    applyTheme(mode);
+    syncAccountThemePicker(mode);
   });
 
   const propertiesJson = document.getElementById('theme-manager-properties');
@@ -65,10 +64,10 @@
     const parsedProperties = JSON.parse(propertiesJson.text);
 
     window.getThemeManagerProperty = function (plugin, propertyName) {
-      const mode = getMode();
+      const mode = currentMode();
       const activeProperties = parsedProperties[mode] ?? {};
       const key = `${plugin}:${propertyName}`;
-      const modeKey = `${key}-${mode}`
+      const modeKey = `${key}-${mode}`;
       return Object.hasOwn(activeProperties, modeKey)
         ? activeProperties[modeKey]
         : activeProperties[key];
@@ -107,13 +106,13 @@
         0,
         function (selectEl) {
           accountThemePickerSelect = selectEl;
-          syncAccountThemePicker(undefined, selectEl);
+          syncAccountThemePicker();
 
           selectEl.addEventListener("change", () => {
-            const mode = getMode();
+            const mode = currentMode();
             theme[mode] = selectEl.value;
-            applyTheme();
-            syncAccountThemePicker(undefined, selectEl);
+            applyTheme(mode);
+            syncAccountThemePicker(mode);
 
             const root = document.head.dataset.rooturl;
             const body = new URLSearchParams({ value: selectEl.value, mode });
