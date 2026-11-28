@@ -28,6 +28,10 @@ public final class ThemeSelection {
         return new ThemeSelection(light, dark);
     }
 
+    static ThemeSelection none() {
+        return of(new NoOpThemeManagerFactory());
+    }
+
     public static ThemeSelection of(ThemeManagerFactory theme) {
         return new ThemeSelection(theme, theme);
     }

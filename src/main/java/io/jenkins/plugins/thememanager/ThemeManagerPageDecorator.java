@@ -8,7 +8,6 @@ import hudson.model.PageDecorator;
 import hudson.model.RootAction;
 import hudson.model.User;
 import hudson.util.HttpResponses;
-import io.jenkins.plugins.thememanager.none.NoOpThemeManagerFactory;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,7 +75,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
 
     public ThemeSelection getTheme() {
         if (themeSelection == null) {
-            return ThemeSelection.of(new NoOpThemeManagerFactory());
+            return ThemeSelection.none();
         }
         return themeSelection;
     }
@@ -102,7 +101,7 @@ public class ThemeManagerPageDecorator extends PageDecorator {
         if (themeSelection != null) {
             return themeSelection;
         }
-        return ThemeSelection.of(new NoOpThemeManagerFactory());
+        return ThemeSelection.none();
     }
 
     /**
