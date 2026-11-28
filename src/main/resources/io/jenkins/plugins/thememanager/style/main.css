@@ -7,6 +7,10 @@
 
 .app-theme-picker__item {
     position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.5rem;
 
     input[type="radio"],
     .app-theme-picker__sr-only {
@@ -20,24 +24,17 @@
         white-space: nowrap;
         clip-path: inset(50%);
     }
-
-    &:has(.app-theme-picker__input:checked) .app-theme-picker__picker::before {
-        border: calc(var(--jenkins-border-width) * 2) solid var(--focus-input-border);
-    }
 }
 
 .app-theme-picker__card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    text-align: center;
-    font-weight: var(--font-bold-weight);
+    display: contents;
 }
 
 .app-theme-picker__picker {
     position: relative;
     display: flex;
     flex-direction: column;
+    grid-column: 1 / -1;
     width: 100%;
     border-radius: var(--form-input-border-radius);
     margin-block-end: 0.625rem;
@@ -52,7 +49,6 @@
         border-radius: inherit;
         border: var(--jenkins-border);
         box-shadow: var(--form-input-glow);
-        transition: var(--standard-transition);
     }
 
     svg {
@@ -65,60 +61,101 @@
 }
 
 .app-theme-picker__title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
+    min-width: 0;
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: var(--font-bold-weight);
 }
 
 .app-theme-picker__controls {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
-    margin-block-start: 0.5rem;
+    gap: 0.25rem;
 }
 
 .app-theme-picker__btn {
+    --item-background: var(--button-background);
+    --item-background--hover: var(--button-background--hover);
+    --item-background--active: var(--button-background--active);
+    --item-box-shadow--focus: var(--button-box-shadow--focus);
+    --app-theme-picker-btn-size: 1.75rem;
+
+    position: relative;
+    z-index: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-inline-size: 32px;
-    min-block-size: 32px;
-    padding: 0.25rem;
-    border-radius: 999px;
-    border: var(--jenkins-border);
-    background: var(--card-background);
-    color: var(--text-color-secondary);
+    inline-size: var(--app-theme-picker-btn-size);
+    block-size: var(--app-theme-picker-btn-size);
+    border-radius: 50%;
+    color: var(--text-color);
     cursor: pointer;
-    transition: var(--standard-transition);
+    box-shadow:
+        inset 0 10px 10px color-mix(in sRGB, white 1.5%, transparent),
+        var(--elevation-2-box-shadow);
 
-    &:hover {
-        border-color: var(--input-border-hover);
-        color: var(--text-color);
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        transition: var(--standard-transition);
+    }
+
+    &::before {
+        background-color: var(--item-background);
+        box-shadow: inset 0 0 0 var(--jenkins-border-width) var(--jenkins-border-color);
+    }
+
+    &::after {
+        box-shadow: var(--focus-ring--hidden);
+    }
+
+    &:hover::before {
+        background-color: var(--item-background--hover);
+    }
+
+    &:active {
+        &::before {
+            background-color: var(--item-background--active);
+        }
+
+        &::after {
+            box-shadow: 0 0 0 var(--focus-ring-width) var(--item-box-shadow--focus);
+        }
     }
 
     svg {
-        width: 1rem;
-        height: 1rem;
+        width: 0.875rem;
+        height: 0.875rem;
         pointer-events: none;
     }
 
     @media (pointer: coarse) {
-        min-inline-size: 44px;
-        min-block-size: 44px;
+        --app-theme-picker-btn-size: 44px;
     }
 }
 
 .app-theme-picker__input {
-    &:focus-visible + .app-theme-picker__btn {
-        outline: 2px solid var(--focus-input-border);
-        outline-offset: 2px;
+    &:focus-visible + .app-theme-picker__btn::after {
+        box-shadow: var(--focus-ring--keyboard);
     }
 
     &:checked + .app-theme-picker__btn {
-        background: var(--focus-input-border);
-        border-color: var(--focus-input-border);
-        color: var(--background);
+        color: var(--button-color--primary);
+
+        &::before {
+            box-shadow: inset 0 0 0 calc(var(--app-theme-picker-btn-size) / 2) var(--accent-color);
+        }
+
+        &:active::after {
+            box-shadow: 0 0 0 var(--focus-ring-width) oklch(from var(--accent-color) l c h / 0.4);
+        }
     }
 }
