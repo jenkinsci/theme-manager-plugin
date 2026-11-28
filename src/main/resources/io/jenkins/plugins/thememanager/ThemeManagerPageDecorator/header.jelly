@@ -1,6 +1,6 @@
-<?jelly escape-by-default='false'?>
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dd="/lib/layout/dropdowns">
-  ${it.getHeaderHtml()}
+  <j:out value="${it.getHeaderHtml()}"/>
   <st:adjunct includes="io.jenkins.plugins.thememanager.header.main" />
 
   <j:if test="${it.shouldShowAccountThemePicker()}">
